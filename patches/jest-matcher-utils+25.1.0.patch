@@ -1,0 +1,44 @@
+diff --git a/node_modules/jest-matcher-utils/LICENSE b/node_modules/jest-matcher-utils/LICENSE
+old mode 100644
+new mode 100755
+diff --git a/node_modules/jest-matcher-utils/build/Replaceable.d.ts b/node_modules/jest-matcher-utils/build/Replaceable.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/jest-matcher-utils/build/Replaceable.d.ts.map b/node_modules/jest-matcher-utils/build/Replaceable.d.ts.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/jest-matcher-utils/build/Replaceable.js b/node_modules/jest-matcher-utils/build/Replaceable.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/jest-matcher-utils/build/deepCyclicCopyReplaceable.d.ts b/node_modules/jest-matcher-utils/build/deepCyclicCopyReplaceable.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/jest-matcher-utils/build/deepCyclicCopyReplaceable.d.ts.map b/node_modules/jest-matcher-utils/build/deepCyclicCopyReplaceable.d.ts.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/jest-matcher-utils/build/deepCyclicCopyReplaceable.js b/node_modules/jest-matcher-utils/build/deepCyclicCopyReplaceable.js
+old mode 100644
+new mode 100755
+index efc41e2..a47288e
+--- a/node_modules/jest-matcher-utils/build/deepCyclicCopyReplaceable.js
++++ b/node_modules/jest-matcher-utils/build/deepCyclicCopyReplaceable.js
+@@ -60,6 +60,10 @@ function deepCyclicCopyObject(object, cycles) {
+       descriptor.value = deepCyclicCopyReplaceable(descriptor.value, cycles);
+     }
+ 
++    if (!('set' in descriptor)) {
++      descriptor.writable = true;
++    }
++
+     descriptor.configurable = true;
+   });
+   return Object.defineProperties(newObject, descriptors);
+diff --git a/node_modules/jest-matcher-utils/build/index.d.ts b/node_modules/jest-matcher-utils/build/index.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/jest-matcher-utils/build/index.d.ts.map b/node_modules/jest-matcher-utils/build/index.d.ts.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/jest-matcher-utils/build/index.js b/node_modules/jest-matcher-utils/build/index.js
+old mode 100644
+new mode 100755
