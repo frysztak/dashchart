@@ -28,18 +28,22 @@ describe('CSV loader', () => {
     const columns: Dictionary<Column> = {
       id: {
         type: ColumnType.STRING,
+        inferredType: ColumnType.NUMBER,
         values: ['1', '2', '3', '4', '5'],
       },
       first_name: {
         type: ColumnType.STRING,
+        inferredType: ColumnType.STRING,
         values: ['Prentiss', 'Bessie', 'Tybi', 'Felix', 'Gay'],
       },
       last_name: {
         type: ColumnType.STRING,
+        inferredType: ColumnType.STRING,
         values: ['Passey', 'Docker', 'Fantini', 'Freak', 'Cutchee'],
       },
       email: {
         type: ColumnType.STRING,
+        inferredType: ColumnType.STRING,
         values: [
           'ppassey0@amazonaws.com',
           'bdocker1@pagesperso-orange.fr',

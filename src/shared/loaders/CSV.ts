@@ -35,6 +35,8 @@ export class CSVLoader implements ILoader {
       frame.push(Object.values(line.record));
     }
 
+    frame.inferColumnTypes();
+
     return frame;
   }
 }
