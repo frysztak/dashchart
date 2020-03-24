@@ -12,7 +12,12 @@ export const basicParabola = () => {
   const props: ChartProps = {
     height: number('Height', 600),
     width: number('Width', 800),
-    margin: { top: 20, right: 15, bottom: 60, left: 60 },
+    margin: {
+      top: number('Margin top', 20),
+      right: number('Margin right', 15),
+      bottom: number('Margin bottom', 60),
+      left: number('Margin left', 20),
+    },
     data: [
       {
         type: ChartType.LINEAR,
