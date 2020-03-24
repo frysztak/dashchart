@@ -1,16 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { curveMonotoneX, line, ScaleLinear, axisBottom, select, axisLeft } from 'd3';
+import { axisBottom, axisLeft, curveMonotoneX, line, ScaleLinear, select } from 'd3';
 import { zip } from '../../../../shared/utils/utils';
-import { ChartAxisDataType, ChartProps, ChartData } from './ChartProps';
+import { ChartAxisDataType, ChartData, ChartProps } from './ChartProps';
 import { genScaler } from './ChartGenerators';
+import { ColourSchemes, getColour } from './ColourSchemes';
 
 export function Chart(props: ChartProps) {
   const d3Container = useRef<SVGSVGElement | null>(null);
-  const [svgPath, setSvgPath] = useState<string[]>(Array(props.data.length).fill(''));
+  const [svgPaths, setSvgPaths] = useState<string[]>([]);
+  const [lineColours, setLineColours] = useState<string[]>([]);
   const xAxes = useRef<Array<SVGElement | null>>([]);
   const yAxes = useRef<Array<SVGElement | null>>([]);
 
   const { width, height, margin } = props;
+
+  const colourScheme = ColourSchemes.Ocean;
 
   useEffect(() => {
     const xRange: [number, number] = [margin.left, width - margin.right];
@@ -18,6 +22,9 @@ export function Chart(props: ChartProps) {
 
     xAxes.current = xAxes.current.slice(0, props.data.length);
     yAxes.current = yAxes.current.slice(0, props.data.length);
+
+    const newPath: string[] = [...svgPaths];
+    const newLineColours: string[] = [...lineColours];
 
     for (let i = 0; i < props.data.length; i++) {
       const chart: ChartData = props.data[i];
@@ -37,9 +44,8 @@ export function Chart(props: ChartProps) {
           .y((d: [number, number]) => yScaler(d[1]))
           .curve(curveMonotoneX)(zipped)!;
 
-        const newPath = [...svgPath];
         newPath[i] = path;
-        setSvgPath(newPath);
+        newLineColours[i] = getColour(colourScheme, i);
 
         const currentXAxis: SVGElement | null = xAxes.current[i];
         if (currentXAxis) {
@@ -52,6 +58,9 @@ export function Chart(props: ChartProps) {
         }
       }
     }
+
+    setSvgPaths(newPath);
+    setLineColours(newLineColours);
   }, [props]);
 
   return (
@@ -61,7 +70,7 @@ export function Chart(props: ChartProps) {
           <g key={i}>
             <g ref={el => (xAxes.current[i] = el)} transform={`translate(0, ${height - margin.bottom})`} />
             <g ref={el => (yAxes.current[i] = el)} transform={`translate(${margin.left}, 0)`} />
-            <path d={svgPath[i]} fill='none' stroke='aqua' />
+            <path d={svgPaths[i]} fill='none' stroke={lineColours[i]} />
           </g>
         ))}
       </g>
