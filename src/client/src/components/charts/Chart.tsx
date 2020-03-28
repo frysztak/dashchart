@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { axisBottom, axisLeft, curveMonotoneX, line, ScaleLinear, select } from 'd3';
 import { zip } from '../../../../shared/utils/utils';
-import { ChartAxisDataType, ChartData, ChartProps } from './ChartProps';
+import { AxisDataType, ChartData, ChartProps } from './ChartProps';
 import { genScaler } from './ChartGenerators';
 import { ColourSchemes, getColour } from './ColourSchemes';
 
 export function Chart(props: ChartProps) {
   const d3Container = useRef<SVGSVGElement | null>(null);
-  const [svgPaths, setSvgPaths] = useState<string[]>([]);
-  const [lineColours, setLineColours] = useState<string[]>([]);
-  const xAxes = useRef<Array<SVGElement | null>>([]);
-  const yAxes = useRef<Array<SVGElement | null>>([]);
+  const [svgPath, setSvgPath] = useState<string>('');
+  const [lineColour, setLineColour] = useState<string>('');
+  const xAxes = useRef<SVGGElement | null>(null);
+  const yAxes = useRef<SVGGElement | null>(null);
 
   const { width, height, margin } = props;
 
@@ -20,59 +20,40 @@ export function Chart(props: ChartProps) {
     const xRange: [number, number] = [margin.left, width - margin.right];
     const yRange: [number, number] = [height - margin.bottom, margin.top];
 
-    xAxes.current = xAxes.current.slice(0, props.data.length);
-    yAxes.current = yAxes.current.slice(0, props.data.length);
+    const chart: ChartData = props.data;
+    const xScaler: ScaleLinear<number, number> | null = genScaler(chart.x, xRange);
+    const yScaler: ScaleLinear<number, number> | null = genScaler(chart.y, yRange);
 
-    const newPath: string[] = [...svgPaths];
-    const newLineColours: string[] = [...lineColours];
+    if (xScaler && yScaler && chart.x.dataType === AxisDataType.NUMBER && chart.y.dataType === AxisDataType.NUMBER) {
+      const zipped: [number, number][] = zip(chart.x.data, chart.y.data);
+      const path: string = line()
+        .x((d: [number, number]) => xScaler(d[0]))
+        .y((d: [number, number]) => yScaler(d[1]))
+        .curve(curveMonotoneX)(zipped)!;
 
-    for (let i = 0; i < props.data.length; i++) {
-      const chart: ChartData = props.data[i];
+      setSvgPath(path);
+      setLineColour(getColour(colourScheme, 0));
 
-      const xScaler: ScaleLinear<number, number> | null = genScaler(chart.x, xRange);
-      const yScaler: ScaleLinear<number, number> | null = genScaler(chart.y, yRange);
+      const currentXAxis: SVGGElement | null = xAxes.current;
+      if (currentXAxis) {
+        select(currentXAxis).call(axisBottom(xScaler));
+      }
 
-      if (
-        xScaler &&
-        yScaler &&
-        chart.x.dataType === ChartAxisDataType.NUMBER &&
-        chart.y.dataType === ChartAxisDataType.NUMBER
-      ) {
-        const zipped: [number, number][] = zip(chart.x.data, chart.y.data);
-        const path: string = line()
-          .x((d: [number, number]) => xScaler(d[0]))
-          .y((d: [number, number]) => yScaler(d[1]))
-          .curve(curveMonotoneX)(zipped)!;
-
-        newPath[i] = path;
-        newLineColours[i] = getColour(colourScheme, i);
-
-        const currentXAxis: SVGElement | null = xAxes.current[i];
-        if (currentXAxis) {
-          select(currentXAxis as SVGSVGElement).call(axisBottom(xScaler));
-        }
-
-        const currentYAxis: SVGElement | null = yAxes.current[i];
-        if (currentYAxis) {
-          select(currentYAxis as SVGSVGElement).call(axisLeft(yScaler));
-        }
+      const currentYAxis: SVGGElement | null = yAxes.current;
+      if (currentYAxis) {
+        select(currentYAxis).call(axisLeft(yScaler));
       }
     }
-
-    setSvgPaths(newPath);
-    setLineColours(newLineColours);
   }, [props]);
 
   return (
     <svg width={width} height={height} ref={d3Container}>
       <g transform={`translate(${margin.left}, ${margin.top})`}>
-        {props.data.map((chart: ChartData, i: number) => (
-          <g key={i}>
-            <g ref={el => (xAxes.current[i] = el)} transform={`translate(0, ${height - margin.bottom})`} />
-            <g ref={el => (yAxes.current[i] = el)} transform={`translate(${margin.left}, 0)`} />
-            <path d={svgPaths[i]} fill='none' stroke={lineColours[i]} />
-          </g>
-        ))}
+        <g>
+          <g ref={xAxes} transform={`translate(0, ${height - margin.bottom})`} />
+          <g ref={yAxes} transform={`translate(${margin.left}, 0)`} />
+          <path d={svgPath} fill='none' stroke={lineColour} />
+        </g>
       </g>
     </svg>
   );

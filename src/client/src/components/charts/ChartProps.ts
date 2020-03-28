@@ -5,52 +5,52 @@ export interface ChartMargin {
   left: number;
 }
 
-export enum ChartAxisScale {
+export enum AxisScale {
   LINEAR = 'LINEAR',
   LOG = 'LOG',
 }
 
-export enum ChartAxisDataType {
+export enum AxisDataType {
   NUMBER = 'NUMBER',
   DATE = 'DATE',
   STRING = 'STRING',
 }
 
-interface ChartBaseAxis {
-  scale: ChartAxisScale;
+interface BaseAxis {
+  scale: AxisScale;
 }
 
-export type ChartAxis =
-  | (ChartBaseAxis & {
-      dataType: ChartAxisDataType.NUMBER;
+export type Axis =
+  | (BaseAxis & {
+      dataType: AxisDataType.NUMBER;
       data: number[];
       domain?: [number, number];
     })
-  | (ChartBaseAxis & {
-      dataType: ChartAxisDataType.DATE;
+  | (BaseAxis & {
+      dataType: AxisDataType.DATE;
       data: Date[];
       domain?: [Date, Date];
     })
-  | (ChartBaseAxis & {
-      dataType: ChartAxisDataType.STRING;
+  | (BaseAxis & {
+      dataType: AxisDataType.STRING;
       data: string[];
       domain?: string[];
     });
 
 export enum ChartType {
-  LINEAR = 'LINEAR',
+  LINE = 'LINE',
   SCATTER = 'SCATTER',
 }
 
 export interface ChartData {
-  x: ChartAxis;
-  y: ChartAxis;
-  type: ChartType;
+  x: Axis;
+  y: Axis;
 }
 
 export interface ChartProps {
   margin: ChartMargin;
   width: number;
   height: number;
-  data: ChartData[];
+  type: ChartType;
+  data: ChartData;
 }
