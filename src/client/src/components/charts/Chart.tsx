@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { axisBottom, axisLeft, curveMonotoneX, line, ScaleLinear, select } from 'd3';
-import { zip } from '../../../../shared/utils/utils';
+import { axisBottom, axisLeft, select } from 'd3';
 import { AxisDataType, ChartData, ChartProps } from './ChartProps';
-import { genScaler } from './ChartGenerators';
+import { genPath, genScaler } from './ChartGenerators';
 import { ColourSchemes, getColour } from './ColourSchemes';
 
 export function Chart(props: ChartProps) {
@@ -21,27 +20,40 @@ export function Chart(props: ChartProps) {
     const yRange: [number, number] = [height - margin.bottom, margin.top];
 
     const chart: ChartData = props.data;
-    const xScaler: ScaleLinear<number, number> | null = genScaler(chart.x, xRange);
-    const yScaler: ScaleLinear<number, number> | null = genScaler(chart.y, yRange);
+    const xScaler = genScaler(chart.x, xRange)!;
+    const yScaler = genScaler(chart.y, yRange)!;
+    const path: string = genPath(chart, xScaler, yScaler);
 
-    if (xScaler && yScaler && chart.x.dataType === AxisDataType.NUMBER && chart.y.dataType === AxisDataType.NUMBER) {
-      const zipped: [number, number][] = zip(chart.x.data, chart.y.data);
-      const path: string = line()
-        .x((d: [number, number]) => xScaler(d[0]))
-        .y((d: [number, number]) => yScaler(d[1]))
-        .curve(curveMonotoneX)(zipped)!;
+    setSvgPath(path);
+    setLineColour(getColour(colourScheme, 0));
 
-      setSvgPath(path);
-      setLineColour(getColour(colourScheme, 0));
-
-      const currentXAxis: SVGGElement | null = xAxes.current;
-      if (currentXAxis) {
-        select(currentXAxis).call(axisBottom(xScaler));
+    const currentXAxis: SVGGElement | null = xAxes.current;
+    if (currentXAxis) {
+      switch (xScaler.dataType) {
+        case AxisDataType.DATE:
+        case AxisDataType.NUMBER: {
+          select(currentXAxis).call(axisBottom(xScaler.scaler));
+          break;
+        }
+        case AxisDataType.STRING: {
+          select(currentXAxis).call(axisBottom(xScaler.scaler));
+          break;
+        }
       }
+    }
 
-      const currentYAxis: SVGGElement | null = yAxes.current;
-      if (currentYAxis) {
-        select(currentYAxis).call(axisLeft(yScaler));
+    const currentYAxis: SVGGElement | null = yAxes.current;
+    if (currentYAxis) {
+      switch (yScaler.dataType) {
+        case AxisDataType.DATE:
+        case AxisDataType.NUMBER: {
+          select(currentYAxis).call(axisLeft(yScaler.scaler));
+          break;
+        }
+        case AxisDataType.STRING: {
+          select(currentYAxis).call(axisLeft(yScaler.scaler));
+          break;
+        }
       }
     }
   }, [props]);

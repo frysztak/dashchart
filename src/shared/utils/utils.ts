@@ -18,6 +18,6 @@ export function minmax<T extends number | Date>(list: Array<T>): [T, T] {
       }
       return [min, max] as [T, T];
     },
-    [0, 0] as [T, T],
+    [Infinity, -Infinity] as [T, T],
   );
 }
