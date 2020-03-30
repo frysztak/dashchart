@@ -16,8 +16,15 @@ export enum AxisDataType {
   STRING = 'STRING',
 }
 
+export enum AxisPosition {
+  PRIMARY = 'PRIMARY',
+  SECONDARY = 'SECONDARY',
+  HIDDEN = 'HIDDEN',
+}
+
 interface BaseAxis {
   scale: AxisScale;
+  position?: AxisPosition;
 }
 
 export type Axis =
@@ -47,10 +54,14 @@ export interface ChartData {
   y: Axis;
 }
 
-export interface ChartProps {
+export interface ChartDimensions {
   margin: ChartMargin;
   width: number;
   height: number;
+}
+
+export interface ChartProps {
+  dimensions: ChartDimensions;
   type: ChartType;
   data: ChartData;
 }

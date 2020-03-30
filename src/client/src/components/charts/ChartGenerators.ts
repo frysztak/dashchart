@@ -1,5 +1,8 @@
-import { Axis, AxisDataType, AxisScale, ChartData } from './ChartProps';
+import { Axis, AxisDataType, AxisPosition, AxisScale, ChartData, ChartDimensions } from './ChartProps';
 import {
+  Axis as D3Axis,
+  axisBottom,
+  AxisDomain,
   curveMonotoneX,
   line,
   scaleLinear,
@@ -10,8 +13,13 @@ import {
   ScaleOrdinal,
   scaleTime,
   ScaleTime,
+  axisTop,
+  axisRight,
+  axisLeft,
+  select,
 } from 'd3';
 import { minmax } from '../../../../shared/utils/utils';
+import { AxisScale as D3AxisScale } from 'd3-axis';
 
 export type ScalerWrapper =
   | {
@@ -108,4 +116,74 @@ export function genPath(data: ChartData, xScaler: ScalerWrapper, yScaler: Scaler
   }
 
   return lineGenerator.curve(curveMonotoneX)(Array(x.length))!;
+}
+
+export type AxisFn = <Domain extends AxisDomain>(scale: D3AxisScale<Domain>) => D3Axis<Domain>;
+
+export function genAxisFn(
+  axis: 'x' | 'y',
+  dimensions: ChartDimensions,
+  position?: AxisPosition,
+): [AxisFn | null, string | null] {
+  const { height, width, margin } = dimensions;
+
+  switch (axis) {
+    case 'x':
+      switch (position) {
+        case AxisPosition.PRIMARY:
+        case undefined:
+          return [axisBottom, `translate(0, ${height - margin.bottom})`];
+        case AxisPosition.SECONDARY:
+          return [axisTop, `translate(0, ${margin.top})`];
+        case AxisPosition.HIDDEN:
+        default:
+          return [null, null];
+      }
+    case 'y':
+      switch (position) {
+        case AxisPosition.PRIMARY:
+        case undefined:
+          return [axisLeft, `translate(${margin.left}, 0)`];
+        case AxisPosition.SECONDARY:
+          return [axisRight, `translate(${width - margin.right}, 0)`];
+        case AxisPosition.HIDDEN:
+        default:
+          return [null, null];
+      }
+  }
+}
+
+export function drawAxis(
+  ref: SVGGElement | null,
+  axis: 'x' | 'y',
+  scalerWrapper: ScalerWrapper,
+  dimensions: ChartDimensions,
+  position: AxisPosition | undefined,
+): string {
+  if (!ref) {
+    return '';
+  }
+
+  select(ref)
+    .selectAll('*')
+    .remove();
+
+  const [axisFn, axisTransform] = genAxisFn(axis, dimensions, position);
+  if (!axisFn) {
+    return '';
+  }
+
+  switch (scalerWrapper.dataType) {
+    case AxisDataType.DATE:
+    case AxisDataType.NUMBER: {
+      select(ref).call(axisFn(scalerWrapper.scaler));
+      break;
+    }
+    case AxisDataType.STRING: {
+      select(ref).call(axisFn(scalerWrapper.scaler));
+      break;
+    }
+  }
+
+  return axisTransform || '';
 }

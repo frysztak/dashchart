@@ -1,6 +1,6 @@
 import React from 'react';
 import { Chart } from './Chart';
-import { AxisDataType, AxisScale, ChartProps, ChartType } from './ChartProps';
+import { AxisDataType, AxisPosition, AxisScale, ChartProps, ChartType } from './ChartProps';
 import { number, select, withKnobs } from '@storybook/addon-knobs';
 
 export default { title: 'Chart', decorators: [withKnobs] };
@@ -10,24 +10,28 @@ export const singlePlot = () => {
   const y = x.map(x => x * x);
 
   const props: ChartProps = {
-    height: number('Height', 600),
-    width: number('Width', 800),
-    margin: {
-      top: number('Margin top', 20),
-      right: number('Margin right', 15),
-      bottom: number('Margin bottom', 60),
-      left: number('Margin left', 20),
+    dimensions: {
+      height: number('Height', 600),
+      width: number('Width', 800),
+      margin: {
+        top: number('Margin top', 20),
+        right: number('Margin right', 15),
+        bottom: number('Margin bottom', 60),
+        left: number('Margin left', 20),
+      },
     },
     type: ChartType.LINE,
     data: {
       x: {
         dataType: AxisDataType.NUMBER,
         scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
+        position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
       },
       y: {
         dataType: AxisDataType.NUMBER,
         scale: select('Y axis scale', AxisScale, AxisScale.LINEAR),
+        position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
       },
     },
@@ -48,24 +52,28 @@ export const plotWithDates = () => {
   const y = [15, 20, 25, 5, 20];
 
   const props: ChartProps = {
-    height: number('Height', 600),
-    width: number('Width', 800),
-    margin: {
-      top: number('Margin top', 20),
-      right: number('Margin right', 15),
-      bottom: number('Margin bottom', 60),
-      left: number('Margin left', 20),
+    dimensions: {
+      height: number('Height', 600),
+      width: number('Width', 800),
+      margin: {
+        top: number('Margin top', 20),
+        right: number('Margin right', 15),
+        bottom: number('Margin bottom', 60),
+        left: number('Margin left', 20),
+      },
     },
     type: ChartType.LINE,
     data: {
       x: {
         dataType: AxisDataType.DATE,
         scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
+        position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
       },
       y: {
         dataType: AxisDataType.NUMBER,
         scale: select('Y axis scale', AxisScale, AxisScale.LINEAR),
+        position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
       },
     },
@@ -86,24 +94,28 @@ export const plotWithDatesAndStrings = () => {
   const y = ['Ulrich', 'Pszemek', 'Egon', 'Bartosz', 'Helge'];
 
   const props: ChartProps = {
-    height: number('Height', 600),
-    width: number('Width', 800),
-    margin: {
-      top: number('Margin top', 20),
-      right: number('Margin right', 15),
-      bottom: number('Margin bottom', 60),
-      left: number('Margin left', 30),
+    dimensions: {
+      height: number('Height', 600),
+      width: number('Width', 800),
+      margin: {
+        top: number('Margin top', 20),
+        right: number('Margin right', 15),
+        bottom: number('Margin bottom', 60),
+        left: number('Margin left', 30),
+      },
     },
     type: ChartType.LINE,
     data: {
       x: {
         dataType: AxisDataType.DATE,
         scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
+        position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
       },
       y: {
         dataType: AxisDataType.STRING,
         scale: select('Y axis scale', AxisScale, AxisScale.LINEAR),
+        position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
       },
     },
