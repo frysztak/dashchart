@@ -1,0 +1,45 @@
+diff --git a/node_modules/d3-axis/.eslintrc.json b/node_modules/d3-axis/.eslintrc.json
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/LICENSE b/node_modules/d3-axis/LICENSE
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/README.md b/node_modules/d3-axis/README.md
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/dist/d3-axis.js b/node_modules/d3-axis/dist/d3-axis.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/dist/d3-axis.min.js b/node_modules/d3-axis/dist/d3-axis.min.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/rollup.config.js b/node_modules/d3-axis/rollup.config.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/src/array.js b/node_modules/d3-axis/src/array.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/src/axis.js b/node_modules/d3-axis/src/axis.js
+old mode 100644
+new mode 100755
+index e12283f..f38c6d7
+--- a/node_modules/d3-axis/src/axis.js
++++ b/node_modules/d3-axis/src/axis.js
+@@ -108,7 +108,7 @@ function axis(orient, scale) {
+         .attr(x, k * spacing)
+         .text(format);
+ 
+-    selection.filter(entering)
++    selection
+         .attr("fill", "none")
+         .attr("font-size", 10)
+         .attr("font-family", "sans-serif")
+diff --git a/node_modules/d3-axis/src/identity.js b/node_modules/d3-axis/src/identity.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/src/index.js b/node_modules/d3-axis/src/index.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/d3-axis/yarn.lock b/node_modules/d3-axis/yarn.lock
+old mode 100644
+new mode 100755

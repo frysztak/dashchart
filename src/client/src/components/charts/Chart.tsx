@@ -13,7 +13,6 @@ export function Chart(props: ChartProps) {
   const yAxisRef = useRef<SVGGElement | null>(null);
 
   const { width, height, margin } = props.dimensions;
-
   const colourScheme = ColourSchemes.Ocean;
 
   useEffect(() => {

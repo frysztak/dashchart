@@ -15,7 +15,7 @@ export const singlePlot = () => {
       width: number('Width', 800),
       margin: {
         top: number('Margin top', 20),
-        right: number('Margin right', 15),
+        right: number('Margin right', 60),
         bottom: number('Margin bottom', 60),
         left: number('Margin left', 20),
       },
@@ -57,7 +57,7 @@ export const plotWithDates = () => {
       width: number('Width', 800),
       margin: {
         top: number('Margin top', 20),
-        right: number('Margin right', 15),
+        right: number('Margin right', 60),
         bottom: number('Margin bottom', 60),
         left: number('Margin left', 20),
       },
@@ -99,7 +99,7 @@ export const plotWithDatesAndStrings = () => {
       width: number('Width', 800),
       margin: {
         top: number('Margin top', 20),
-        right: number('Margin right', 15),
+        right: number('Margin right', 60),
         bottom: number('Margin bottom', 60),
         left: number('Margin left', 30),
       },

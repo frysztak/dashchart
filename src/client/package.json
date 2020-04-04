@@ -44,6 +44,7 @@
     "@types/webpack-env": "^1.15.1",
     "fork-ts-checker-webpack-plugin": "^4.1.0",
     "jest": "^25.1.0",
+    "patch-package": "^6.2.2",
     "razzle-plugin-typescript": "^3.0.0",
     "ts-jest": "^25.2.1",
     "ts-loader": "^6.2.1",
