@@ -22,6 +22,14 @@ export enum AxisPosition {
   HIDDEN = 'HIDDEN',
 }
 
+export interface AxisStyle<Domain> {
+  tickSize?: number;
+  tickSizeInner?: number;
+  tickSizeOuter?: number;
+  tickPadding?: number;
+  tickValues?: Domain[];
+}
+
 interface BaseAxis {
   scale: AxisScale;
   position?: AxisPosition;
@@ -32,16 +40,19 @@ export type Axis =
       dataType: AxisDataType.NUMBER;
       data: number[];
       domain?: [number, number];
+      style?: AxisStyle<number>;
     })
   | (BaseAxis & {
       dataType: AxisDataType.DATE;
       data: Date[];
       domain?: [Date, Date];
+      style?: AxisStyle<Date>;
     })
   | (BaseAxis & {
       dataType: AxisDataType.STRING;
       data: string[];
       domain?: string[];
+      style?: AxisStyle<string>;
     });
 
 export enum ChartType {

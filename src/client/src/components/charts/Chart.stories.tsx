@@ -27,12 +27,20 @@ export const singlePlot = () => {
         scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
         position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
+        style: {
+          tickPadding: number('X axis tick padding', 3),
+          tickSize: number('X axis tick size', 6),
+        },
       },
       y: {
         dataType: AxisDataType.NUMBER,
         scale: select('Y axis scale', AxisScale, AxisScale.LINEAR),
         position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
+        style: {
+          tickPadding: number('X axis tick padding', 3),
+          tickSize: number('X axis tick size', 6),
+        },
       },
     },
   };

@@ -27,8 +27,8 @@ export function Chart(props: ChartProps) {
     setSvgPath(path);
     setLineColour(getColour(colourScheme, 0));
 
-    setXAxisTransform(drawAxis(xAxisRef.current, 'x', xScaler, props.dimensions, chart.x.position));
-    setYAxisTransform(drawAxis(yAxisRef.current, 'y', yScaler, props.dimensions, chart.y.position));
+    setXAxisTransform(drawAxis(xAxisRef.current, chart.x, 'x', xScaler, props.dimensions));
+    setYAxisTransform(drawAxis(yAxisRef.current, chart.y, 'y', yScaler, props.dimensions));
   }, [props]);
 
   return (

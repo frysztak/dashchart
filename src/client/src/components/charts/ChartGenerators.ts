@@ -1,4 +1,4 @@
-import { Axis, AxisDataType, AxisPosition, AxisScale, ChartData, ChartDimensions } from './ChartProps';
+import { Axis, AxisDataType, AxisPosition, AxisScale, AxisStyle, ChartData, ChartDimensions } from './ChartProps';
 import {
   Axis as D3Axis,
   axisBottom,
@@ -121,15 +121,15 @@ export function genPath(data: ChartData, xScaler: ScalerWrapper, yScaler: Scaler
 export type AxisFn = <Domain extends AxisDomain>(scale: D3AxisScale<Domain>) => D3Axis<Domain>;
 
 export function genAxisFn(
-  axis: 'x' | 'y',
+  axis: Axis,
+  axisOrientation: 'x' | 'y',
   dimensions: ChartDimensions,
-  position?: AxisPosition,
 ): [AxisFn | null, string | null] {
   const { height, width, margin } = dimensions;
 
-  switch (axis) {
+  switch (axisOrientation) {
     case 'x':
-      switch (position) {
+      switch (axis.position) {
         case AxisPosition.PRIMARY:
         case undefined:
           return [axisBottom, `translate(0, ${height - margin.bottom})`];
@@ -140,7 +140,7 @@ export function genAxisFn(
           return [null, null];
       }
     case 'y':
-      switch (position) {
+      switch (axis.position) {
         case AxisPosition.PRIMARY:
         case undefined:
           return [axisLeft, `translate(${margin.left}, 0)`];
@@ -153,12 +153,40 @@ export function genAxisFn(
   }
 }
 
+function applyAxisStyle<Domain extends AxisDomain>(axisFn: D3Axis<Domain>, style?: AxisStyle<Domain>): D3Axis<Domain> {
+  if (!style) {
+    return axisFn;
+  }
+
+  if (style.tickSize) {
+    axisFn.tickSize(style.tickSize);
+  }
+
+  if (style.tickSizeInner) {
+    axisFn.tickSizeInner(style.tickSizeInner);
+  }
+
+  if (style.tickSizeOuter) {
+    axisFn.tickSizeOuter(style.tickSizeOuter);
+  }
+
+  if (style.tickPadding) {
+    axisFn.tickPadding(style.tickPadding);
+  }
+
+  if (style.tickValues) {
+    axisFn.tickValues(style.tickValues);
+  }
+
+  return axisFn;
+}
+
 export function drawAxis(
   ref: SVGGElement | null,
-  axis: 'x' | 'y',
+  axis: Axis,
+  axisOrientation: 'x' | 'y',
   scalerWrapper: ScalerWrapper,
   dimensions: ChartDimensions,
-  position: AxisPosition | undefined,
 ): string {
   if (!ref) {
     return '';
@@ -168,7 +196,7 @@ export function drawAxis(
     .selectAll('*')
     .remove();
 
-  const [axisFn, axisTransform] = genAxisFn(axis, dimensions, position);
+  const [axisFn, axisTransform] = genAxisFn(axis, axisOrientation, dimensions);
   if (!axisFn) {
     return '';
   }
@@ -176,11 +204,11 @@ export function drawAxis(
   switch (scalerWrapper.dataType) {
     case AxisDataType.DATE:
     case AxisDataType.NUMBER: {
-      select(ref).call(axisFn(scalerWrapper.scaler));
+      select(ref).call(applyAxisStyle(axisFn(scalerWrapper.scaler), axis.style as AxisStyle<number>));
       break;
     }
     case AxisDataType.STRING: {
-      select(ref).call(axisFn(scalerWrapper.scaler));
+      select(ref).call(applyAxisStyle(axisFn(scalerWrapper.scaler), axis.style as AxisStyle<string>));
       break;
     }
   }
