@@ -18,8 +18,9 @@ import {
   axisLeft,
   select,
 } from 'd3';
-import { minmax } from '../../../../shared/utils/utils';
 import { AxisScale as D3AxisScale } from 'd3-axis';
+import { RefObject } from 'react';
+import { minmax } from '../../../../shared/utils/utils';
 
 export type ScalerWrapper =
   | {
@@ -182,17 +183,17 @@ function applyAxisStyle<Domain extends AxisDomain>(axisFn: D3Axis<Domain>, style
 }
 
 export function drawAxis(
-  ref: SVGGElement | null,
+  ref: RefObject<SVGGElement | null>,
   axis: Axis,
   axisOrientation: 'x' | 'y',
   scalerWrapper: ScalerWrapper,
   dimensions: ChartDimensions,
 ): string {
-  if (!ref) {
+  if (!ref || !ref.current) {
     return '';
   }
 
-  select(ref)
+  select(ref.current)
     .selectAll('*')
     .remove();
 
@@ -204,11 +205,11 @@ export function drawAxis(
   switch (scalerWrapper.dataType) {
     case AxisDataType.DATE:
     case AxisDataType.NUMBER: {
-      select(ref).call(applyAxisStyle(axisFn(scalerWrapper.scaler), axis.style as AxisStyle<number>));
+      select(ref.current).call(applyAxisStyle(axisFn(scalerWrapper.scaler), axis.style as AxisStyle<number>));
       break;
     }
     case AxisDataType.STRING: {
-      select(ref).call(applyAxisStyle(axisFn(scalerWrapper.scaler), axis.style as AxisStyle<string>));
+      select(ref.current).call(applyAxisStyle(axisFn(scalerWrapper.scaler), axis.style as AxisStyle<string>));
       break;
     }
   }

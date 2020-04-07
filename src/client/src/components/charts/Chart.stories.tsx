@@ -1,7 +1,7 @@
 import React from 'react';
-import { Chart } from './Chart';
 import { AxisDataType, AxisPosition, AxisScale, ChartProps, ChartType } from './ChartProps';
 import { number, select, withKnobs } from '@storybook/addon-knobs';
+import { Chart } from './Chart';
 
 export default { title: 'Chart', decorators: [withKnobs] };
 

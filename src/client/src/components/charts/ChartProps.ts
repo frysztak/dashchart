@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface ChartMargin {
   top: number;
   right: number;
@@ -76,3 +78,7 @@ export interface ChartProps {
   type: ChartType;
   data: ChartData;
 }
+
+export type BaseChartProps = ChartProps & {
+  children: ReactNode;
+};
