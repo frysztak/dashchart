@@ -1,12 +1,13 @@
 import React from 'react';
 import { ChartProps, ChartType } from './ChartProps';
 import { LineChart } from './LineChart';
+import { ScatterChart } from './ScatterChart';
 
 export function Chart(props: ChartProps) {
   switch (props.type) {
     case ChartType.LINE:
       return <LineChart {...props} />;
     case ChartType.SCATTER:
-      return <LineChart {...props} />;
+      return <ScatterChart {...props} />;
   }
 }

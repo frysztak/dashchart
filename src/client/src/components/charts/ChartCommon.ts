@@ -29,7 +29,7 @@ export function getAxisScalers(chart: ChartData, axisRanges: AxisRanges): AxisSc
   };
 }
 
-export interface AxisTransforms {
+export interface AxesTransforms {
   x: string;
   y: string;
 }
@@ -40,7 +40,7 @@ export function getAxisTransforms(
   chart: ChartData,
   scalers: AxisScalers,
   dimensions: ChartDimensions,
-): AxisTransforms {
+): AxesTransforms {
   return {
     x: drawAxis(xAxisRef, chart.x, 'x', scalers.x, dimensions),
     y: drawAxis(yAxisRef, chart.y, 'y', scalers.y, dimensions),

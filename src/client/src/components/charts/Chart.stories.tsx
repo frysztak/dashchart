@@ -20,7 +20,7 @@ export const singlePlot = () => {
         left: number('Margin left', 20),
       },
     },
-    type: ChartType.LINE,
+    type: select('Chart type', ChartType, ChartType.LINE),
     data: {
       x: {
         dataType: AxisDataType.NUMBER,
@@ -57,7 +57,7 @@ export const plotWithDates = () => {
     new Date('1999-12-17T03:24:00'),
     new Date('2000-12-17T03:24:00'),
   ];
-  const y = [15, 20, 25, 5, 20];
+  const y = [15, 20, 25, 5, 20, 33];
 
   const props: ChartProps = {
     dimensions: {
@@ -70,7 +70,7 @@ export const plotWithDates = () => {
         left: number('Margin left', 20),
       },
     },
-    type: ChartType.LINE,
+    type: select('Chart type', ChartType, ChartType.LINE),
     data: {
       x: {
         dataType: AxisDataType.DATE,
@@ -97,7 +97,6 @@ export const plotWithDatesAndStrings = () => {
     new Date('1997-12-17T03:24:00'),
     new Date('1998-12-17T03:24:00'),
     new Date('1999-12-17T03:24:00'),
-    new Date('2000-12-17T03:24:00'),
   ];
   const y = ['Ulrich', 'Pszemek', 'Egon', 'Bartosz', 'Helge'];
 
@@ -112,7 +111,7 @@ export const plotWithDatesAndStrings = () => {
         left: number('Margin left', 30),
       },
     },
-    type: ChartType.LINE,
+    type: select('Chart type', ChartType, ChartType.LINE),
     data: {
       x: {
         dataType: AxisDataType.DATE,
