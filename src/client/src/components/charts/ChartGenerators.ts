@@ -21,6 +21,11 @@ import {
 import { AxisScale as D3AxisScale } from 'd3-axis';
 import { RefObject } from 'react';
 import { minmax, zip } from '../../../../shared/utils/utils';
+import { Result, Err, Ok } from '../../utils';
+import { pipe } from 'fp-ts/es6/pipeable';
+import { chain, isLeft, left } from 'fp-ts/es6/Either';
+import { Option, none, some } from 'fp-ts/es6/Option';
+import { AxisScalers } from './ChartCommon';
 
 export type ScalerWrapper =
   | {
@@ -36,10 +41,10 @@ export type ScalerWrapper =
       scaler: ScaleOrdinal<string, number>;
     };
 
-export function genScaler(axis: Axis, range: [number, number]): ScalerWrapper {
+export function genScaler(axis: Axis, range: [number, number]): Result<ScalerWrapper> {
   if (axis.scale === AxisScale.LOG) {
     if (axis.dataType === AxisDataType.STRING || axis.dataType === AxisDataType.DATE) {
-      throw new Error(`Scale '${axis.scale}' is unsupported with data type '${axis.dataType}'.`);
+      return Err(`Scale '${axis.scale}' is unsupported with data type '${axis.dataType}'.`);
     }
   }
 
@@ -47,25 +52,25 @@ export function genScaler(axis: Axis, range: [number, number]): ScalerWrapper {
     case AxisDataType.NUMBER: {
       const domain: number[] = axis.domain || minmax(axis.data);
       const scale = axis.scale === AxisScale.LINEAR ? scaleLinear() : scaleLog();
-      return { dataType: axis.dataType, scaler: scale.domain(domain).range(range) };
+      return Ok({ dataType: axis.dataType, scaler: scale.domain(domain).range(range) });
     }
     case AxisDataType.DATE: {
       const domain: Date[] = axis.domain || minmax(axis.data);
-      return {
+      return Ok({
         dataType: axis.dataType,
         scaler: scaleTime()
           .domain(domain)
           .range(range),
-      };
+      });
     }
     case AxisDataType.STRING: {
       const domain: string[] = axis.domain || axis.data;
-      return {
+      return Ok({
         dataType: axis.dataType,
         scaler: scaleOrdinal<number>()
           .domain(domain)
           .range(genOrdinalRange(range, domain.length)),
-      };
+      });
     }
   }
 }
@@ -91,32 +96,37 @@ export type ScalerCallbacks = {
   [AxisDataType.STRING]: (scaler: ScaleOrdinal<string, number>, data: string[]) => void;
 };
 
-function applyFuncOnScaler(scaler: ScalerWrapper, axis: Axis, callbacks: ScalerCallbacks) {
+function applyFuncOnScaler(scaler: ScalerWrapper, axis: Axis, callbacks: ScalerCallbacks): Result<void> {
   switch (scaler.dataType) {
     case AxisDataType.NUMBER: {
       if (axis.dataType !== AxisDataType.NUMBER) {
-        throw new Error(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
+        return Err(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
       }
-      return callbacks[AxisDataType.NUMBER](scaler.scaler, axis.data);
+      return Ok(callbacks[AxisDataType.NUMBER](scaler.scaler, axis.data));
     }
     case AxisDataType.DATE: {
       if (axis.dataType !== AxisDataType.DATE) {
-        throw new Error(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
+        return Err(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
       }
-      return callbacks[AxisDataType.DATE](scaler.scaler, axis.data);
+      return Ok(callbacks[AxisDataType.DATE](scaler.scaler, axis.data));
     }
     case AxisDataType.STRING: {
       if (axis.dataType !== AxisDataType.STRING) {
-        throw new Error(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
+        return Err(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
       }
-      return callbacks[AxisDataType.STRING](scaler.scaler, axis.data);
+      return Ok(callbacks[AxisDataType.STRING](scaler.scaler, axis.data));
     }
   }
 }
 
-export function genPath(axes: ChartData, xScaler: ScalerWrapper, yScaler: ScalerWrapper): string {
+export function genPath(axes: ChartData, axisScalersResult: Result<AxisScalers>): Result<string> {
+  if (isLeft(axisScalersResult)) {
+    return left(axisScalersResult.left);
+  }
+  const axisScalers = axisScalersResult.right;
+
   if (axes.x.data.length !== axes.y.data.length) {
-    throw new Error(`Array lengths don't match (${axes.x.data.length} vs ${axes.y.data.length})`);
+    return Err(`Array lengths don't match (${axes.x.data.length} vs ${axes.y.data.length})`);
   }
 
   let lineGenerator = line();
@@ -137,17 +147,28 @@ export function genPath(axes: ChartData, xScaler: ScalerWrapper, yScaler: Scaler
           ? lineGenerator.x((_, i: number) => scaler(data[i]))
           : lineGenerator.y((_, i: number) => scaler(data[i]))),
   });
-  applyFuncOnScaler(xScaler, axes.x, scalerCallbacks('x'));
-  applyFuncOnScaler(yScaler, axes.y, scalerCallbacks('y'));
+  const generate = (): Result<string> => {
+    const svgPath: string | null = lineGenerator.curve(curveMonotoneX)(Array(axes.x.data.length));
+    return svgPath === null ? Err('Line generator returned null') : Ok(svgPath);
+  };
 
-  return lineGenerator.curve(curveMonotoneX)(Array(axes.x.data.length))!;
+  return pipe(
+    applyFuncOnScaler(axisScalers.x, axes.x, scalerCallbacks('x')),
+    chain(_ => applyFuncOnScaler(axisScalers.y, axes.y, scalerCallbacks('y'))),
+    chain(_ => generate()),
+  );
 }
 
 export type PointCoords = [number, number][];
 
-export function genPoints(axes: ChartData, xScaler: ScalerWrapper, yScaler: ScalerWrapper): PointCoords {
+export function genPoints(axes: ChartData, axisScalersR: Result<AxisScalers>): Result<PointCoords> {
+  if (isLeft(axisScalersR)) {
+    return left(axisScalersR.left);
+  }
+  const axisScalers = axisScalersR.right;
+
   if (axes.x.data.length !== axes.y.data.length) {
-    throw new Error(`Array lengths don't match (${axes.x.data.length} vs ${axes.y.data.length})`);
+    return Err(`Array lengths don't match (${axes.x.data.length} vs ${axes.y.data.length})`);
   }
 
   let x: number[] = [];
@@ -162,10 +183,11 @@ export function genPoints(axes: ChartData, xScaler: ScalerWrapper, yScaler: Scal
       axis === 'x' ? (x = data.map((v: string) => scaler(v))) : (y = data.map((v: string) => scaler(v))),
   });
 
-  applyFuncOnScaler(xScaler, axes.x, scalerCallbacks('x'));
-  applyFuncOnScaler(yScaler, axes.y, scalerCallbacks('y'));
-
-  return zip(x, y);
+  return pipe(
+    applyFuncOnScaler(axisScalers.x, axes.x, scalerCallbacks('x')),
+    chain(_ => applyFuncOnScaler(axisScalers.y, axes.y, scalerCallbacks('y'))),
+    chain(_ => Ok(zip(x, y))),
+  );
 }
 
 export type AxisFn = <Domain extends AxisDomain>(scale: D3AxisScale<Domain>) => D3Axis<Domain>;
@@ -237,9 +259,9 @@ export function drawAxis(
   axisOrientation: 'x' | 'y',
   scalerWrapper: ScalerWrapper,
   dimensions: ChartDimensions,
-): string {
+): Option<string> {
   if (!ref || !ref.current) {
-    return '';
+    return none;
   }
 
   select(ref.current)
@@ -248,7 +270,7 @@ export function drawAxis(
 
   const [axisFn, axisTransform] = genAxisFn(axis, axisOrientation, dimensions);
   if (!axisFn) {
-    return '';
+    return none;
   }
 
   switch (scalerWrapper.dataType) {
@@ -263,5 +285,5 @@ export function drawAxis(
     }
   }
 
-  return axisTransform || '';
+  return axisTransform ? some(axisTransform) : none;
 }

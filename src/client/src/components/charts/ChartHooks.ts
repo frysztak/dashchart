@@ -1,11 +1,12 @@
 import { ChartData, ChartProps } from './ChartProps';
 import { RefObject, useEffect, useMemo, useState } from 'react';
 import { AxisRanges, AxisScalers, AxesTransforms, getAxisScalers, getAxisTransforms, getRanges } from './ChartCommon';
+import { Result, Ok } from '../../utils';
 
-export function useAxesScalers(props: ChartProps): AxisScalers {
+export function useAxesScalers(props: ChartProps): Result<AxisScalers> {
   const chart: ChartData = props.data;
   const axisRanges: AxisRanges = useMemo(() => getRanges(props.dimensions), [props.dimensions]);
-  const scalers: AxisScalers = useMemo(() => getAxisScalers(chart, axisRanges), [chart, axisRanges]);
+  const scalers: Result<AxisScalers> = useMemo(() => getAxisScalers(chart, axisRanges), [chart, axisRanges]);
   return scalers;
 }
 
@@ -13,9 +14,9 @@ export function useAxesTransforms(
   xAxisRef: RefObject<SVGGElement | null>,
   yAxisRef: RefObject<SVGGElement | null>,
   props: ChartProps,
-  scalers: AxisScalers,
-): AxesTransforms | undefined {
-  const [axisTransforms, setAxisTransforms] = useState<AxesTransforms>();
+  scalers: Result<AxisScalers>,
+): Result<AxesTransforms> {
+  const [axisTransforms, setAxisTransforms] = useState<Result<AxesTransforms>>(Ok({ x: '', y: '' }));
 
   useEffect(() => {
     setAxisTransforms(getAxisTransforms(xAxisRef, yAxisRef, props.data, scalers, props.dimensions));

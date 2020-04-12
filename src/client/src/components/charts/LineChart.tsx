@@ -4,6 +4,9 @@ import { ColourSchemes, getColour } from './ColourSchemes';
 import { AxisScalers, AxesTransforms } from './ChartCommon';
 import { genPath } from './ChartGenerators';
 import { useAxesTransforms, useAxesScalers } from './ChartHooks';
+import { Result } from '../../utils';
+import { fold, either } from 'fp-ts/es6/Either';
+import { sequenceT } from 'fp-ts/es6/Apply';
 
 export function LineChart(props: ChartProps) {
   const xAxisRef = useRef<SVGGElement | null>(null);
@@ -13,19 +16,21 @@ export function LineChart(props: ChartProps) {
   const colourScheme = ColourSchemes.Ocean;
   const [lineColour, setLineColour] = useState<string>(getColour(colourScheme, 0));
 
-  const scalers: AxisScalers = useAxesScalers(props);
-  const axesTransforms: AxesTransforms | undefined = useAxesTransforms(xAxisRef, yAxisRef, props, scalers);
-  const svgPath: string = useMemo(() => genPath(props.data, scalers.x, scalers.y), [props.data, scalers]);
+  const scalersR: Result<AxisScalers> = useAxesScalers(props);
+  const transformsR: Result<AxesTransforms> = useAxesTransforms(xAxisRef, yAxisRef, props, scalersR);
+  const svgPathR: Result<string> = useMemo(() => genPath(props.data, scalersR), [props.data, scalersR]);
+  const results: Result<[AxisScalers, AxesTransforms, string]> = sequenceT(either)(scalersR, transformsR, svgPathR);
 
-  return (
-    <svg width={width} height={height}>
-      <g transform={`translate(${margin.left}, ${margin.top})`}>
-        <g>
-          <g ref={xAxisRef} transform={axesTransforms?.x} />
-          <g ref={yAxisRef} transform={axesTransforms?.y} />
+  return fold(
+    (e: Error) => <div>{e.message}</div>,
+    ([_, transforms, svgPath]: [AxisScalers, AxesTransforms, string]) => (
+      <svg width={width} height={height}>
+        <g transform={`translate(${margin.left}, ${margin.top})`}>
+          <g ref={xAxisRef} transform={transforms.x} />
+          <g ref={yAxisRef} transform={transforms.y} />
           <path d={svgPath} fill='none' stroke={lineColour} />
         </g>
-      </g>
-    </svg>
-  );
+      </svg>
+    ),
+  )(results);
 }
