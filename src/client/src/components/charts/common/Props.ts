@@ -58,6 +58,8 @@ export type Axis =
 export enum ChartType {
   LINE = 'LINE',
   SCATTER = 'SCATTER',
+  BAR_VERTICAL = 'BAR_VERTICAL',
+  BAR_HORIZONTAL = 'BAR_HORIZONTAL',
 }
 
 export interface ChartData {

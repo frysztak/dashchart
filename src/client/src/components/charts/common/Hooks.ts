@@ -6,7 +6,10 @@ import { Result, Ok } from '../../../utils';
 export function useAxesScalers(props: ChartProps): Result<AxisScalers> {
   const chart: ChartData = props.data;
   const axisRanges: AxisRanges = useMemo(() => getRanges(props.dimensions), [props.dimensions]);
-  const scalers: Result<AxisScalers> = useMemo(() => getAxisScalers(chart, axisRanges), [chart, axisRanges]);
+  const scalers: Result<AxisScalers> = useMemo(() => getAxisScalers(chart, props.type, axisRanges), [
+    chart,
+    axisRanges,
+  ]);
   return scalers;
 }
 

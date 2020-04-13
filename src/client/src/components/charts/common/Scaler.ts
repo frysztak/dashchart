@@ -1,5 +1,7 @@
 import { Axis, AxisDataType, AxisScale, ChartData } from './Props';
 import {
+  ScaleBand,
+  scaleBand,
   scaleLinear,
   ScaleLinear,
   scaleLog,
@@ -13,23 +15,28 @@ import { Err, Ok, Result } from '../../../utils';
 import { minmax } from '../../../../../shared/utils/utils';
 import { AxisScalers } from './Axis';
 import { sequenceT } from 'fp-ts/es6/Apply';
-import { either } from 'fp-ts/es6/Either';
+import { either, fromNullable, chain } from 'fp-ts/es6/Either';
+import { array } from 'fp-ts/es6/Array';
+
+export type NumberScaler = ScaleLinear<number, number> | ScaleLogarithmic<number, number> | ScaleBand<number>;
+export type DateScaler = ScaleTime<number, number> | ScaleBand<Date>;
+export type StringScaler = ScaleOrdinal<string, number> | ScaleBand<string>;
 
 export type ScalerWrapper =
   | {
       dataType: AxisDataType.NUMBER;
-      scaler: ScaleLinear<number, number> | ScaleLogarithmic<number, number>;
+      scaler: NumberScaler;
     }
   | {
       dataType: AxisDataType.DATE;
-      scaler: ScaleTime<number, number>;
+      scaler: DateScaler;
     }
   | {
       dataType: AxisDataType.STRING;
-      scaler: ScaleOrdinal<string, number>;
+      scaler: StringScaler;
     };
 
-export function genScaler(axis: Axis, range: [number, number]): Result<ScalerWrapper> {
+export function genScaler(axis: Axis, range: [number, number], useBandScale: boolean): Result<ScalerWrapper> {
   if (axis.scale === AxisScale.LOG) {
     if (axis.dataType === AxisDataType.STRING || axis.dataType === AxisDataType.DATE) {
       return Err(`Scale '${axis.scale}' is unsupported with data type '${axis.dataType}'.`);
@@ -38,20 +45,49 @@ export function genScaler(axis: Axis, range: [number, number]): Result<ScalerWra
 
   switch (axis.dataType) {
     case AxisDataType.NUMBER: {
+      if (useBandScale) {
+        return Ok({
+          dataType: axis.dataType,
+          scaler: scaleBand<number>()
+            .domain(axis.data)
+            .rangeRound(range)
+            .padding(0.1),
+        });
+      }
+
       const domain: number[] = axis.domain || minmax(axis.data);
       const scale = axis.scale === AxisScale.LINEAR ? scaleLinear() : scaleLog();
       return Ok({ dataType: axis.dataType, scaler: scale.domain(domain).range(range) });
     }
     case AxisDataType.DATE: {
+      if (useBandScale) {
+        return Ok({
+          dataType: axis.dataType,
+          scaler: scaleBand<Date>()
+            .domain(axis.data)
+            .rangeRound(range)
+            .padding(0.1),
+        });
+      }
+
       const domain: Date[] = axis.domain || minmax(axis.data);
       return Ok({
         dataType: axis.dataType,
-        scaler: scaleTime()
+        scaler: scaleTime<number, number>()
           .domain(domain)
           .range(range),
       });
     }
     case AxisDataType.STRING: {
+      if (useBandScale) {
+        return Ok({
+          dataType: axis.dataType,
+          scaler: scaleBand<string>()
+            .domain(axis.data)
+            .rangeRound(range)
+            .padding(0.1),
+        });
+      }
       const domain: string[] = axis.domain || axis.data;
       return Ok({
         dataType: axis.dataType,
@@ -81,23 +117,39 @@ export function scaleAxis(wrapper: ScalerWrapper, axis: Axis): Result<number[]> 
       if (axis.dataType !== AxisDataType.NUMBER) {
         return Err(`Scaler received data of type '${axis.dataType}', but expected '${wrapper.dataType}'`);
       }
-      return Ok(axis.data.map((v: number) => wrapper.scaler(v)));
+      const mapValue = (v: number): Result<number> =>
+        fromNullable(new Error(`Scaler failed on value '${v}'`))(wrapper.scaler(v));
+      return array.traverse(either)(axis.data, (v: number) => mapValue(v));
     }
     case AxisDataType.DATE: {
       if (axis.dataType !== AxisDataType.DATE) {
         return Err(`Scaler received data of type '${axis.dataType}', but expected '${wrapper.dataType}'`);
       }
-      return Ok(axis.data.map((v: Date) => wrapper.scaler(v)));
+      const mapValue = (v: Date): Result<number> =>
+        fromNullable(new Error(`Scaler failed on value '${v}'`))(wrapper.scaler(v));
+      return array.traverse(either)(axis.data, (v: Date) => mapValue(v));
     }
     case AxisDataType.STRING: {
       if (axis.dataType !== AxisDataType.STRING) {
         return Err(`Scaler received data of type '${axis.dataType}', but expected '${wrapper.dataType}'`);
       }
-      return Ok(axis.data.map((v: string) => wrapper.scaler(v)));
+      const mapValue = (v: string): Result<number> =>
+        fromNullable(new Error(`Scaler failed on value '${v}'`))(wrapper.scaler(v));
+      return array.traverse(either)(axis.data, (v: string) => mapValue(v));
     }
   }
 }
 
 export function generateScaledAxes([axes, axisScalers]: [ChartData, AxisScalers]): Result<[number[], number[]]> {
   return sequenceT(either)(scaleAxis(axisScalers.x, axes.x), scaleAxis(axisScalers.y, axes.y));
+}
+
+export function getBandWidth(axisScalers: Result<AxisScalers>, axis: 'x' | 'y'): Result<number> {
+  return chain((scalers: AxisScalers) => {
+    const scaler = axis === 'x' ? scalers.x.scaler : scalers.y.scaler;
+    if ('bandwidth' in scaler) {
+      return Ok(scaler.bandwidth());
+    }
+    return Err(`Scaler doesn't have bandwidth() method.`);
+  })(axisScalers);
 }

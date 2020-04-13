@@ -1,12 +1,12 @@
-import { Axis, AxisDataType, AxisPosition, AxisStyle, ChartData, ChartDimensions } from './Props';
+import { Axis, AxisDataType, AxisPosition, AxisStyle, ChartData, ChartDimensions, ChartType } from './Props';
 import { RefObject } from 'react';
 import { Result } from '../../../utils';
 import { sequenceT } from 'fp-ts/es6/Apply';
 import { either, Either, map } from 'fp-ts/es6/Either';
-import { Option, fold, none, some } from 'fp-ts/es6/Option';
+import { fold, none, Option, some } from 'fp-ts/es6/Option';
 import { axisBottom, AxisDomain, axisLeft, axisRight, axisTop, select } from 'd3';
 import { Axis as D3Axis, AxisScale as D3AxisScale } from 'd3-axis';
-import { genScaler, ScalerWrapper } from './Scaler';
+import { DateScaler, genScaler, ScalerWrapper } from './Scaler';
 
 export type AxisRange = [number, number];
 export interface AxisRanges {
@@ -28,10 +28,10 @@ export interface AxisScalers {
   y: ScalerWrapper;
 }
 
-export function getAxisScalers(chart: ChartData, axisRanges: AxisRanges): Result<AxisScalers> {
+export function getAxisScalers(chart: ChartData, type: ChartType, axisRanges: AxisRanges): Result<AxisScalers> {
   const scalers: Either<Error, [ScalerWrapper, ScalerWrapper]> = sequenceT(either)(
-    genScaler(chart.x, axisRanges.x),
-    genScaler(chart.y, axisRanges.y),
+    genScaler(chart.x, axisRanges.x, type === ChartType.BAR_VERTICAL),
+    genScaler(chart.y, axisRanges.y, type === ChartType.BAR_HORIZONTAL),
   );
   return map(
     ([xScaler, yScaler]: [ScalerWrapper, ScalerWrapper]): AxisScalers => ({
@@ -149,7 +149,10 @@ export function drawAxis(
   }
 
   switch (scalerWrapper.dataType) {
-    case AxisDataType.DATE:
+    case AxisDataType.DATE: {
+      select(ref.current).call(applyAxisStyle(axisFn<Date>(scalerWrapper.scaler), axis.style as AxisStyle<Date>));
+      break;
+    }
     case AxisDataType.NUMBER: {
       select(ref.current).call(applyAxisStyle(axisFn(scalerWrapper.scaler), axis.style as AxisStyle<number>));
       break;
