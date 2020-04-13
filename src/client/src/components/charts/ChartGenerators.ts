@@ -23,9 +23,10 @@ import { RefObject } from 'react';
 import { minmax, zip } from '../../../../shared/utils/utils';
 import { Result, Err, Ok } from '../../utils';
 import { pipe } from 'fp-ts/es6/pipeable';
-import { chain, isLeft, left } from 'fp-ts/es6/Either';
+import { chain, either, fromNullable, right } from 'fp-ts/es6/Either';
 import { Option, none, some } from 'fp-ts/es6/Option';
 import { AxisScalers } from './ChartCommon';
+import { sequenceT } from 'fp-ts/es6/Apply';
 
 export type ScalerWrapper =
   | {
@@ -87,107 +88,69 @@ export function genOrdinalRange(axisRange: [number, number], length: number): nu
   return range;
 }
 
-export type ScalerCallbacks = {
-  [AxisDataType.NUMBER]: (
-    scaler: ScaleLinear<number, number> | ScaleLogarithmic<number, number>,
-    data: number[],
-  ) => void;
-  [AxisDataType.DATE]: (scaler: ScaleTime<number, number>, data: Date[]) => void;
-  [AxisDataType.STRING]: (scaler: ScaleOrdinal<string, number>, data: string[]) => void;
-};
-
-function applyFuncOnScaler(scaler: ScalerWrapper, axis: Axis, callbacks: ScalerCallbacks): Result<void> {
-  switch (scaler.dataType) {
+function scaleAxis(wrapper: ScalerWrapper, axis: Axis): Result<number[]> {
+  switch (wrapper.dataType) {
     case AxisDataType.NUMBER: {
       if (axis.dataType !== AxisDataType.NUMBER) {
-        return Err(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
+        return Err(`Scaler received data of type '${axis.dataType}', but expected '${wrapper.dataType}'`);
       }
-      return Ok(callbacks[AxisDataType.NUMBER](scaler.scaler, axis.data));
+      return Ok(axis.data.map((v: number) => wrapper.scaler(v)));
     }
     case AxisDataType.DATE: {
       if (axis.dataType !== AxisDataType.DATE) {
-        return Err(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
+        return Err(`Scaler received data of type '${axis.dataType}', but expected '${wrapper.dataType}'`);
       }
-      return Ok(callbacks[AxisDataType.DATE](scaler.scaler, axis.data));
+      return Ok(axis.data.map((v: Date) => wrapper.scaler(v)));
     }
     case AxisDataType.STRING: {
       if (axis.dataType !== AxisDataType.STRING) {
-        return Err(`Scaler received data of type '${axis.dataType}', but expected '${scaler.dataType}'`);
+        return Err(`Scaler received data of type '${axis.dataType}', but expected '${wrapper.dataType}'`);
       }
-      return Ok(callbacks[AxisDataType.STRING](scaler.scaler, axis.data));
+      return Ok(axis.data.map((v: string) => wrapper.scaler(v)));
     }
   }
 }
 
-export function genPath(axes: ChartData, axisScalersResult: Result<AxisScalers>): Result<string> {
-  if (isLeft(axisScalersResult)) {
-    return left(axisScalersResult.left);
-  }
-  const axisScalers = axisScalersResult.right;
-
+function checkArrayLengths(axes: ChartData): Result<ChartData> {
   if (axes.x.data.length !== axes.y.data.length) {
     return Err(`Array lengths don't match (${axes.x.data.length} vs ${axes.y.data.length})`);
   }
+  return Ok(axes);
+}
 
-  let lineGenerator = line();
-  const scalerCallbacks = (axis: 'x' | 'y'): ScalerCallbacks => ({
-    [AxisDataType.NUMBER]: (scaler: ScaleLinear<number, number> | ScaleLogarithmic<number, number>, data: number[]) =>
-      (lineGenerator =
-        axis === 'x'
-          ? lineGenerator.x((_, i: number) => scaler(data[i]))
-          : lineGenerator.y((_, i: number) => scaler(data[i]))),
-    [AxisDataType.DATE]: (scaler: ScaleTime<number, number>, data: Date[]) =>
-      (lineGenerator =
-        axis === 'x'
-          ? lineGenerator.x((_, i: number) => scaler(data[i]))
-          : lineGenerator.y((_, i: number) => scaler(data[i]))),
-    [AxisDataType.STRING]: (scaler: ScaleOrdinal<string, number>, data: string[]) =>
-      (lineGenerator =
-        axis === 'x'
-          ? lineGenerator.x((_, i: number) => scaler(data[i]))
-          : lineGenerator.y((_, i: number) => scaler(data[i]))),
-  });
-  const generate = (): Result<string> => {
-    const svgPath: string | null = lineGenerator.curve(curveMonotoneX)(Array(axes.x.data.length));
-    return svgPath === null ? Err('Line generator returned null') : Ok(svgPath);
-  };
+function generateScaledAxes([axes, axisScalers]: [ChartData, AxisScalers]): Result<[number[], number[]]> {
+  return sequenceT(either)(scaleAxis(axisScalers.x, axes.x), scaleAxis(axisScalers.y, axes.y));
+}
 
-  return pipe(
-    applyFuncOnScaler(axisScalers.x, axes.x, scalerCallbacks('x')),
-    chain(_ => applyFuncOnScaler(axisScalers.y, axes.y, scalerCallbacks('y'))),
-    chain(_ => generate()),
+function generateSvgPath([x, y]: [number[], number[]]): Result<string> {
+  return fromNullable(Error('Line generator returned null'))(
+    line()
+      .x((_, i) => x[i])
+      .y((_, i) => y[i])
+      .curve(curveMonotoneX)(Array(x.length)),
   );
+}
+
+export function genPath(axes: ChartData, axisScalers: Result<AxisScalers>): Result<string> {
+  const scaledAxes: Result<[number[], number[]]> = chain(generateScaledAxes)(
+    sequenceT(either)(chain(checkArrayLengths)(right(axes)), axisScalers),
+  );
+
+  return pipe(scaledAxes, chain(generateSvgPath));
 }
 
 export type PointCoords = [number, number][];
 
-export function genPoints(axes: ChartData, axisScalersR: Result<AxisScalers>): Result<PointCoords> {
-  if (isLeft(axisScalersR)) {
-    return left(axisScalersR.left);
-  }
-  const axisScalers = axisScalersR.right;
+function generateScatterPoints([x, y]: [number[], number[]]): Result<PointCoords> {
+  return Ok(zip(x, y));
+}
 
-  if (axes.x.data.length !== axes.y.data.length) {
-    return Err(`Array lengths don't match (${axes.x.data.length} vs ${axes.y.data.length})`);
-  }
-
-  let x: number[] = [];
-  let y: number[] = [];
-
-  const scalerCallbacks = (axis: 'x' | 'y'): ScalerCallbacks => ({
-    [AxisDataType.NUMBER]: (scaler: ScaleLinear<number, number> | ScaleLogarithmic<number, number>, data: number[]) =>
-      axis === 'x' ? (x = data.map((v: number) => scaler(v))) : (y = data.map((v: number) => scaler(v))),
-    [AxisDataType.DATE]: (scaler: ScaleTime<number, number>, data: Date[]) =>
-      axis === 'x' ? (x = data.map((v: Date) => scaler(v))) : (y = data.map((v: Date) => scaler(v))),
-    [AxisDataType.STRING]: (scaler: ScaleOrdinal<string, number>, data: string[]) =>
-      axis === 'x' ? (x = data.map((v: string) => scaler(v))) : (y = data.map((v: string) => scaler(v))),
-  });
-
-  return pipe(
-    applyFuncOnScaler(axisScalers.x, axes.x, scalerCallbacks('x')),
-    chain(_ => applyFuncOnScaler(axisScalers.y, axes.y, scalerCallbacks('y'))),
-    chain(_ => Ok(zip(x, y))),
+export function genPoints(axes: ChartData, axisScalers: Result<AxisScalers>): Result<PointCoords> {
+  const scaledAxes: Result<[number[], number[]]> = chain(generateScaledAxes)(
+    sequenceT(either)(chain(checkArrayLengths)(right(axes)), axisScalers),
   );
+
+  return pipe(scaledAxes, chain(generateScatterPoints));
 }
 
 export type AxisFn = <Domain extends AxisDomain>(scale: D3AxisScale<Domain>) => D3Axis<Domain>;
