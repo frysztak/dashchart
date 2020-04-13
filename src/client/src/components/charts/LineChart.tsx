@@ -1,9 +1,9 @@
-import { ChartProps } from './ChartProps';
+import { ChartProps } from './common/Props';
 import React, { useMemo, useRef, useState } from 'react';
 import { ColourSchemes, getColour } from './ColourSchemes';
-import { AxisScalers, AxesTransforms } from './ChartCommon';
-import { genPath } from './ChartGenerators';
-import { useAxesTransforms, useAxesScalers } from './ChartHooks';
+import { AxisScalers, AxesTransforms } from './common/Axis';
+import { genPath } from './common/Generators';
+import { useAxesTransforms, useAxesScalers } from './common/Hooks';
 import { Result } from '../../utils';
 import { fold, either } from 'fp-ts/es6/Either';
 import { sequenceT } from 'fp-ts/es6/Apply';

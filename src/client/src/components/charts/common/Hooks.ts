@@ -1,7 +1,7 @@
-import { ChartData, ChartProps } from './ChartProps';
+import { ChartData, ChartProps } from './Props';
 import { RefObject, useEffect, useMemo, useState } from 'react';
-import { AxisRanges, AxisScalers, AxesTransforms, getAxisScalers, getAxisTransforms, getRanges } from './ChartCommon';
-import { Result, Ok } from '../../utils';
+import { AxisRanges, AxisScalers, AxesTransforms, getAxisScalers, getAxisTransforms, getRanges } from './Axis';
+import { Result, Ok } from '../../../utils';
 
 export function useAxesScalers(props: ChartProps): Result<AxisScalers> {
   const chart: ChartData = props.data;

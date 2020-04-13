@@ -1,5 +1,5 @@
 import React from 'react';
-import { AxisDataType, AxisPosition, AxisScale, ChartProps, ChartType } from './ChartProps';
+import { AxisDataType, AxisPosition, AxisScale, ChartProps, ChartType } from './common/Props';
 import { number, select, withKnobs } from '@storybook/addon-knobs';
 import { Chart } from './Chart';
 

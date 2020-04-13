@@ -1,8 +1,8 @@
-import { ChartProps } from './ChartProps';
+import { ChartProps } from './common/Props';
 import React, { useMemo, useRef } from 'react';
-import { AxisScalers, AxesTransforms } from './ChartCommon';
-import { genPoints, PointCoords } from './ChartGenerators';
-import { useAxesScalers, useAxesTransforms } from './ChartHooks';
+import { AxisScalers, AxesTransforms } from './common/Axis';
+import { genPoints, PointCoords } from './common/Generators';
+import { useAxesScalers, useAxesTransforms } from './common/Hooks';
 import { Result } from '../../utils';
 import { sequenceT } from 'fp-ts/es6/Apply';
 import { either, fold } from 'fp-ts/es6/Either';
@@ -24,8 +24,8 @@ export function ScatterChart(props: ChartProps) {
         <g transform={`translate(${margin.left}, ${margin.top})`}>
           <g ref={xAxisRef} transform={transforms.x} />
           <g ref={yAxisRef} transform={transforms.y} />
-          {points.map(([x, y]: [number, number]) => (
-            <circle cx={x} cy={y} r={2} />
+          {points.map(([x, y]: [number, number], i: number) => (
+            <circle cx={x} cy={y} r={2} key={i} />
           ))}
         </g>
       </svg>
