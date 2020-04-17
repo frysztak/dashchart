@@ -6,7 +6,7 @@ import { either, Either, map } from 'fp-ts/es6/Either';
 import { fold, none, Option, some } from 'fp-ts/es6/Option';
 import { axisBottom, AxisDomain, axisLeft, axisRight, axisTop, select } from 'd3';
 import { Axis as D3Axis, AxisScale as D3AxisScale } from 'd3-axis';
-import { DateScaler, genScaler, ScalerWrapper } from './Scaler';
+import { genScaler, ScalerWrapper } from './Scaler';
 
 export type AxisRange = [number, number];
 export interface AxisRanges {

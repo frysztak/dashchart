@@ -66,7 +66,7 @@ export function genScaler(axis: Axis, range: [number, number], useBandScale: boo
           scaler: scaleBand<Date>()
             .domain(axis.data)
             .rangeRound(range)
-            .padding(0.1),
+            .padding(0.6),
         });
       }
 
@@ -75,7 +75,8 @@ export function genScaler(axis: Axis, range: [number, number], useBandScale: boo
         dataType: axis.dataType,
         scaler: scaleTime<number, number>()
           .domain(domain)
-          .range(range),
+          .range(range)
+          .nice(),
       });
     }
     case AxisDataType.STRING: {

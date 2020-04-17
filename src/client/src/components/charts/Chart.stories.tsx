@@ -73,16 +73,16 @@ export const plotWithDates = () => {
     type: select('Chart type', ChartType, ChartType.LINE),
     data: {
       x: {
-        dataType: AxisDataType.DATE,
+        dataType: AxisDataType.NUMBER,
         scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
         position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
-        data: x,
+        data: y,
       },
       y: {
-        dataType: AxisDataType.NUMBER,
+        dataType: AxisDataType.DATE,
         scale: select('Y axis scale', AxisScale, AxisScale.LINEAR),
         position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
-        data: y,
+        data: x,
       },
     },
   };
