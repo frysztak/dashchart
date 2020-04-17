@@ -57,7 +57,7 @@ export const plotWithDates = () => {
     new Date('1999-12-17T03:24:00'),
     new Date('2000-12-17T03:24:00'),
   ];
-  const y = [15, 20, 25, 5, 20, 33];
+  const y = [5, 15, 20, 22, 25, 33];
 
   const props: ChartProps = {
     dimensions: {
@@ -77,12 +77,18 @@ export const plotWithDates = () => {
         scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
         position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
+        style: {
+          barPadding: 0.75,
+        },
       },
       y: {
         dataType: AxisDataType.DATE,
         scale: select('Y axis scale', AxisScale, AxisScale.LINEAR),
         position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
+        style: {
+          barPadding: 0.75,
+        },
       },
     },
   };
@@ -118,12 +124,18 @@ export const plotWithDatesAndStrings = () => {
         scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
         position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
+        style: {
+          barPadding: 0.75,
+        },
       },
       y: {
         dataType: AxisDataType.STRING,
         scale: select('Y axis scale', AxisScale, AxisScale.LINEAR),
         position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
+        style: {
+          barPadding: 0.75,
+        },
       },
     },
   };

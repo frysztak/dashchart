@@ -1,5 +1,6 @@
-import { Axis, AxisDataType, AxisScale, ChartData } from './Props';
+import { Axis, AxisDataType, AxisScale, AxisStyle, ChartData } from './Props';
 import {
+  AxisDomain,
   ScaleBand,
   scaleBand,
   scaleLinear,
@@ -36,6 +37,21 @@ export type ScalerWrapper =
       scaler: StringScaler;
     };
 
+function applyBandStyle<Domain extends AxisDomain>(
+  scaler: ScaleBand<Domain>,
+  style?: AxisStyle<Domain>,
+): ScaleBand<Domain> {
+  if (!style) {
+    return scaler;
+  }
+
+  if (style.barPadding) {
+    scaler.padding(style.barPadding);
+  }
+
+  return scaler;
+}
+
 export function genScaler(axis: Axis, range: [number, number], useBandScale: boolean): Result<ScalerWrapper> {
   if (axis.scale === AxisScale.LOG) {
     if (axis.dataType === AxisDataType.STRING || axis.dataType === AxisDataType.DATE) {
@@ -48,10 +64,12 @@ export function genScaler(axis: Axis, range: [number, number], useBandScale: boo
       if (useBandScale) {
         return Ok({
           dataType: axis.dataType,
-          scaler: scaleBand<number>()
-            .domain(axis.data)
-            .rangeRound(range)
-            .padding(0.1),
+          scaler: applyBandStyle(
+            scaleBand<number>()
+              .domain(axis.data)
+              .rangeRound(range),
+            axis.style,
+          ),
         });
       }
 
@@ -63,10 +81,12 @@ export function genScaler(axis: Axis, range: [number, number], useBandScale: boo
       if (useBandScale) {
         return Ok({
           dataType: axis.dataType,
-          scaler: scaleBand<Date>()
-            .domain(axis.data)
-            .rangeRound(range)
-            .padding(0.6),
+          scaler: applyBandStyle(
+            scaleBand<Date>()
+              .domain(axis.data)
+              .rangeRound(range),
+            axis.style,
+          ),
         });
       }
 
@@ -83,10 +103,12 @@ export function genScaler(axis: Axis, range: [number, number], useBandScale: boo
       if (useBandScale) {
         return Ok({
           dataType: axis.dataType,
-          scaler: scaleBand<string>()
-            .domain(axis.data)
-            .rangeRound(range)
-            .padding(0.1),
+          scaler: applyBandStyle(
+            scaleBand<string>()
+              .domain(axis.data)
+              .rangeRound(range),
+            axis.style,
+          ),
         });
       }
       const domain: string[] = axis.domain || axis.data;

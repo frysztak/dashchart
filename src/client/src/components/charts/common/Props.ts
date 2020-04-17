@@ -28,6 +28,8 @@ export interface AxisStyle<Domain> {
   tickSizeOuter?: number;
   tickPadding?: number;
   tickValues?: Domain[];
+
+  barPadding?: number;
 }
 
 interface BaseAxis {
