@@ -1,4 +1,4 @@
-import { Dictionary } from '../../../../shared/utils/Dictionary';
+import { Dictionary } from 'shared/utils';
 
 export enum ColourSchemes {
   Ocean = 'Ocean',

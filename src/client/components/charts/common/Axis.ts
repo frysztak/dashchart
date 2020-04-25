@@ -1,10 +1,11 @@
 import { Axis, AxisDataType, AxisPosition, AxisStyle, ChartData, ChartDimensions, ChartType } from './Props';
 import { RefObject } from 'react';
-import { Result } from '../../../utils';
+import { Result } from 'shared/utils';
 import { sequenceT } from 'fp-ts/es6/Apply';
 import { either, Either, map } from 'fp-ts/es6/Either';
 import { fold, none, Option, some } from 'fp-ts/es6/Option';
-import { axisBottom, AxisDomain, axisLeft, axisRight, axisTop, select } from 'd3';
+import { axisBottom, AxisDomain, axisLeft, axisRight, axisTop } from 'd3-axis';
+import { select } from 'd3-selection';
 import { Axis as D3Axis, AxisScale as D3AxisScale } from 'd3-axis';
 import { genScaler, ScalerWrapper } from './Scaler';
 

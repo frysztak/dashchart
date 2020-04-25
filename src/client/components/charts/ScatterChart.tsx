@@ -3,7 +3,7 @@ import React, { useMemo, useRef } from 'react';
 import { AxisScalers, AxesTransforms } from './common/Axis';
 import { genPoints, PointCoords } from './common/Generators';
 import { useAxesScalers, useAxesTransforms } from './common/Hooks';
-import { Result } from '../../utils';
+import { Result } from 'shared/utils';
 import { sequenceT } from 'fp-ts/es6/Apply';
 import { either, fold } from 'fp-ts/es6/Either';
 

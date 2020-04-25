@@ -1,7 +1,7 @@
 import { AxisDataType, ChartData } from './Props';
-import { curveMonotoneX, line } from 'd3';
-import { zip } from '../../../../../shared/utils/utils';
-import { Err, Ok, Result } from '../../../utils';
+import { curveMonotoneX, line } from 'd3-shape';
+import { zip } from 'shared/utils';
+import { Err, Ok, Result } from 'shared/utils';
 import { pipe } from 'fp-ts/es6/pipeable';
 import { chain, either, fromNullable, right } from 'fp-ts/es6/Either';
 import { AxisScalers } from './Axis';

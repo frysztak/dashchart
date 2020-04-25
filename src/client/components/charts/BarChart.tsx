@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 import { AxesTransforms, AxisScalers } from './common/Axis';
 import { genBarPoints, PointCoords, useSecondaryDateAxis } from './common/Generators';
 import { useAxesScalers, useAxesTransforms } from './common/Hooks';
-import { Result } from '../../utils';
+import { Result } from 'shared/utils';
 import { sequenceT } from 'fp-ts/es6/Apply';
 import { either, fold } from 'fp-ts/es6/Either';
 import { getBandWidth } from './common/Scaler';

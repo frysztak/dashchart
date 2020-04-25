@@ -1,6 +1,6 @@
 import { Axis, AxisDataType, AxisScale, AxisStyle, ChartData } from './Props';
+import { AxisDomain } from 'd3-axis';
 import {
-  AxisDomain,
   ScaleBand,
   scaleBand,
   scaleLinear,
@@ -11,9 +11,9 @@ import {
   ScaleOrdinal,
   scaleTime,
   ScaleTime,
-} from 'd3';
-import { Err, Ok, Result } from '../../../utils';
-import { minmax } from '../../../../../shared/utils/utils';
+} from 'd3-scale';
+import { Err, Ok, Result } from 'shared/utils';
+import { minmax } from 'shared/utils';
 import { AxisScalers } from './Axis';
 import { sequenceT } from 'fp-ts/es6/Apply';
 import { either, fromNullable, chain } from 'fp-ts/es6/Either';
