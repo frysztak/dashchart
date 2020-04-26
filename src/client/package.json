@@ -18,10 +18,13 @@
     "patch-package": "^6.2.2",
     "postinstall-postinstall": "^2.1.0",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "shared": "file:.yalc/shared"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-export-default-from": "^7.8.3",
+    "@babel/plugin-proposal-export-namespace-from": "^7.8.3",
     "@storybook/addon-knobs": "^6.0.0-alpha.43",
     "@storybook/addons": "^6.0.0-alpha.43",
     "@storybook/preset-typescript": "^3.0.0",
@@ -36,6 +39,7 @@
     "@types/styled-jsx": "^2.2.8",
     "babel-loader": "^8.1.0",
     "babel-preset-react-app": "^9.1.2",
+    "ts-loader": "^7.0.1",
     "typescript": "^3.8.3"
   },
   "resolutions": {

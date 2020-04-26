@@ -1,0 +1,10 @@
+{
+  "name": "shared",
+  "version": "1.0.0-d3590031",
+  "main": "index.js",
+  "author": "Sebastian Frysztak",
+  "license": "MIT",
+  "dependencies": {
+    "fp-ts": "^2.5.3"
+  }
+}

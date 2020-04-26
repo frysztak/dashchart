@@ -1,6 +1,5 @@
 import produce, { Draft } from 'immer';
-import { isNumeric } from './utils/utils';
-import { Dictionary } from './utils/Dictionary';
+import { Dictionary, isNumeric } from '../utils';
 
 export enum ColumnType {
   STRING = 'STRING',
