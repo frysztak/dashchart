@@ -9,7 +9,7 @@ describe('DataFrame', () => {
   });
 
   beforeEach(() => {
-    frame = new DataFrame({
+    frame = new DataFrame('My DF', {
       id: {
         type: ColumnType.STRING,
         values: ['1', '2', '3', '4', '5'],
@@ -37,6 +37,17 @@ describe('DataFrame', () => {
         values: [10, 20, 30, 40, 50],
       },
     });
+  });
+
+  test('returns name of DF', () => {
+    const name: string = frame.name();
+    expect(name).toEqual('My DF');
+  });
+
+  test('renames DF', () => {
+    frame.setName('My new DF');
+    const name: string = frame.name();
+    expect(name).toEqual('My new DF');
   });
 
   test('returns name of columns', () => {

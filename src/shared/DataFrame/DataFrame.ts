@@ -21,23 +21,34 @@ export type Column =
     });
 
 export class DataFrame {
-  private columns: Map<string, Column>;
+  private _name: string;
+  private _columns: Map<string, Column>;
 
-  constructor(data?: Dictionary<Column>) {
+  constructor(name?: string, data?: Dictionary<Column>) {
+    this._name = name || '';
+
     if (data) {
-      this.columns = new Map<string, Column>();
-      this.columns = produce(this.columns, (draft: Draft<Map<string, Column>>) => {
+      this._columns = new Map<string, Column>();
+      this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
         for (const [colName, column] of Object.entries(data)) {
           draft.set(colName, column);
         }
       });
     } else {
-      this.columns = new Map<string, Column>();
+      this._columns = new Map<string, Column>();
     }
   }
 
+  name(): string {
+    return this._name;
+  }
+
+  setName(newName: string) {
+    this._name = newName;
+  }
+
   createColumn(columnName: string, type: ColumnType = ColumnType.STRING) {
-    this.columns = produce(this.columns, (draft: Draft<Map<string, Column>>) => {
+    this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
       if (!draft.has(columnName)) {
         draft.set(columnName, { type: type, values: [] });
       }
@@ -51,7 +62,7 @@ export class DataFrame {
   }
 
   push(values: string[]) {
-    this.columns = produce(this.columns, (draft: Draft<Map<string, Column>>) => {
+    this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
       let idx = 0;
       for (const column of draft.values()) {
         if (column.type === ColumnType.STRING) {
@@ -63,11 +74,11 @@ export class DataFrame {
   }
 
   column(name: string): Readonly<Column> | null {
-    return this.columns.has(name) ? this.columns.get(name)! : null;
+    return this._columns.has(name) ? this._columns.get(name)! : null;
   }
 
   columnNames(): string[] {
-    return Array.from(this.columns.keys());
+    return Array.from(this._columns.keys());
   }
 
   inferColumnType(columnName: string) {
@@ -82,13 +93,13 @@ export class DataFrame {
     }
 
     const isNumber: boolean = column.values.every((value: string) => isNumeric(value));
-    this.columns = produce(this.columns, (draft: Draft<Map<string, Column>>) => {
+    this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
       draft.get(columnName)!.inferredType = isNumber ? ColumnType.NUMBER : ColumnType.STRING;
     });
   }
 
   inferColumnTypes() {
-    for (const columnName of this.columns.keys()) {
+    for (const columnName of this._columns.keys()) {
       this.inferColumnType(columnName);
     }
   }
@@ -103,7 +114,7 @@ export class DataFrame {
       throw new Error(`Column '${columnName}' cannot be converted to type ${desiredType.toString()}`);
     }
 
-    this.columns = produce(this.columns, (draft: Draft<Map<string, Column>>) => {
+    this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
       let newValues: any[];
       if (column.type === ColumnType.STRING && desiredType === ColumnType.NUMBER) {
         newValues = column.values.map((v: string) => parseFloat(v));
