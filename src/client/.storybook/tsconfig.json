@@ -28,5 +28,5 @@
   },
   "exclude": ["node_modules", "build", "scripts", "acceptance-tests", "webpack", "jest", "razzle.config.js"],
   "types": ["typePatches", "node", "webpack-env"],
-  "include": ["next-env.d.ts", "../**/*.tsx", "node_modules/shared/**/*.ts"]
+  "include": ["next-env.d.ts", "../**/*.tsx", "node_modules/shared/**/*.ts", "../typings/**.ts"]
 }
