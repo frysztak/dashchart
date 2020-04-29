@@ -58,6 +58,7 @@ export type Axis =
     });
 
 export enum ChartType {
+  AXIS_ONLY = 'AXIS_ONLY',
   LINE = 'LINE',
   SCATTER = 'SCATTER',
   BAR_VERTICAL = 'BAR_VERTICAL',

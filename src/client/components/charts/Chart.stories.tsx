@@ -142,3 +142,46 @@ export const plotWithDatesAndStrings = () => {
 
   return <Chart {...props} />;
 };
+
+export const axisOnlyPlot = () => {
+  const x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const y = x.map(x => x * x);
+
+  const props: ChartProps = {
+    dimensions: {
+      height: number('Height', 600),
+      width: number('Width', 800),
+      margin: {
+        top: number('Margin top', 20),
+        right: number('Margin right', 60),
+        bottom: number('Margin bottom', 60),
+        left: number('Margin left', 20),
+      },
+    },
+    type: select('Chart type', ChartType, ChartType.AXIS_ONLY),
+    data: {
+      x: {
+        dataType: AxisDataType.NUMBER,
+        scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
+        position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
+        data: x,
+        style: {
+          tickPadding: number('X axis tick padding', 3),
+          tickSize: number('X axis tick size', 6),
+        },
+      },
+      y: {
+        dataType: AxisDataType.NUMBER,
+        scale: select('Y axis scale', AxisScale, AxisScale.LINEAR),
+        position: select('Y axis position', AxisPosition, AxisPosition.HIDDEN),
+        data: y,
+        style: {
+          tickPadding: number('X axis tick padding', 3),
+          tickSize: number('X axis tick size', 6),
+        },
+      },
+    },
+  };
+
+  return <Chart {...props} />;
+};
