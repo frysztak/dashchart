@@ -47,8 +47,8 @@ export function DataFrameColumnList(props: DataFrameColumnListProps) {
         </Text>
       </Flex>
       {expanded
-        ? Array.from(dataFrame.columns()).map(([name, col]: [string, Column]) => (
-            <Flex mt={2}>
+        ? Array.from(dataFrame.columns()).map(([name, col]: [string, Column], idx: number) => (
+            <Flex mt={2} key={idx}>
               <Flex size={20} justifyContent={'center'} alignItems={'center'}>
                 <Circle size={8} />
               </Flex>

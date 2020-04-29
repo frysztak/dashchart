@@ -5,7 +5,7 @@ import { DataFrameColumnList, DataFrameColumnListProps } from './DataFrameColumn
 
 export default { title: 'DataFrame', decorators: [withKnobs] };
 
-export const regularDataFrame = () => {
+export const DataFrameColumns = () => {
   const frame: DataFrame = new DataFrame('My DF', {
     id: {
       type: ColumnType.STRING,
