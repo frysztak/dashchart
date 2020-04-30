@@ -1,12 +1,13 @@
 import React from 'react';
-import { number, select, withKnobs, boolean } from '@storybook/addon-knobs';
-import { ChartCreator, ChartCreatorProps } from './ChartCreator';
+import { boolean, select, withKnobs } from '@storybook/addon-knobs';
+import { ActiveDropZone, ChartCreator, ChartCreatorProps } from './ChartCreator';
 
 export default { title: 'ChartCreator', decorators: [withKnobs] };
 
 export const RegularChartCreator = () => {
   const props: ChartCreatorProps = {
     isDragging: boolean('isDragging', false),
+    activeDropZone: select('activeDropZone', ActiveDropZone, ActiveDropZone.NONE),
   };
   return <ChartCreator {...props} />;
 };

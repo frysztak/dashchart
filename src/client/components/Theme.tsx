@@ -4,8 +4,10 @@ import React, { ReactNode } from 'react';
 const theme = {
   colors: {
     lightGrey: '#F5F7FB',
-    pink: '#CAA9A9',
+
+    pink: '#e7d8d8',
     palePink: '#F7F2F2',
+    darkPink: '#CAA9A9',
   },
 };
 
