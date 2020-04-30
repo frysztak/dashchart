@@ -19,5 +19,14 @@ src: local('Signika Light'), url(${SignikaLight}) format('woff2')
 
 body {
 font-family: 'Signika',sans-serif;
+height: 100%;
+}
+
+html {
+height: 100%;
+}
+
+#root {
+height: 100%;
 }
 `;
