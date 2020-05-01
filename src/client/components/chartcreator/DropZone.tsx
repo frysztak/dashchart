@@ -1,9 +1,5 @@
-import styled, { keyframes } from 'styled-components';
-
-const dropZoneHeight: string = '16px';
-const dropZoneWidth: string = '60%';
-const dropZoneMargin: string = '56px';
-const dropZoneBgMargin: string = '32px';
+import { keyframes } from 'styled-components';
+import { styled } from '../../config/Theme';
 
 interface DropZoneProps {
   top?: boolean;
@@ -26,16 +22,16 @@ const opacity = keyframes`
 const DropZoneCommon = styled.div<DropZoneProps>`
   position: absolute;
   background-color: ${props => (props.active ? props.theme.colors.darkPink : props.theme.colors.pink)};
-  border-radius: 16px;
-  animation: ${opacity} 0.25s ease-out;
-  transition: background-color 0.25s ease-out;
+  border-radius: ${props => props.theme.dropZone.borderRadius};
+  animation: ${opacity} ${props => props.theme.dropZone.animTime} ease-out;
+  transition: background-color ${props => props.theme.dropZone.animTime} ease-out;
 `;
 
 export const DropZoneH = styled(DropZoneCommon)`
-  width: ${dropZoneWidth};
-  height: ${dropZoneHeight};
-  top: ${props => (props.top ? dropZoneMargin : '')};
-  bottom: ${props => (props.bottom ? dropZoneMargin : '')};
+  width: ${props => props.theme.dropZone.width};
+  height: ${props => props.theme.dropZone.height};
+  top: ${props => (props.top ? props.theme.dropZone.margin : '')};
+  bottom: ${props => (props.bottom ? props.theme.dropZone.margin : '')};
   left: 0;
   right: 0;
   margin-left: auto;
@@ -43,10 +39,10 @@ export const DropZoneH = styled(DropZoneCommon)`
 `;
 
 export const DropZoneV = styled(DropZoneCommon)`
-  width: ${dropZoneHeight};
-  height: ${dropZoneWidth};
-  left: ${props => (props.left ? dropZoneMargin : '')};
-  right: ${props => (props.right ? dropZoneMargin : '')};
+  width: ${props => props.theme.dropZone.height};
+  height: ${props => props.theme.dropZone.width};
+  left: ${props => (props.left ? props.theme.dropZone.margin : '')};
+  right: ${props => (props.right ? props.theme.dropZone.margin : '')};
   top: 0;
   bottom: 0;
   margin-top: auto;
@@ -54,9 +50,9 @@ export const DropZoneV = styled(DropZoneCommon)`
 `;
 
 export const DropZoneBackground = styled(DropZoneCommon)`
-  left: ${dropZoneBgMargin};
-  right: ${dropZoneBgMargin};
-  top: ${dropZoneBgMargin};
-  bottom: ${dropZoneBgMargin};
+  left: ${props => props.theme.dropZone.bgMargin};
+  right: ${props => props.theme.dropZone.bgMargin};
+  top: ${props => props.theme.dropZone.bgMargin};
+  bottom: ${props => props.theme.dropZone.bgMargin};
   background-color: ${props => props.theme.colors.palePink};
 `;
