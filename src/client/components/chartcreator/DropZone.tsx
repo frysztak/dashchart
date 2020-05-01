@@ -1,13 +1,10 @@
 import { keyframes } from 'styled-components';
 import { styled } from '../../config/Theme';
-
-interface DropZoneProps {
-  top?: boolean;
-  bottom?: boolean;
-  left?: boolean;
-  right?: boolean;
-  active?: boolean;
-}
+import { DraggedColumnData, formatColumnData } from './DragNDrop';
+import { Dictionary } from 'shared/utils/Dictionary';
+import { DropZoneLocation, isHorizontal } from './ChartCreator';
+import { Flex } from 'reflexbox/styled-components';
+import React from 'react';
 
 const opacity = keyframes`
   from {
@@ -19,34 +16,30 @@ const opacity = keyframes`
   }
 `;
 
-const DropZoneCommon = styled.div<DropZoneProps>`
+type StyledDropZoneProps = DropZoneProps & {
+  active: boolean;
+};
+
+const DropZoneCommon = styled(Flex)`
   position: absolute;
-  background-color: ${props => (props.active ? props.theme.colors.darkPink : props.theme.colors.pink)};
   border-radius: ${props => props.theme.dropZone.borderRadius};
   animation: ${opacity} ${props => props.theme.dropZone.animTime} ease-out;
   transition: background-color ${props => props.theme.dropZone.animTime} ease-out;
 `;
 
-export const DropZoneH = styled(DropZoneCommon)`
-  width: ${props => props.theme.dropZone.width};
-  height: ${props => props.theme.dropZone.height};
-  top: ${props => (props.top ? props.theme.dropZone.margin : '')};
-  bottom: ${props => (props.bottom ? props.theme.dropZone.margin : '')};
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-export const DropZoneV = styled(DropZoneCommon)`
-  width: ${props => props.theme.dropZone.height};
-  height: ${props => props.theme.dropZone.width};
-  left: ${props => (props.left ? props.theme.dropZone.margin : '')};
-  right: ${props => (props.right ? props.theme.dropZone.margin : '')};
-  top: 0;
-  bottom: 0;
-  margin-top: auto;
-  margin-bottom: auto;
+const StyledDropZone = styled(DropZoneCommon)<StyledDropZoneProps>`
+  width: ${p => (isHorizontal(p.location) ? p.theme.dropZone.width : p.theme.dropZone.height)};
+  height: ${p => (isHorizontal(p.location) ? p.theme.dropZone.height : p.theme.dropZone.width)};
+  top: ${p => (p.location === DropZoneLocation.TOP ? p.theme.dropZone.margin : isHorizontal(p.location) ? '' : 0)};
+  bottom: ${p =>
+    p.location === DropZoneLocation.BOTTOM ? p.theme.dropZone.margin : isHorizontal(p.location) ? '' : 0};
+  left: ${p => (p.location === DropZoneLocation.LEFT ? p.theme.dropZone.margin : isHorizontal(p.location) ? 0 : '')};
+  right: ${p => (p.location === DropZoneLocation.RIGHT ? p.theme.dropZone.margin : isHorizontal(p.location) ? 0 : '')};
+  margin-left: ${p => (isHorizontal(p.location) ? 'auto' : '')};
+  margin-right: ${p => (isHorizontal(p.location) ? 'auto' : '')};
+  margin-top: ${p => (isHorizontal(p.location) ? '' : 'auto')};
+  margin-bottom: ${p => (isHorizontal(p.location) ? '' : 'auto')};
+  background-color: ${props => (props.active ? props.theme.colors.darkPink : props.theme.colors.pink)};
 `;
 
 export const DropZoneBackground = styled(DropZoneCommon)`
@@ -56,3 +49,28 @@ export const DropZoneBackground = styled(DropZoneCommon)`
   bottom: ${props => props.theme.dropZone.bgMargin};
   background-color: ${props => props.theme.colors.palePink};
 `;
+
+const ColumnNameContainer = styled(Flex)<{ location: DropZoneLocation }>`
+  height: ${props => (isHorizontal(props.location) ? props.theme.dropZone.height : '')};
+  width: ${props => (isHorizontal(props.location) ? '' : props.theme.dropZone.height)};
+  writing-mode: ${props => (isHorizontal(props.location) ? '' : 'vertical-lr')};
+`;
+
+export interface DropZoneProps {
+  location: DropZoneLocation;
+  activeDropZone?: DropZoneLocation;
+  currentColumns?: Dictionary<DraggedColumnData>;
+}
+
+export function DropZone(props: DropZoneProps) {
+  const { activeDropZone, currentColumns, location } = props;
+  const formattedColumnName: string = formatColumnData(currentColumns ? currentColumns[location] : undefined);
+
+  return (
+    <StyledDropZone location={location} active={activeDropZone === location}>
+      <ColumnNameContainer location={location} justifyContent={'center'} alignItems={'center'} flexGrow={1}>
+        {formattedColumnName}
+      </ColumnNameContainer>
+    </StyledDropZone>
+  );
+}

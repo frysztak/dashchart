@@ -12,7 +12,7 @@ export const theme = {
   dropZone: {
     borderRadius: '16px',
     animTime: '0.25s',
-    height: '16px',
+    height: '24px',
     width: '60%',
     margin: '56px',
     bgMargin: '32px',
