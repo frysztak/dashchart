@@ -3,23 +3,13 @@ import React, { useState } from 'react';
 import { ChevronRight } from '@styled-icons/boxicons-regular';
 import { Circle } from '@styled-icons/boxicons-solid';
 import { Text, Flex } from 'rebass';
-import { styled } from '../../config/Theme';
+import { Icon } from '../Icon';
 
 export interface DataFrameColumnListProps {
   dataFrame: DataFrame;
 }
 
-interface ChevronProps {
-  readonly rotated: boolean;
-  readonly size: number;
-}
-
-const Chevron = styled(ChevronRight)<ChevronProps>`
-  width: ${props => `${props.size}px`};
-  height: ${props => `${props.size}px`};
-  transition: all 0.3s ease-out;
-  transform: ${props => (props.rotated ? `rotate(90deg)` : '')};
-`;
+const Chevron = Icon(ChevronRight);
 
 function mapColumnType(type: ColumnType): string {
   switch (type) {

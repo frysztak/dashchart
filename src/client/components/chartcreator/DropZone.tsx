@@ -5,6 +5,9 @@ import { Dictionary } from 'shared/utils/Dictionary';
 import { DropZoneLocation, isHorizontal } from './ChartCreator';
 import { Flex } from 'reflexbox/styled-components';
 import React from 'react';
+import { Table } from '@styled-icons/boxicons-regular';
+import { Text } from 'rebass';
+import { Icon } from '../Icon';
 
 const opacity = keyframes`
   from {
@@ -62,15 +65,33 @@ export interface DropZoneProps {
   currentColumns?: Dictionary<DraggedColumnData>;
 }
 
-export function DropZone(props: DropZoneProps) {
+const TableIcon = Icon(Table);
+
+function ColumnName(props: DropZoneProps) {
   const { activeDropZone, currentColumns, location } = props;
   const formattedColumnName: string = formatColumnData(currentColumns ? currentColumns[location] : undefined);
+  if (!formattedColumnName) {
+    return null;
+  }
+
+  const horizontal: boolean = isHorizontal(location);
+
+  return (
+    <ColumnNameContainer location={location} justifyContent={'center'} alignItems={'center'} flexGrow={1}>
+      <TableIcon size={16} rotated={!horizontal} />
+      <Text ml={horizontal ? 2 : 0} mt={horizontal ? 0 : 2}>
+        {formattedColumnName}
+      </Text>
+    </ColumnNameContainer>
+  );
+}
+
+export function DropZone(props: DropZoneProps) {
+  const { activeDropZone, currentColumns, location } = props;
 
   return (
     <StyledDropZone location={location} active={activeDropZone === location}>
-      <ColumnNameContainer location={location} justifyContent={'center'} alignItems={'center'} flexGrow={1}>
-        {formattedColumnName}
-      </ColumnNameContainer>
+      <ColumnName {...props} />
     </StyledDropZone>
   );
 }
