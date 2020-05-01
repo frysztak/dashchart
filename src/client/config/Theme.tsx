@@ -9,6 +9,9 @@ export const theme = {
     palePink: '#F7F2F2',
     darkPink: '#CAA9A9',
   },
+  fonts: {
+    light: "'Signika Light', sans-serif",
+  },
   dropZone: {
     borderRadius: '16px',
     animTime: '0.25s',

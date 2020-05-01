@@ -3,6 +3,7 @@ import { Flex } from 'reflexbox/styled-components';
 import { DropZoneBackground, DropZone } from './DropZone';
 import { Dictionary } from 'shared/utils/Dictionary';
 import { DraggedColumnData } from './DragNDrop';
+import { LightText } from '../LightText';
 
 export enum DropZoneLocation {
   LEFT = 'LEFT',
@@ -40,7 +41,7 @@ export function ChartCreator(props: ChartCreatorProps) {
         </>
       ) : (
         <Flex width={'100%'} justifyContent={'center'} alignItems={'center'}>
-          <h2>Drag Data Frame columns here</h2>
+          <LightText fontSize={4}>Drag Data Frame columns here</LightText>
         </Flex>
       )}
     </Flex>

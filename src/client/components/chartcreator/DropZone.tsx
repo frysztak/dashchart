@@ -8,6 +8,7 @@ import React from 'react';
 import { Table } from '@styled-icons/boxicons-regular';
 import { Text } from 'rebass';
 import { Icon } from '../Icon';
+import { LightText } from '../LightText';
 
 const opacity = keyframes`
   from {
@@ -79,9 +80,9 @@ function ColumnName(props: DropZoneProps) {
   return (
     <ColumnNameContainer location={location} justifyContent={'center'} alignItems={'center'} flexGrow={1}>
       <TableIcon size={16} rotated={!horizontal} />
-      <Text ml={horizontal ? 2 : 0} mt={horizontal ? 0 : 2}>
+      <LightText ml={horizontal ? 2 : 0} mt={horizontal ? 0 : 2}>
         {formattedColumnName}
-      </Text>
+      </LightText>
     </ColumnNameContainer>
   );
 }
