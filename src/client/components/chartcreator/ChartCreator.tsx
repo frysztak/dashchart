@@ -1,25 +1,13 @@
 import React from 'react';
 import { Flex } from 'reflexbox/styled-components';
 import { DropZoneBackground, DropZone } from './DropZone';
-import { Dictionary } from 'shared/utils/Dictionary';
-import { DraggedColumnData } from './DragNDrop';
+import { DraggedColumnData, DropZoneLocation, DropZoneValues } from './DragNDrop';
 import { LightText } from '../LightText';
-
-export enum DropZoneLocation {
-  LEFT = 'LEFT',
-  TOP = 'TOP',
-  RIGHT = 'RIGHT',
-  BOTTOM = 'BOTTOM',
-}
-
-export function isHorizontal(location: DropZoneLocation): boolean {
-  return location === DropZoneLocation.TOP || location === DropZoneLocation.BOTTOM;
-}
 
 export interface ChartCreatorProps {
   isDragging: boolean;
   activeDropZone?: DropZoneLocation;
-  currentColumns: Dictionary<DraggedColumnData>;
+  currentColumns: DropZoneValues<DraggedColumnData>;
 }
 
 export function ChartCreator(props: ChartCreatorProps) {

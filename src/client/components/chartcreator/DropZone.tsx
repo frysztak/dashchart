@@ -1,12 +1,9 @@
 import { keyframes } from 'styled-components';
 import { styled } from '../../config/Theme';
-import { DraggedColumnData, formatColumnData } from './DragNDrop';
-import { Dictionary } from 'shared/utils/Dictionary';
-import { DropZoneLocation, isHorizontal } from './ChartCreator';
+import { DraggedColumnData, DropZoneLocation, DropZoneValues, formatColumnData, isHorizontal } from './DragNDrop';
 import { Flex } from 'reflexbox/styled-components';
 import React from 'react';
 import { Table } from '@styled-icons/boxicons-regular';
-import { Text } from 'rebass';
 import { Icon } from '../Icon';
 import { LightText } from '../LightText';
 
@@ -63,7 +60,7 @@ const ColumnNameContainer = styled(Flex)<{ location: DropZoneLocation }>`
 export interface DropZoneProps {
   location: DropZoneLocation;
   activeDropZone?: DropZoneLocation;
-  currentColumns?: Dictionary<DraggedColumnData>;
+  currentColumns?: DropZoneValues<DraggedColumnData>;
 }
 
 const TableIcon = Icon(Table);
