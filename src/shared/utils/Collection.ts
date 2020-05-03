@@ -32,3 +32,8 @@ export function minmax<T extends number | Date>(list: Array<T>): [T, T] {
     [Infinity, -Infinity] as [T, T],
   );
 }
+
+export const keys = Object.keys as <T>(o: T) => Extract<keyof T, string>[];
+export const entries = Object.entries as <K extends string | number, T>(o: {
+  [key: string]: T;
+}) => Extract<K, keyof T>[];
