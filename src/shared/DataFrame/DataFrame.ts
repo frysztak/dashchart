@@ -81,6 +81,10 @@ export class DataFrame {
     return Array.from(this._columns.keys());
   }
 
+  columns(): [string, Column][] {
+    return Array.from(this._columns);
+  }
+
   inferColumnType(columnName: string) {
     const column: Readonly<Column> | null = this.column(columnName);
     if (!column) {
