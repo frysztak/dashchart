@@ -7,14 +7,22 @@ export function zip<A, B>(a: A[], b: B[]): [A, B][] {
   return [...Array(len)].map((_, i: number) => [a[i], b[i]]);
 }
 
-export function dupingZip<A, B>(a: A[], b: B[]): [A, B][] {
+export const identity = <T>(t: T): T => t;
+
+export function dupingZip<A, B>(
+  a: A[],
+  b: B[],
+  mapperA: (a: A) => A = identity,
+  mapperB: (b: B) => B = identity,
+): [A, B][] {
   if (a.length === b.length) {
     return zip(a, b);
   }
 
   const len: number = Math.max(a.length, b.length);
-  const at = <T>(arr: T[], i: number): T => (i >= arr.length ? arr[arr.length - 1] : arr[i]);
-  return [...Array(len)].map((_, i: number) => [at(a, i), at(b, i)]);
+  const at = <T>(arr: T[], i: number, mapper: (t: T) => T): T =>
+    i >= arr.length ? mapper(arr[arr.length - 1]) : arr[i];
+  return [...Array(len)].map((_, i: number) => [at(a, i, mapperA), at(b, i, mapperB)]);
 }
 
 export function minmax<T extends number | Date>(list: Array<T>): [T, T] {
