@@ -1,11 +1,12 @@
 import { keyframes } from 'styled-components';
 import { styled } from '../../config/Theme';
-import { DraggedColumnData, DropZoneLocation, DropZoneValues, formatColumnData, isHorizontal } from './DragNDrop';
+import { DropZoneLocation, DropZoneValues, isHorizontal } from './DragNDrop';
 import { Flex } from 'reflexbox/styled-components';
 import React from 'react';
 import { Table } from '@styled-icons/boxicons-regular';
 import { Icon } from '../Icon';
 import { LightText } from '../LightText';
+import { ColumnId, formatColumnData } from 'shared/DataFrame';
 
 const opacity = keyframes`
   from {
@@ -60,7 +61,7 @@ const ColumnNameContainer = styled(Flex)<{ location: DropZoneLocation }>`
 export interface DropZoneProps {
   location: DropZoneLocation;
   activeDropZone?: DropZoneLocation;
-  currentColumns?: DropZoneValues<DraggedColumnData>;
+  currentColumns?: DropZoneValues<ColumnId>;
 }
 
 const TableIcon = Icon(Table);

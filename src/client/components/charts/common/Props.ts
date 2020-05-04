@@ -33,7 +33,7 @@ export interface AxisStyle<Domain> {
 }
 
 interface BaseAxis {
-  scale: AxisScale;
+  scale?: AxisScale;
   position?: AxisPosition;
 }
 

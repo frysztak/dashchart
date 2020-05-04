@@ -1,13 +1,14 @@
 import React from 'react';
 import { Flex } from 'reflexbox/styled-components';
 import { DropZoneBackground, DropZone } from './DropZone';
-import { DraggedColumnData, DropZoneLocation, DropZoneValues } from './DragNDrop';
+import { DropZoneLocation, DropZoneValues } from './DragNDrop';
 import { LightText } from '../LightText';
+import { ColumnId } from 'shared/DataFrame';
 
 export interface ChartCreatorProps {
   isDragging: boolean;
   activeDropZone?: DropZoneLocation;
-  currentColumns: DropZoneValues<DraggedColumnData>;
+  currentColumns: DropZoneValues<ColumnId>;
 }
 
 export function ChartCreator(props: ChartCreatorProps) {
