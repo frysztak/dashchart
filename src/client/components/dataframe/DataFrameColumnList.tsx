@@ -23,7 +23,7 @@ function mapColumnType(type: ColumnType): string {
 }
 
 export function DataFrameColumnList(props: DataFrameColumnListProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const toggleExpand = () => setExpanded(!expanded);
 
   const { dataFrame } = props;
