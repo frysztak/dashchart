@@ -1,24 +1,17 @@
 import { DataFrame } from 'shared/DataFrame';
-import { styled } from '../../config/Theme';
 import { DataFrameColumnList } from './DataFrameColumnList';
 import React from 'react';
 import { LightText } from '../LightText';
 import { Flex, Box } from 'reflexbox';
+import { Sidebar } from '../Sidebar';
 
 export interface DataFrameSidebarProps {
   dataFrames: DataFrame[];
 }
 
-const Background = styled.div`
-  background-color: ${p => p.theme.colors.palePink};
-  width: 250px;
-  height: 100%;
-  overflow-y: auto;
-`;
-
 export function DataFrameSidebar(props: DataFrameSidebarProps) {
   return (
-    <Background>
+    <Sidebar bgColor={'palePink'}>
       <Flex flexDirection={'column'} pt={2}>
         <Flex justifyContent={'center'} mb={4}>
           <LightText fontSize={4}>Data Frames</LightText>
@@ -32,6 +25,6 @@ export function DataFrameSidebar(props: DataFrameSidebarProps) {
           ))}
         </Box>
       </Flex>
-    </Background>
+    </Sidebar>
   );
 }

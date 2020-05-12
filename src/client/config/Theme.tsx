@@ -24,3 +24,4 @@ export const theme = {
 
 export type Theme = typeof theme;
 export const styled = baseStyled as ThemedStyledInterface<Theme>;
+export type ThemeColors = keyof Theme['colors'];
