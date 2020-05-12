@@ -1,4 +1,4 @@
-import { styled } from '../config/Theme';
+import { styled } from '../../config/Theme';
 import { StyledIcon, StyledIconProps } from '@styled-icons/styled-icon';
 import React from 'react';
 

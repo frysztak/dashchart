@@ -1,9 +1,9 @@
 import { DataFrame } from 'shared/DataFrame';
 import { DataFrameColumnList } from './DataFrameColumnList';
 import React from 'react';
-import { LightText } from '../LightText';
+import { LightText } from '../misc/LightText';
 import { Flex, Box } from 'reflexbox';
-import { Sidebar } from '../Sidebar';
+import { Sidebar } from '../misc/Sidebar';
 
 export interface DataFrameSidebarProps {
   dataFrames: DataFrame[];

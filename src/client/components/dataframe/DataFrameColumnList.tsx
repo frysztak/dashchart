@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ChevronRight } from '@styled-icons/boxicons-regular';
 import { Circle } from '@styled-icons/boxicons-solid';
 import { Text, Flex } from 'rebass';
-import { Icon } from '../Icon';
+import { Icon } from '../misc/Icon';
 
 export interface DataFrameColumnListProps {
   dataFrame: DataFrame;

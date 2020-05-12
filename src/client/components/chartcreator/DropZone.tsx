@@ -4,8 +4,8 @@ import { DropZoneLocation, DropZoneValues, isHorizontal } from './DragNDrop';
 import { Flex } from 'reflexbox/styled-components';
 import React from 'react';
 import { Table } from '@styled-icons/boxicons-regular';
-import { Icon } from '../Icon';
-import { LightText } from '../LightText';
+import { Icon } from '../misc/Icon';
+import { LightText } from '../misc/LightText';
 import { ColumnId, formatColumnData } from 'shared/DataFrame';
 
 const opacity = keyframes`

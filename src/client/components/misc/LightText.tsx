@@ -1,4 +1,4 @@
-import { styled } from '../config/Theme';
+import { styled } from '../../config/Theme';
 import { Text } from 'rebass';
 
 export const LightText = styled(Text)`

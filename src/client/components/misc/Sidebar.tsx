@@ -1,4 +1,4 @@
-import { styled, ThemeColors } from '../config/Theme';
+import { styled, ThemeColors } from '../../config/Theme';
 import React, { ReactElement } from 'react';
 
 export interface SidebarProps {

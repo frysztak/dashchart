@@ -2,7 +2,7 @@ import React from 'react';
 import { Flex } from 'reflexbox/styled-components';
 import { DropZoneBackground, DropZone } from './DropZone';
 import { DropZoneLocation, DropZoneValues } from './DragNDrop';
-import { LightText } from '../LightText';
+import { LightText } from '../misc/LightText';
 import { ColumnId } from 'shared/DataFrame';
 
 export interface ChartCreatorProps {

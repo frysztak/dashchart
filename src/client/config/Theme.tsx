@@ -20,6 +20,13 @@ export const theme = {
     margin: '56px',
     bgMargin: '32px',
   },
+  boxShadow: {
+    offsetX: '5px',
+    offsetY: '5px',
+    spread: '5px',
+    blur: '5px',
+    color: '#333',
+  },
 };
 
 export type Theme = typeof theme;
