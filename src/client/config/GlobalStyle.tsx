@@ -22,6 +22,10 @@ font-family: 'Signika',sans-serif;
 height: 100%;
 }
 
+* {
+scrollbar-width: thin;
+}
+
 html {
 height: 100%;
 }
