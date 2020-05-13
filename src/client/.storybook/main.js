@@ -21,19 +21,6 @@ module.exports = {
       include: path.resolve(__dirname, '../'),
     });
 
-    config.module.rules.push({
-      test: /\.(svg)(\?v=\d+\.\d+\.\d+)?$/,
-      use: [
-        {
-          loader: 'file-loader',
-          options: {
-            name: '[name].[ext]',
-            outputPath: 'icons/',
-          },
-        },
-      ],
-    });
-
     // Return the altered config
     return config;
   },
