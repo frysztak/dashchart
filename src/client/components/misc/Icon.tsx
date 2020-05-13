@@ -1,9 +1,10 @@
-import { styled } from '../../config/Theme';
+import { styled, ThemeColors } from '../../config/Theme';
 import { StyledIcon, StyledIconProps } from '@styled-icons/styled-icon';
 import React from 'react';
 
 export type IconProps = StyledIconProps & {
-  readonly rotated: boolean;
+  readonly color?: ThemeColors;
+  readonly rotated?: boolean;
 };
 
 export function Icon(styledIcon: StyledIcon) {
@@ -12,6 +13,7 @@ export function Icon(styledIcon: StyledIcon) {
     height: ${props => (typeof props.size === 'number' ? `${props.size}px` : props.size)};
     transition: all 0.3s ease-out;
     transform: ${props => (props.rotated ? `rotate(90deg)` : '')};
+    color: ${props => (props.color ? props.theme.colors[props.color] : '')};
   `;
   return (props: IconProps) => <StyledIcon {...props} />;
 }
