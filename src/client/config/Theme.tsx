@@ -3,11 +3,16 @@ import React from 'react';
 
 export const theme = {
   colors: {
+    black: '#000',
     lightGrey: '#F5F7FB',
+    grey: '#999999',
+    grey2: '#CCCCCC',
 
     pink: '#e7d8d8',
     palePink: '#F7F2F2',
     darkPink: '#CAA9A9',
+
+    blue: '#46539E',
   },
   fonts: {
     light: "'Signika Light', sans-serif",
