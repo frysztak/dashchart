@@ -14,6 +14,8 @@ export const theme = {
 
     blue: '#46539E',
     paleBlue: '#AFB6DC',
+
+    almostWhite: '#FDFDFD',
   },
   fonts: {
     light: "'Signika Light', sans-serif",
