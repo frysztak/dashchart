@@ -13,6 +13,7 @@ export const theme = {
     darkPink: '#CAA9A9',
 
     blue: '#46539E',
+    paleBlue: '#AFB6DC',
   },
   fonts: {
     light: "'Signika Light', sans-serif",
