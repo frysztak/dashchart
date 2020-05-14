@@ -8,6 +8,7 @@ import { Text } from 'rebass';
 import { TabBar } from './TabBar';
 import { Avatar } from './Avatar';
 import { Bell, Cog } from '@styled-icons/boxicons-solid';
+import { Pulsate, Rotate, Wobble } from '../misc/animations';
 
 export interface MenuBarProps {
   projectName: string;
@@ -34,7 +35,9 @@ export function MenuBar(props: MenuBarProps) {
     <Background>
       <Flex alignItems={'center'} justifyContent={'space-between'} height={'100%'}>
         <Flex justifyContent={'center'} alignItems={'center'}>
-          <BackIcon size={42} color={'grey'} onClick={props.onBackClicked} />
+          <Pulsate>
+            <BackIcon size={42} color={'grey'} onClick={props.onBackClicked} />
+          </Pulsate>
           <Text fontSize={3}>{props.projectName}</Text>
         </Flex>
 
@@ -48,10 +51,14 @@ export function MenuBar(props: MenuBarProps) {
             <Avatar size={'32px'} onClick={props.onUserClicked} />
           </Box>
           <Box mr={3}>
-            <BellIcon size={'32px'} color={'grey'} onClick={props.onNotificationsClicked} />
+            <Wobble>
+              <BellIcon size={'32px'} color={'grey'} onClick={props.onNotificationsClicked} />
+            </Wobble>
           </Box>
           <Box mr={3}>
-            <CogIcon size={'32px'} color={'grey'} onClick={props.onSettingsClicked} />
+            <Rotate>
+              <CogIcon size={'32px'} color={'grey'} onClick={props.onSettingsClicked} />
+            </Rotate>
           </Box>
         </Flex>
       </Flex>
