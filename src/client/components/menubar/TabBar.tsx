@@ -6,13 +6,19 @@ import { keyframes } from 'styled-components';
 
 export interface TabBarProps {
   currentMenuItem: MenuItem;
+  onItemClicked: (item: MenuItem) => void;
 }
 
 export function TabBar(props: TabBarProps) {
   return (
     <>
       {[MenuItem.DATAFRAMES, MenuItem.CHARTS, MenuItem.DASHBOARDS].map((menuItem: MenuItem) => (
-        <TabBarItem menuItem={menuItem} isActive={menuItem === props.currentMenuItem} key={menuItem} />
+        <TabBarItem
+          menuItem={menuItem}
+          isActive={menuItem === props.currentMenuItem}
+          key={menuItem}
+          onItemClicked={() => props.onItemClicked(menuItem)}
+        />
       ))}
     </>
   );
@@ -21,6 +27,7 @@ export function TabBar(props: TabBarProps) {
 interface TabBarItemProps {
   menuItem: MenuItem;
   isActive: boolean;
+  onItemClicked: () => void;
 }
 
 const TabBarItemName = styled(Text)<{ active: boolean }>`
@@ -49,7 +56,7 @@ function TabBarItem(props: TabBarItemProps) {
   return (
     <Flex flexDirection={'column'} height={'100%'}>
       <Flex flex={1} alignItems={'center'}>
-        <TabBarItemName fontSize={3} mx={4} active={props.isActive}>
+        <TabBarItemName fontSize={3} mx={4} active={props.isActive} onClick={props.onItemClicked}>
           {MenuItemNames[props.menuItem]}
         </TabBarItemName>
       </Flex>
