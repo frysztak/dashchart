@@ -12,7 +12,7 @@ export interface TabBarProps {
 export function TabBar(props: TabBarProps) {
   return (
     <>
-      {[MenuItem.DATAFRAMES, MenuItem.CHARTS, MenuItem.DASHBOARDS].map((menuItem: MenuItem) => (
+      {[MenuItem.PROJECTS, MenuItem.DATAFRAMES, MenuItem.CHARTS, MenuItem.DASHBOARDS].map((menuItem: MenuItem) => (
         <TabBarItem
           menuItem={menuItem}
           isActive={menuItem === props.currentMenuItem}
