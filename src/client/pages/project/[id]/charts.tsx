@@ -1,8 +1,27 @@
 import { useRouter } from 'next/router';
+import { connect, useDispatch } from 'react-redux';
+import { useProject, useCharts } from '../../../store/selectors';
+import { CreateNewChart } from '../../../components/charts/ChartPreview';
+import { setCurrentProject } from '../../../store/current';
 
-export default function Charts() {
+function Charts() {
   const router = useRouter();
-  const { id } = router.query;
+  const projectId: number = +router.query.id!;
+  const project = useProject(projectId);
+  if (!project) {
+    return <>Project not found.</>;
+  }
 
-  return <>Charts at project id {id}</>;
+  const dispatch = useDispatch();
+  dispatch(setCurrentProject(projectId));
+
+  const charts = useCharts(project);
+
+  return (
+    <>
+      <CreateNewChart />
+    </>
+  );
 }
+
+export default connect()(Charts);
