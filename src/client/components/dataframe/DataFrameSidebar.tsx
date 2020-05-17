@@ -18,11 +18,17 @@ export function DataFrameSidebar(props: DataFrameSidebarProps) {
         </Flex>
 
         <Box mx={2}>
-          {props.dataFrames.map((dataFrame: DataFrame, idx: number) => (
-            <Box mb={4}>
-              <DataFrameColumnList dataFrame={dataFrame} key={idx} />
-            </Box>
-          ))}
+          {props.dataFrames.length === 0 ? (
+            <LightText fontSize={3} textAlign={'center'}>
+              No Data Frames were found. Add some?
+            </LightText>
+          ) : (
+            props.dataFrames.map((dataFrame: DataFrame, idx: number) => (
+              <Box mb={4}>
+                <DataFrameColumnList dataFrame={dataFrame} key={idx} />
+              </Box>
+            ))
+          )}
         </Box>
       </Flex>
     </Sidebar>

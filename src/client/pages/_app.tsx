@@ -7,16 +7,19 @@ import { ThemeProvider } from 'styled-components';
 import { theme } from '../config/Theme';
 import { store } from '../store/store';
 import { Provider } from 'react-redux';
-import { useCurrentProject } from '../store/selectors';
+import { useCurrentProjectFromStore } from '../store/selectors';
 import { Project } from '../store/project';
+import { useRouter } from 'next/router';
+import { Box, Flex } from 'reflexbox';
 
 function App({ children }: { children: ReactElement }) {
-  const currentProject: Project | null = useCurrentProject();
+  const router = useRouter();
+  const currentProject: Project | null = useCurrentProjectFromStore();
 
   const menuBarProps: MenuBarProps = {
     projectName: currentProject?.name || '',
     currentMenuItem: MenuItem.CHARTS,
-    onBackClicked: () => console.log('Back clicked'),
+    onBackClicked: router.back,
     onItemClicked: (menuItem: MenuItem) => console.log(`Item ${menuItem} clicked`),
     onUserClicked: () => console.log('User clicked'),
     onNotificationsClicked: () => console.log('Notifications clicked'),
@@ -24,10 +27,12 @@ function App({ children }: { children: ReactElement }) {
   };
 
   return (
-    <>
-      <MenuBar {...menuBarProps} />
-      {children}
-    </>
+    <Flex flexDirection={'column'} height={'100%'}>
+      <Box>
+        <MenuBar {...menuBarProps} />
+      </Box>
+      <Box flexGrow={1}>{children}</Box>
+    </Flex>
   );
 }
 

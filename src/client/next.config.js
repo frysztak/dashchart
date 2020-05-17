@@ -1,3 +1,5 @@
 const withFonts = require('next-fonts');
 const withImages = require('next-images');
-module.exports = withImages(withFonts());
+const withTM = require('next-transpile-modules')(['shared', 'fp-ts']);
+
+module.exports = withImages(withFonts(withTM()));

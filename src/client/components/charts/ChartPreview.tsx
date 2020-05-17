@@ -9,6 +9,7 @@ const Background = styled.div`
   height: 200px;
   background-color: ${p => p.theme.colors.almostWhite};
   border-radius: 8px;
+  cursor: pointer;
 `;
 
 function Base({ children }: { children: ReactElement }) {
@@ -21,10 +22,16 @@ function Base({ children }: { children: ReactElement }) {
   );
 }
 
-export function CreateNewChart() {
+interface BaseProps {
+  onClick: () => void;
+}
+
+export type CreateNewChartProps = BaseProps;
+
+export function CreateNewChart(props: CreateNewChartProps) {
   return (
     <Base>
-      <Flex justifyContent={'center'} height={'100%'} alignItems={'center'}>
+      <Flex justifyContent={'center'} height={'100%'} alignItems={'center'} onClick={props.onClick}>
         <LightText fontSize={3}>Create new chart...</LightText>
       </Flex>
     </Base>
