@@ -11,6 +11,7 @@ import { useCurrentProjectFromStore } from '../store/selectors';
 import { Project } from '../store/project';
 import { useRouter } from 'next/router';
 import { Box, Flex } from 'reflexbox';
+import { BottomBoxShadow } from '../components/misc/BoxShadow';
 
 function App({ children }: { children: ReactElement }) {
   const router = useRouter();
@@ -28,8 +29,10 @@ function App({ children }: { children: ReactElement }) {
 
   return (
     <Flex flexDirection={'column'} height={'100%'}>
-      <Box>
-        <MenuBar {...menuBarProps} />
+      <Box css={{ zIndex: 1 }}>
+        <BottomBoxShadow>
+          <MenuBar {...menuBarProps} />
+        </BottomBoxShadow>
       </Box>
       <Box flexGrow={1}>{children}</Box>
     </Flex>

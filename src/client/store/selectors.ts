@@ -14,3 +14,6 @@ export const useCharts = (project: Project): ChartState[] => Object.values(proje
 
 export const useDataFrames = (project: Project | null): DataFrameState[] | null =>
   project ? Object.values(project.dataFrames) : null;
+
+export const useChartCreator = (project: Project | null) =>
+  useSelector((state: AppState) => (project ? state.projects[project.id].chartCreator : null));

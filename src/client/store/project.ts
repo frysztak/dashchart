@@ -2,6 +2,10 @@ import { DataFrame } from 'shared/DataFrame';
 import { AggregateChartProps } from '../components/charts/AggregateChart';
 import { createReducer } from '@reduxjs/toolkit';
 import { ID } from './state';
+import { ColumnType } from '../../shared/DataFrame';
+import { enableMapSet } from 'immer';
+import { DropZoneLocation, DropZoneValues } from '../components/chartcreator/DragNDrop';
+import { ColumnId } from 'shared/DataFrame/index';
 
 export type Projects = Record<ID, Project>;
 
@@ -11,6 +15,7 @@ export interface Project {
   dataFrames: Record<ID, DataFrameState>;
   charts: Record<ID, ChartState>;
   dashboards: Record<ID, DashboardState>;
+  chartCreator: ChartCreatorState;
 }
 
 export interface DataFrameState {
@@ -27,13 +32,58 @@ export interface ChartState {
 
 export interface DashboardState {}
 
+export interface ChartCreatorState {
+  isDragging: boolean;
+  activeDropZone?: DropZoneLocation;
+  currentColumns: DropZoneValues<ColumnId>;
+}
+
+enableMapSet();
 export const initialProjects: Projects = {
   1: {
     name: 'My Project',
     id: 1,
-    dataFrames: {},
+    dataFrames: {
+      1: {
+        id: 1,
+        source: '',
+        dataFrame: new DataFrame('My DF', {
+          id: {
+            type: ColumnType.STRING,
+            values: ['1', '2', '3', '4', '5'],
+          },
+          first_name: {
+            type: ColumnType.STRING,
+            values: ['Prentiss', 'Bessie', 'Tybi', 'Felix', 'Gay'],
+          },
+          last_name: {
+            type: ColumnType.STRING,
+            values: ['Passey', 'Docker', 'Fantini', 'Freak', 'Cutchee'],
+          },
+          email: {
+            type: ColumnType.STRING,
+            values: [
+              'ppassey0@amazonaws.com',
+              'bdocker1@pagesperso-orange.fr',
+              'tfantini2@reference.com',
+              'ffreak3@google.nl',
+              'gcutchee4@ifeng.com',
+            ],
+          },
+          numbers: {
+            type: ColumnType.NUMBER,
+            values: [10, 20, 30, 40, 50],
+          },
+        }),
+      },
+    },
     charts: {},
     dashboards: {},
+    chartCreator: {
+      isDragging: false,
+      currentColumns: {},
+      activeDropZone: undefined,
+    },
   },
 };
 
