@@ -2,15 +2,16 @@ import { Flex, Box } from 'reflexbox';
 import { DataFrameSidebar } from '../../../../components/dataframe/DataFrameSidebar';
 import React from 'react';
 import { useChartCreator, useDataFrames } from '../../../../store/selectors';
-import { Project, DataFrameState, ChartCreatorState } from '../../../../store/project';
+import { Project, DataFrameState } from '../../../../store/project';
 import { useCurrentProject } from '../../../../store/hooks';
 import { ChartCreator } from '../../../../components/chartcreator/ChartCreator';
 import { RightBoxShadow } from '../../../../components/misc/BoxShadow';
+import { ChartCreatorState } from '../../../../store/chartCreator';
 
 function New() {
   const project: Project | null = useCurrentProject();
   const dataFrames: DataFrameState[] = useDataFrames(project) ?? [];
-  const chartCreator: ChartCreatorState | null = useChartCreator(project);
+  const chartCreator: ChartCreatorState | null = useChartCreator();
   if (!project || !chartCreator) {
     return <>Project not found.</>;
   }

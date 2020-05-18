@@ -5,6 +5,7 @@ import { Flex, Box } from 'reflexbox';
 import { routes } from '../../../config/routes';
 import { useCurrentProject } from '../../../store/hooks';
 import { Project, ChartState } from '../../../store/project';
+import React from 'react';
 
 function Charts() {
   const router = useRouter();

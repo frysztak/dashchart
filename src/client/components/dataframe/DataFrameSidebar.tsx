@@ -24,8 +24,8 @@ export function DataFrameSidebar(props: DataFrameSidebarProps) {
             </LightText>
           ) : (
             props.dataFrames.map((dataFrame: DataFrame, idx: number) => (
-              <Box mb={4}>
-                <DataFrameColumnList dataFrame={dataFrame} key={idx} />
+              <Box mb={4} key={idx}>
+                <DataFrameColumnList dataFrame={dataFrame} />
               </Box>
             ))
           )}

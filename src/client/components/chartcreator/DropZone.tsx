@@ -1,12 +1,15 @@
 import { keyframes } from 'styled-components';
 import { styled } from '../../config/Theme';
-import { DropZoneLocation, DropZoneValues, isHorizontal } from './DragNDrop';
+import { DragAndDropItemType, DropZoneLocation, DropZoneValues, isHorizontal } from './DragNDrop';
 import { Flex } from 'reflexbox/styled-components';
 import React from 'react';
 import { Table } from '@styled-icons/boxicons-regular';
 import { Icon } from '../misc/Icon';
 import { LightText } from '../misc/LightText';
 import { ColumnId, formatColumnData } from 'shared/DataFrame';
+import { useDrag, useDrop } from 'react-dnd';
+import { useDispatch } from 'react-redux';
+import { dropColumn } from '../../store/chartCreator';
 
 const opacity = keyframes`
   from {
@@ -69,27 +72,66 @@ const TableIcon = Icon(Table);
 function ColumnName(props: DropZoneProps) {
   const { activeDropZone, currentColumns, location } = props;
   const formattedColumnName: string = formatColumnData(currentColumns ? currentColumns[location] : undefined);
+
+  const column: ColumnId | undefined = currentColumns ? currentColumns[location] : undefined;
+  const [, drag] = useDrag({
+    item: {
+      type: DragAndDropItemType.COLUMN,
+      dataFrameName: column?.dataFrameName,
+      columnName: column?.columnName,
+      fromLocation: location,
+    } as DraggedColumn,
+  });
+
   if (!formattedColumnName) {
     return null;
   }
 
   const horizontal: boolean = isHorizontal(location);
-
   return (
     <ColumnNameContainer location={location} justifyContent={'center'} alignItems={'center'} flexGrow={1}>
-      <TableIcon size={16} rotated={!horizontal} />
-      <LightText ml={horizontal ? 2 : 0} mt={horizontal ? 0 : 2}>
-        {formattedColumnName}
-      </LightText>
+      <Flex ref={drag} css={{ cursor: 'move' }}>
+        <TableIcon size={16} rotated={!horizontal} />
+        <LightText ml={horizontal ? 2 : 0} mt={horizontal ? 0 : 2} css={{ userSelect: 'none' }}>
+          {formattedColumnName}
+        </LightText>
+      </Flex>
     </ColumnNameContainer>
   );
 }
 
+export interface DraggedColumn {
+  type: DragAndDropItemType;
+  columnName: string;
+  dataFrameName: string;
+  fromLocation?: DropZoneLocation;
+}
+
+export type DroppedColumn = Omit<DraggedColumn, 'type'> & { toLocation: DropZoneLocation };
+
 export function DropZone(props: DropZoneProps) {
   const { activeDropZone, currentColumns, location } = props;
+  const dispatch = useDispatch();
+
+  const [{ isOver }, drop] = useDrop({
+    accept: DragAndDropItemType.COLUMN,
+    drop: (item: DraggedColumn) => {
+      dispatch(
+        dropColumn({
+          columnName: item.columnName,
+          dataFrameName: item.dataFrameName,
+          fromLocation: item.fromLocation,
+          toLocation: location,
+        }),
+      );
+    },
+    collect: mon => ({
+      isOver: mon.isOver({ shallow: true }),
+    }),
+  });
 
   return (
-    <StyledDropZone location={location} active={activeDropZone === location}>
+    <StyledDropZone location={location} active={activeDropZone === location || isOver} ref={drop}>
       <ColumnName {...props} />
     </StyledDropZone>
   );

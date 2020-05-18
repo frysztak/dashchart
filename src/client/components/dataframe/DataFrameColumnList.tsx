@@ -1,26 +1,15 @@
-import { DataFrame, Column, ColumnType } from 'shared/DataFrame';
+import { DataFrame, Column } from 'shared/DataFrame';
 import React, { useState } from 'react';
 import { ChevronRight } from '@styled-icons/boxicons-regular';
-import { Circle } from '@styled-icons/boxicons-solid';
 import { Text, Flex } from 'rebass';
 import { Icon } from '../misc/Icon';
+import { DraggableColumnName } from './DraggableColumnName';
 
 export interface DataFrameColumnListProps {
   dataFrame: DataFrame;
 }
 
 const Chevron = Icon(ChevronRight);
-
-function mapColumnType(type: ColumnType): string {
-  switch (type) {
-    case ColumnType.NUMBER:
-      return 'number';
-    case ColumnType.STRING:
-      return 'string';
-    default:
-      return type;
-  }
-}
 
 export function DataFrameColumnList(props: DataFrameColumnListProps) {
   const [expanded, setExpanded] = useState(true);
@@ -37,15 +26,8 @@ export function DataFrameColumnList(props: DataFrameColumnListProps) {
         </Text>
       </Flex>
       {expanded
-        ? Array.from(dataFrame.columns()).map(([name, col]: [string, Column], idx: number) => (
-            <Flex mt={2} key={idx}>
-              <Flex size={20} justifyContent={'center'} alignItems={'center'}>
-                <Circle size={8} />
-              </Flex>
-              <Text ml={2}>
-                {name} :: {mapColumnType(col.type)}
-              </Text>
-            </Flex>
+        ? Array.from(dataFrame.columns()).map(([name, col]: [string, Column]) => (
+            <DraggableColumnName dataFrameName={dataFrame.name()} columnName={name} column={col} key={name} />
           ))
         : null}
     </Flex>

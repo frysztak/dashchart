@@ -12,6 +12,8 @@ import { Project } from '../store/project';
 import { useRouter } from 'next/router';
 import { Box, Flex } from 'reflexbox';
 import { BottomBoxShadow } from '../components/misc/BoxShadow';
+import { DndProvider } from 'react-dnd';
+import Backend from 'react-dnd-html5-backend';
 
 function App({ children }: { children: ReactElement }) {
   const router = useRouter();
@@ -45,9 +47,11 @@ export default ({ Component, pageProps }: AppProps) => {
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <App>
-            <Component {...pageProps} />
-          </App>
+          <DndProvider backend={Backend}>
+            <App>
+              <Component {...pageProps} />
+            </App>
+          </DndProvider>
         </Provider>
       </ThemeProvider>
     </>

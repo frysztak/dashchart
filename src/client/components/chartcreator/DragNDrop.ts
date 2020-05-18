@@ -10,3 +10,7 @@ export type DropZoneValues<T> = Partial<Record<DropZoneLocation, T>>;
 export function isHorizontal(location: DropZoneLocation): boolean {
   return location === DropZoneLocation.TOP || location === DropZoneLocation.BOTTOM;
 }
+
+export enum DragAndDropItemType {
+  COLUMN = 'COLUMN',
+}

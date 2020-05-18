@@ -1,22 +1,30 @@
 import React from 'react';
 import { Flex } from 'reflexbox/styled-components';
 import { DropZoneBackground, DropZone } from './DropZone';
-import { DropZoneLocation, DropZoneValues } from './DragNDrop';
+import { DragAndDropItemType, DropZoneLocation, DropZoneValues } from './DragNDrop';
 import { LightText } from '../misc/LightText';
 import { ColumnId } from 'shared/DataFrame';
+import { useDrop } from 'react-dnd';
 
 export interface ChartCreatorProps {
-  isDragging: boolean;
+  isDragging?: boolean;
   activeDropZone?: DropZoneLocation;
   currentColumns: DropZoneValues<ColumnId>;
 }
 
 export function ChartCreator(props: ChartCreatorProps) {
   const { isDragging, activeDropZone, currentColumns } = props;
+  const [{ isOver }, drop] = useDrop({
+    accept: DragAndDropItemType.COLUMN,
+    collect: mon => ({
+      isOver: mon.isOver(),
+    }),
+  });
+  const hasDroppedColumns = Object.entries(currentColumns).length > 0;
 
   return (
-    <Flex minHeight={'100%'} minWidth={'100%'}>
-      {isDragging ? (
+    <Flex minHeight={'100%'} minWidth={'100%'} ref={drop} css={{ position: 'relative' }}>
+      {isDragging || isOver || hasDroppedColumns ? (
         <>
           <DropZoneBackground />
           <DropZone location={DropZoneLocation.TOP} activeDropZone={activeDropZone} currentColumns={currentColumns} />

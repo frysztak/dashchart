@@ -4,8 +4,6 @@ import { createReducer } from '@reduxjs/toolkit';
 import { ID } from './state';
 import { ColumnType } from '../../shared/DataFrame';
 import { enableMapSet } from 'immer';
-import { DropZoneLocation, DropZoneValues } from '../components/chartcreator/DragNDrop';
-import { ColumnId } from 'shared/DataFrame/index';
 
 export type Projects = Record<ID, Project>;
 
@@ -15,7 +13,6 @@ export interface Project {
   dataFrames: Record<ID, DataFrameState>;
   charts: Record<ID, ChartState>;
   dashboards: Record<ID, DashboardState>;
-  chartCreator: ChartCreatorState;
 }
 
 export interface DataFrameState {
@@ -31,12 +28,6 @@ export interface ChartState {
 }
 
 export interface DashboardState {}
-
-export interface ChartCreatorState {
-  isDragging: boolean;
-  activeDropZone?: DropZoneLocation;
-  currentColumns: DropZoneValues<ColumnId>;
-}
 
 enableMapSet();
 export const initialProjects: Projects = {
@@ -79,11 +70,6 @@ export const initialProjects: Projects = {
     },
     charts: {},
     dashboards: {},
-    chartCreator: {
-      isDragging: false,
-      currentColumns: {},
-      activeDropZone: undefined,
-    },
   },
 };
 

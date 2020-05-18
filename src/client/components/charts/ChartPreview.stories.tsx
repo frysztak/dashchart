@@ -5,5 +5,5 @@ import { CreateNewChart } from './ChartPreview';
 export default { title: 'Chart Preview', decorators: [withKnobs] };
 
 export const CreateNewChartStory = () => {
-  return <CreateNewChart />;
+  return <CreateNewChart onClick={() => {}} />;
 };

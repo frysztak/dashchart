@@ -3,6 +3,7 @@ import { routes } from '../../config/routes';
 import { useEffect } from 'react';
 import { useCurrentProject } from '../../store/hooks';
 import { Project } from '../../store/project';
+import React from 'react';
 
 function ProjectPage() {
   const router = useRouter();
