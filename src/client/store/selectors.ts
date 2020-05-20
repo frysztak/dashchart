@@ -1,6 +1,7 @@
 import { ID, AppState } from './state';
 import { Project, ChartState, DataFrameState } from './project';
 import { useSelector } from 'react-redux';
+import { DataFrame } from 'shared/DataFrame';
 
 export const useProjects = (): Project[] => useSelector((state: AppState) => Object.values(state.projects));
 
@@ -12,7 +13,7 @@ export const useCurrentProjectFromStore = (): Project | null =>
 
 export const useCharts = (project: Project): ChartState[] => Object.values(project.charts);
 
-export const useDataFrames = (project: Project | null): DataFrameState[] | null =>
-  project ? Object.values(project.dataFrames) : null;
+export const useDataFrames = (project: Project | null): DataFrame[] =>
+  project ? Object.values(project.dataFrames).map((s: DataFrameState) => s.dataFrame) : [];
 
 export const useChartCreator = () => useSelector((state: AppState) => state.chartCreator);

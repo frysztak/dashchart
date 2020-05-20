@@ -1,8 +1,15 @@
 import { styled } from '../../config/Theme';
 
-const Base = styled.div`
-  height: 100%;
-  width: 100%;
+export interface BoxShadowProps {
+  width?: string;
+  height?: string;
+  borderRadius?: string;
+}
+
+const Base = styled.div<BoxShadowProps>`
+  height: ${p => p.height || '100%'};
+  width: ${p => p.width || '100%'};
+  border-radius: ${p => p.borderRadius || ''};
 `;
 
 export const TopBoxShadow = styled(Base)`
