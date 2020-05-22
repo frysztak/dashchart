@@ -5,7 +5,16 @@ import { DropZoneLocation } from './DragNDrop';
 
 export default { title: 'ChartCreator', decorators: [withKnobs] };
 
-export const RegularChartCreator = () => {
+export const ChartCreatorWithoutDroppedColumns = () => {
+  const props: ChartCreatorProps = {
+    isDragging: boolean('isDragging', false),
+    activeDropZone: select('activeDropZone', DropZoneLocation, undefined),
+    currentColumns: {},
+  };
+  return <ChartCreator {...props} />;
+};
+
+export const ChartCreatorWithDroppedColumns = () => {
   const props: ChartCreatorProps = {
     isDragging: boolean('isDragging', false),
     activeDropZone: select('activeDropZone', DropZoneLocation, undefined),

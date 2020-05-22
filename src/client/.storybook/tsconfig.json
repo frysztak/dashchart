@@ -26,7 +26,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "exclude": ["node_modules", "build", "scripts", "acceptance-tests", "webpack", "jest", "razzle.config.js"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "razzle.config.js",
+    "../pages"
+  ],
   "types": ["typePatches", "node", "webpack-env"],
   "include": ["next-env.d.ts", "../**/*.tsx", "node_modules/shared/**/*.ts", "../typings/**.ts"]
 }

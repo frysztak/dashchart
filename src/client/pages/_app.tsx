@@ -4,7 +4,7 @@ import { MenuBar, MenuBarProps } from '../components/menubar/MenuBar';
 import { MenuItem } from '../components/menubar/MenuItems';
 import GlobalStyle from '../config/GlobalStyle';
 import { ThemeProvider } from 'styled-components';
-import { theme } from '../config/Theme';
+import { styled, theme } from '../config/Theme';
 import { store } from '../store/store';
 import { Provider } from 'react-redux';
 import { useCurrentProjectFromStore } from '../store/selectors';
@@ -14,6 +14,10 @@ import { Box, Flex } from 'reflexbox';
 import { BottomBoxShadow } from '../components/misc/BoxShadow';
 import { DndProvider } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend';
+
+const ElevatedBox = styled(Box)`
+  z-index: 1;
+`;
 
 function App({ children }: { children: ReactElement }) {
   const router = useRouter();
@@ -31,11 +35,11 @@ function App({ children }: { children: ReactElement }) {
 
   return (
     <Flex flexDirection={'column'} height={'100%'}>
-      <Box css={{ zIndex: 1 }}>
+      <ElevatedBox>
         <BottomBoxShadow>
           <MenuBar {...menuBarProps} />
         </BottomBoxShadow>
-      </Box>
+      </ElevatedBox>
       <Box flexGrow={1}>{children}</Box>
     </Flex>
   );

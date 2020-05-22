@@ -5,12 +5,17 @@ import { DragAndDropItemType, DropZoneLocation, DropZoneValues } from './DragNDr
 import { LightText } from '../misc/LightText';
 import { ColumnId } from 'shared/DataFrame';
 import { useDrop } from 'react-dnd';
+import { styled } from '../../config/Theme';
 
 export interface ChartCreatorProps {
   isDragging?: boolean;
   activeDropZone?: DropZoneLocation;
   currentColumns: DropZoneValues<ColumnId>;
 }
+
+const RelativeFlex = styled(Flex)`
+  position: relative;
+`;
 
 export function ChartCreator(props: ChartCreatorProps) {
   const { isDragging, activeDropZone, currentColumns } = props;
@@ -23,7 +28,7 @@ export function ChartCreator(props: ChartCreatorProps) {
   const hasDroppedColumns = Object.entries(currentColumns).length > 0;
 
   return (
-    <Flex minHeight={'100%'} minWidth={'100%'} ref={drop} css={{ position: 'relative' }}>
+    <RelativeFlex minHeight={'100%'} minWidth={'100%'} ref={drop}>
       {isDragging || isOver || hasDroppedColumns ? (
         <>
           <DropZoneBackground />
@@ -41,6 +46,6 @@ export function ChartCreator(props: ChartCreatorProps) {
           <LightText fontSize={4}>Drag Data Frame columns here</LightText>
         </Flex>
       )}
-    </Flex>
+    </RelativeFlex>
   );
 }

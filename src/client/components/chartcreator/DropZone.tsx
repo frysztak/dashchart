@@ -69,6 +69,14 @@ export interface DropZoneProps {
 
 const TableIcon = Icon(Table);
 
+const MoveFlex = styled(Flex)`
+  cursor: move;
+`;
+
+const NoSelectLightText = styled(LightText)`
+  user-select: none;
+`;
+
 function ColumnName(props: DropZoneProps) {
   const { activeDropZone, currentColumns, location } = props;
   const formattedColumnName: string = formatColumnData(currentColumns ? currentColumns[location] : undefined);
@@ -90,12 +98,12 @@ function ColumnName(props: DropZoneProps) {
   const horizontal: boolean = isHorizontal(location);
   return (
     <ColumnNameContainer location={location} justifyContent={'center'} alignItems={'center'} flexGrow={1}>
-      <Flex ref={drag} css={{ cursor: 'move' }}>
+      <MoveFlex ref={drag}>
         <TableIcon size={16} rotated={!horizontal} />
-        <LightText ml={horizontal ? 2 : 0} mt={horizontal ? 0 : 2} css={{ userSelect: 'none' }}>
+        <NoSelectLightText ml={horizontal ? 2 : 0} mt={horizontal ? 0 : 2}>
           {formattedColumnName}
-        </LightText>
-      </Flex>
+        </NoSelectLightText>
+      </MoveFlex>
     </ColumnNameContainer>
   );
 }

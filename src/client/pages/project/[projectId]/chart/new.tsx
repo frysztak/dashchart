@@ -25,6 +25,10 @@ const ModeIndicator = styled.div`
   cursor: pointer;
 `;
 
+const RelativeBox = styled(Box)`
+  position: relative;
+`;
+
 function New() {
   const project: Project | null = useCurrentProject();
   const dataFrames: DataFrame[] = useDataFrames(project);
@@ -43,7 +47,7 @@ function New() {
           <DataFrameSidebar dataFrames={dataFrames} />
         </RightBoxShadow>
       </Box>
-      <Box flexGrow={1} css={{ position: 'relative' }}>
+      <RelativeBox flexGrow={1}>
         {layoutMode ? (
           <ChartCreator {...chartCreator} />
         ) : (
@@ -53,7 +57,7 @@ function New() {
         <ModeIndicator onClick={toggleLayoutMode}>
           <IconWrapper size={42}>{layoutMode ? <LayoutIcon size={32} /> : <ChartIcon size={32} />}</IconWrapper>
         </ModeIndicator>
-      </Box>
+      </RelativeBox>
       <Box>
         <LeftBoxShadow>
           <ChartPropsSidebar />
