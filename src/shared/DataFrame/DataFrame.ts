@@ -1,4 +1,4 @@
-import produce, { Draft } from 'immer';
+import produce, { Draft, enableMapSet } from 'immer';
 import { Dictionary, isNumeric } from '../utils';
 
 export enum ColumnType {
@@ -19,6 +19,8 @@ export type Column =
       type: ColumnType.STRING;
       values: string[];
     });
+
+enableMapSet();
 
 export class DataFrame {
   private _name: string;
