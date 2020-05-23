@@ -1,8 +1,19 @@
 import React from 'react';
-import { number, select, withKnobs } from '@storybook/addon-knobs';
+import { withKnobs, select } from '@storybook/addon-knobs';
 import { ColumnType, DataFrame } from 'shared/DataFrame/index';
-import { AggregateChart, AggregateChartProps } from './AggregateChart';
+import { AggregateChart } from './AggregateChart';
 import { DropZoneLocation } from '../chartcreator/DragNDrop';
+import { Result } from 'shared/utils/index';
+import {
+  AxisScale,
+  ChartDimensions,
+  ChartProps,
+  ChartType,
+  PositionalChartData,
+  UserEditableChartProps,
+} from './common/Props';
+import { applyUserProps, mapDroppedColumns } from './AggregateChartMapper';
+import { fold } from 'fp-ts/es6/Either';
 
 export default { title: 'AggregateChart', decorators: [withKnobs] };
 
@@ -35,42 +46,95 @@ const dataFrame = new DataFrame('My DF', {
   },
 });
 
+const dimensions: ChartDimensions = {
+  height: 400,
+  width: 600,
+  margin: {
+    top: 20,
+    left: 30,
+    right: 80,
+    bottom: 50,
+  },
+};
+
 export const xyChart = () => {
-  const props: AggregateChartProps = {
-    dataFrames: [dataFrame],
-    droppedColumns: {
-      [DropZoneLocation.BOTTOM]: {
-        dataFrameName: 'My DF',
-        columnName: 'id',
-      },
-      [DropZoneLocation.LEFT]: {
-        dataFrameName: 'My DF',
-        columnName: 'numbers',
-      },
+  const droppedColumns = {
+    [DropZoneLocation.BOTTOM]: {
+      dataFrameName: 'My DF',
+      columnName: 'id',
+    },
+    [DropZoneLocation.LEFT]: {
+      dataFrameName: 'My DF',
+      columnName: 'numbers',
     },
   };
 
-  return <AggregateChart {...props} />;
+  const userProps: UserEditableChartProps[] = [
+    {
+      type: select('Chart type', ChartType, ChartType.SCATTER),
+      dimensions,
+      data: {
+        x: {
+          scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
+        },
+        y: { scale: select('Y axis scale', AxisScale, AxisScale.LOG) },
+      },
+    },
+  ];
+
+  const chartData: Result<PositionalChartData[]> = mapDroppedColumns([dataFrame], droppedColumns);
+  const chartPropsR: Result<ChartProps[]> = applyUserProps(chartData, userProps);
+
+  return fold(
+    (e: Error) => <div>{e.message}</div>,
+    (chartProps: ChartProps[]) => <AggregateChart chartProps={chartProps} />,
+  )(chartPropsR);
 };
 
 export const xyyChart = () => {
-  const props: AggregateChartProps = {
-    dataFrames: [dataFrame],
-    droppedColumns: {
-      [DropZoneLocation.BOTTOM]: {
-        dataFrameName: 'My DF',
-        columnName: 'id',
-      },
-      [DropZoneLocation.LEFT]: {
-        dataFrameName: 'My DF',
-        columnName: 'numbers',
-      },
-      [DropZoneLocation.RIGHT]: {
-        dataFrameName: 'My DF',
-        columnName: 'last_name',
-      },
+  const droppedColumns = {
+    [DropZoneLocation.BOTTOM]: {
+      dataFrameName: 'My DF',
+      columnName: 'id',
+    },
+    [DropZoneLocation.LEFT]: {
+      dataFrameName: 'My DF',
+      columnName: 'numbers',
+    },
+    [DropZoneLocation.RIGHT]: {
+      dataFrameName: 'My DF',
+      columnName: 'last_name',
     },
   };
 
-  return <AggregateChart {...props} />;
+  const userProps: UserEditableChartProps[] = [
+    {
+      type: select('1st Chart type', ChartType, ChartType.SCATTER),
+      dimensions,
+      data: {
+        x: {
+          scale: select('1st X axis scale', AxisScale, AxisScale.LINEAR),
+        },
+        y: { scale: select('1st Y axis scale', AxisScale, AxisScale.LINEAR) },
+      },
+    },
+    {
+      type: select('2st Chart type', ChartType, ChartType.SCATTER),
+      dimensions,
+      data: {
+        x: {
+          scale: select('2st X axis scale', AxisScale, AxisScale.LINEAR),
+        },
+        y: { scale: select('2st Y axis scale', AxisScale, AxisScale.LINEAR) },
+      },
+    },
+  ];
+
+  const chartData: Result<PositionalChartData[]> = mapDroppedColumns([dataFrame], droppedColumns);
+  const chartPropsR: Result<ChartProps[]> = applyUserProps(chartData, userProps);
+
+  return fold(
+    (e: Error) => <div>{e.message}</div>,
+    (chartProps: ChartProps[]) => <AggregateChart chartProps={chartProps} />,
+  )(chartPropsR);
 };

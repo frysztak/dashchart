@@ -1,6 +1,14 @@
 import { DropZoneLocation, DropZoneValues, isHorizontal } from '../chartcreator/DragNDrop';
-import { Axis, AxisDataType, AxisPosition, ChartData } from './common/Props';
-import { DistributivePick, dupingZip, entries, Ok, Result } from 'shared/utils';
+import {
+  Axis,
+  AxisDataType,
+  AxisPosition,
+  ChartProps,
+  UserEditableChartProps,
+  PositionalChartData,
+  PositionalAxisData,
+} from './common/Props';
+import { DistributivePick, dupingZip, entries, Ok, Result, zip } from 'shared/utils';
 import { Column, ColumnId, ColumnType, DataFrame, resolveColumnId } from 'shared/DataFrame';
 import { chain, either, filterOrElse } from 'fp-ts/es6/Either';
 import { array } from 'fp-ts/es6/Array';
@@ -9,8 +17,8 @@ import { pipe } from 'fp-ts/es6/pipeable';
 import { tupled } from 'fp-ts/es6/function';
 
 interface MappedAxes {
-  xAxes: Axis[];
-  yAxes: Axis[];
+  xAxes: PositionalAxisData[];
+  yAxes: PositionalAxisData[];
 }
 
 type ColumnEntry = [DropZoneLocation, ColumnId];
@@ -30,9 +38,9 @@ function mapColumnValues(column: Column): DistributivePick<Axis, 'dataType' | 'd
   }
 }
 
-function mapColumnEntryToAxis(dataFrames: DataFrame[], [loc, colId]: ColumnEntry): Result<Axis> {
+function mapColumnEntryToAxis(dataFrames: DataFrame[], [loc, colId]: ColumnEntry): Result<PositionalAxisData> {
   const column: Result<Column> = resolveColumnId(dataFrames, colId);
-  const mapColumn = (col: Column): Result<Axis> =>
+  const mapColumn = (col: Column): Result<PositionalAxisData> =>
     Ok({
       position:
         loc === DropZoneLocation.BOTTOM || loc === DropZoneLocation.LEFT
@@ -50,20 +58,22 @@ function mapColumnEntryToAxis(dataFrames: DataFrame[], [loc, colId]: ColumnEntry
 
 function mapColumnsToAxes(dataFrames: DataFrame[], droppedColumns: DropZoneValues<ColumnId>): Result<MappedAxes> {
   const columns: ColumnEntry[] = entries(droppedColumns);
-  const mapArrays = (arrays: Result<Axis>[]): Result<Axis[]> => array.sequence(either)(arrays);
+  const mapArrays = (arrays: Result<PositionalAxisData>[]): Result<PositionalAxisData[]> =>
+    array.sequence(either)(arrays);
 
-  const xAxes: Result<Axis[]> = mapArrays(
+  const xAxes: Result<PositionalAxisData[]> = mapArrays(
     columns
       .filter(([loc, colId]: ColumnEntry) => isHorizontal(loc))
       .map((col: ColumnEntry) => mapColumnEntryToAxis(dataFrames, col)),
   );
-  const yAxes: Result<Axis[]> = mapArrays(
+  const yAxes: Result<PositionalAxisData[]> = mapArrays(
     columns
       .filter(([loc, colId]: ColumnEntry) => !isHorizontal(loc))
       .map((col: ColumnEntry) => mapColumnEntryToAxis(dataFrames, col)),
   );
 
-  const mapAxes = (xAxes: Axis[], yAxes: Axis[]): Result<MappedAxes> => Ok({ xAxes, yAxes });
+  const mapAxes = (xAxes: PositionalAxisData[], yAxes: PositionalAxisData[]): Result<MappedAxes> =>
+    Ok({ xAxes, yAxes });
 
   // prettier-ignore
   return pipe(
@@ -75,20 +85,22 @@ function mapColumnsToAxes(dataFrames: DataFrame[], droppedColumns: DropZoneValue
 export function mapDroppedColumns(
   dataFrames: DataFrame[],
   droppedColumns: DropZoneValues<ColumnId>,
-): Result<ChartData[]> {
+): Result<PositionalChartData[]> {
   const axes: Result<MappedAxes> = mapColumnsToAxes(dataFrames, droppedColumns);
 
-  const mapDupedAxis = (axis: Axis): Axis => ({
+  const mapDupedAxis = (axis: PositionalAxisData): PositionalAxisData => ({
     ...axis,
     position: AxisPosition.HIDDEN,
   });
 
-  const mapToChartData = ({ xAxes, yAxes }: MappedAxes): Result<ChartData[]> =>
+  const mapToChartData = ({ xAxes, yAxes }: MappedAxes): Result<PositionalChartData[]> =>
     Ok(
-      dupingZip(xAxes, yAxes, mapDupedAxis, mapDupedAxis).map(([xAxis, yAxis]: [Axis, Axis]) => ({
-        x: xAxis,
-        y: yAxis,
-      })),
+      dupingZip(xAxes, yAxes, mapDupedAxis, mapDupedAxis).map(
+        ([xAxis, yAxis]: [PositionalAxisData, PositionalAxisData]) => ({
+          x: xAxis,
+          y: yAxis,
+        }),
+      ),
     );
 
   return pipe(
@@ -102,5 +114,39 @@ export function mapDroppedColumns(
       _ => new Error('There must be at least one Y axis.'),
     ),
     chain(mapToChartData),
+  );
+}
+
+export function applyUserProps(
+  chartDataR: Result<PositionalChartData[]>,
+  chartProps: UserEditableChartProps[],
+): Result<ChartProps[]> {
+  const mapToChartProps = (chartData: PositionalChartData[]): Result<ChartProps[]> =>
+    Ok(
+      zip(chartData, chartProps).map(
+        ([data, userProps]: [PositionalChartData, UserEditableChartProps]): ChartProps =>
+          <ChartProps>{
+            ...userProps,
+            data: {
+              x: {
+                ...userProps.data.x,
+                ...data.x,
+              },
+              y: {
+                ...userProps.data.y,
+                ...data.y,
+              },
+            },
+          },
+      ),
+    );
+
+  return pipe(
+    chartDataR,
+    filterOrElse(
+      (chartData: PositionalChartData[]) => chartData.length === chartProps.length,
+      _ => new Error(`Axis data has different length than chart props`),
+    ),
+    chain(mapToChartProps),
   );
 }
