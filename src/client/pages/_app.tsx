@@ -15,6 +15,8 @@ import { BottomBoxShadow } from '../components/misc/BoxShadow';
 import { DndProvider } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend';
 
+import '../assets/fonts/font.css';
+
 const ElevatedBox = styled(Box)`
   z-index: 1;
 `;

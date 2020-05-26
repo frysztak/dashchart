@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'Signika';
+  src: local('Signika'), url('Signika.woff2') format('woff2'), url('Signika.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Signika Light';
+  src: local('Signika Light'), url('Signika-Light.woff2') format('woff2'), url('Signika-Light.woff') format('woff');
+}
