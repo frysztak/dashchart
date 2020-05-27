@@ -11,8 +11,10 @@ import {
   ChartProps,
   ChartType,
   UserEditableChartProps,
+  PositionalChartData,
 } from './common/Props';
 import { Ok, Result, takeRight } from 'shared/utils';
+import { DefaultAxisStyle } from './common/Defaults';
 
 describe('AggregateChartMapper', () => {
   describe('mapDroppedColumns', () => {
@@ -50,12 +52,12 @@ describe('AggregateChartMapper', () => {
     });
 
     it('fails with zero columns', () => {
-      const result: Result<ChartData[]> = mapDroppedColumns([frame], {});
+      const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {});
       expect(isLeft(result)).toEqual(true);
     });
 
     it('fails with zero X axes', () => {
-      const result: Result<ChartData[]> = mapDroppedColumns([frame], {
+      const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.LEFT]: {
           dataFrameName: 'DF',
           columnName: 'col1',
@@ -65,7 +67,7 @@ describe('AggregateChartMapper', () => {
     });
 
     it('fails with zero Y axes', () => {
-      const result: Result<ChartData[]> = mapDroppedColumns([frame], {
+      const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.BOTTOM]: {
           dataFrameName: 'DF',
           columnName: 'col1',
@@ -75,7 +77,7 @@ describe('AggregateChartMapper', () => {
     });
 
     it('works with simple XY chart', () => {
-      const result: Result<ChartData[]> = mapDroppedColumns([frame], {
+      const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.BOTTOM]: {
           dataFrameName: 'My DF',
           columnName: 'id',
@@ -87,7 +89,7 @@ describe('AggregateChartMapper', () => {
       });
 
       expect(isRight(result)).toEqual(true);
-      const chartData: ChartData[] = takeRight(result);
+      const chartData: PositionalChartData[] = takeRight(result);
       expect(chartData.length).toEqual(1);
       expect(chartData[0]).toEqual(<ChartData>{
         x: {
@@ -104,7 +106,7 @@ describe('AggregateChartMapper', () => {
     });
 
     it('works with XYY chart', () => {
-      const result: Result<ChartData[]> = mapDroppedColumns([frame], {
+      const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.BOTTOM]: {
           dataFrameName: 'My DF',
           columnName: 'id',
@@ -120,7 +122,7 @@ describe('AggregateChartMapper', () => {
       });
 
       expect(isRight(result)).toEqual(true);
-      const chartData: ChartData[] = takeRight(result);
+      const chartData: PositionalChartData[] = takeRight(result);
       expect(chartData.length).toEqual(2);
       expect(chartData[0]).toEqual(<ChartData>{
         x: {
@@ -149,7 +151,7 @@ describe('AggregateChartMapper', () => {
     });
 
     it('works with XXY chart', () => {
-      const result: Result<ChartData[]> = mapDroppedColumns([frame], {
+      const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.BOTTOM]: {
           dataFrameName: 'My DF',
           columnName: 'id',
@@ -165,7 +167,7 @@ describe('AggregateChartMapper', () => {
       });
 
       expect(isRight(result)).toEqual(true);
-      const chartData: ChartData[] = takeRight(result);
+      const chartData: PositionalChartData[] = takeRight(result);
       expect(chartData.length).toEqual(2);
       expect(chartData[0]).toEqual(<ChartData>{
         x: {
@@ -201,7 +203,7 @@ describe('AggregateChartMapper', () => {
     });
 
     it('applies type, dimensions and style', () => {
-      const chartData: ChartData[] = [
+      const chartData: PositionalChartData[] = [
         {
           x: {
             dataType: AxisDataType.STRING,
@@ -232,8 +234,8 @@ describe('AggregateChartMapper', () => {
           dimensions: dimensions,
           type: ChartType.SCATTER,
           data: {
-            x: { scale: AxisScale.LINEAR, style: { tickSize: 5 } },
-            y: { scale: AxisScale.LOG },
+            x: { scale: AxisScale.LINEAR, style: { ...DefaultAxisStyle, tickSize: 5 } },
+            y: { scale: AxisScale.LOG, style: DefaultAxisStyle },
           },
         },
       ];

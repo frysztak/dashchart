@@ -3,6 +3,7 @@ import React from 'react';
 import { PropsEditor } from './PropsEditor';
 import { AxisScale, ChartType, UserEditableChartProps } from '../../charts/common/Props';
 import { styled } from '../../../config/Theme';
+import { DefaultAxisStyle } from '../../charts/common/Defaults';
 
 export default { title: 'PropsEditor', decorators: [withKnobs] };
 
@@ -26,9 +27,11 @@ export const PropsEditorStory = () => {
     data: {
       x: {
         scale: AxisScale.LINEAR,
+        style: DefaultAxisStyle,
       },
       y: {
         scale: AxisScale.LINEAR,
+        style: DefaultAxisStyle,
       },
     },
   };

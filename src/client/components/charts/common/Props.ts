@@ -30,18 +30,18 @@ export enum AxisPosition {
 }
 
 export interface AxisStyle<Domain> {
-  tickSize?: number;
+  tickSize: number;
   tickSizeInner?: number;
   tickSizeOuter?: number;
-  tickPadding?: number;
+  tickPadding: number;
   tickValues?: Domain[];
 
-  barPadding?: number;
+  barPadding: number;
 }
 
 interface BaseAxis {
-  scale?: AxisScale;
-  position?: AxisPosition;
+  scale: AxisScale;
+  position: AxisPosition;
 }
 
 export type Axis =
@@ -49,19 +49,19 @@ export type Axis =
       dataType: AxisDataType.NUMBER;
       data: number[];
       domain?: [number, number];
-      style?: AxisStyle<number>;
+      style: AxisStyle<number>;
     })
   | (BaseAxis & {
       dataType: AxisDataType.DATE;
       data: Date[];
       domain?: [Date, Date];
-      style?: AxisStyle<Date>;
+      style: AxisStyle<Date>;
     })
   | (BaseAxis & {
       dataType: AxisDataType.STRING;
       data: string[];
       domain?: string[];
-      style?: AxisStyle<string>;
+      style: AxisStyle<string>;
     });
 
 export enum ChartType {
@@ -109,26 +109,4 @@ export type UserEditableChartProps = Omit<ChartProps, 'data'> & {
     x: UserEditableAxisProps;
     y: UserEditableAxisProps;
   };
-};
-
-export const DefaultChartProps: UserEditableChartProps = {
-  type: ChartType.LINE,
-  dimensions: {
-    width: 600,
-    height: 400,
-    margin: {
-      top: 40,
-      left: 40,
-      right: 80,
-      bottom: 80,
-    },
-  },
-  data: {
-    x: {
-      scale: AxisScale.LINEAR,
-    },
-    y: {
-      scale: AxisScale.LINEAR,
-    },
-  },
 };

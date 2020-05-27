@@ -111,7 +111,7 @@ export function PropsEditor(props: ChartPropsEditorProps) {
                   field={'data.x.scale'}
                   handleChange={props.handleChange}
                   type={PropType.ENUM}
-                  value={props.values.data.x.scale!}
+                  value={props.values.data.x.scale}
                   enum={AxisScale}
                   enumMap={AxisScaleMap}
                 />
@@ -120,7 +120,7 @@ export function PropsEditor(props: ChartPropsEditorProps) {
                   field={'data.x.style.tickSize'}
                   handleChange={props.handleChange}
                   type={PropType.NUMBER}
-                  value={props.values.data.x.style?.tickSize ?? 6}
+                  value={props.values.data.x.style.tickSize}
                 />
               </Group>
               <Group groupName={'Y axis'}>
@@ -129,7 +129,7 @@ export function PropsEditor(props: ChartPropsEditorProps) {
                   field={'data.y.scale'}
                   handleChange={props.handleChange}
                   type={PropType.ENUM}
-                  value={props.values.data.y.scale!}
+                  value={props.values.data.y.scale}
                   enum={AxisScale}
                   enumMap={AxisScaleMap}
                 />
@@ -138,7 +138,7 @@ export function PropsEditor(props: ChartPropsEditorProps) {
                   field={'data.y.style.tickSize'}
                   handleChange={props.handleChange}
                   type={PropType.NUMBER}
-                  value={props.values.data.y.style?.tickSize ?? 6}
+                  value={props.values.data.y.style.tickSize}
                 />
               </Group>
             </Group>

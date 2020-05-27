@@ -2,6 +2,7 @@ import React from 'react';
 import { AxisDataType, AxisPosition, AxisScale, ChartProps, ChartType } from './common/Props';
 import { number, select, withKnobs } from '@storybook/addon-knobs';
 import { Chart } from './Chart';
+import { DefaultAxisStyle } from './common/Defaults';
 
 export default { title: 'Chart', decorators: [withKnobs] };
 
@@ -28,6 +29,7 @@ export const singlePlot = () => {
         position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
         style: {
+          ...DefaultAxisStyle,
           tickPadding: number('X axis tick padding', 3),
           tickSize: number('X axis tick size', 6),
         },
@@ -38,6 +40,7 @@ export const singlePlot = () => {
         position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
         style: {
+          ...DefaultAxisStyle,
           tickPadding: number('X axis tick padding', 3),
           tickSize: number('X axis tick size', 6),
         },
@@ -78,6 +81,7 @@ export const plotWithDates = () => {
         position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
         style: {
+          ...DefaultAxisStyle,
           barPadding: 0.75,
         },
       },
@@ -87,6 +91,7 @@ export const plotWithDates = () => {
         position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
         style: {
+          ...DefaultAxisStyle,
           barPadding: 0.75,
         },
       },
@@ -125,6 +130,7 @@ export const plotWithDatesAndStrings = () => {
         position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
         style: {
+          ...DefaultAxisStyle,
           barPadding: 0.75,
         },
       },
@@ -134,6 +140,7 @@ export const plotWithDatesAndStrings = () => {
         position: select('Y axis position', AxisPosition, AxisPosition.PRIMARY),
         data: y,
         style: {
+          ...DefaultAxisStyle,
           barPadding: 0.75,
         },
       },
@@ -166,6 +173,7 @@ export const axisOnlyPlot = () => {
         position: select('X axis position', AxisPosition, AxisPosition.PRIMARY),
         data: x,
         style: {
+          ...DefaultAxisStyle,
           tickPadding: number('X axis tick padding', 3),
           tickSize: number('X axis tick size', 6),
         },
@@ -176,6 +184,7 @@ export const axisOnlyPlot = () => {
         position: select('Y axis position', AxisPosition, AxisPosition.HIDDEN),
         data: y,
         style: {
+          ...DefaultAxisStyle,
           tickPadding: number('X axis tick padding', 3),
           tickSize: number('X axis tick size', 6),
         },

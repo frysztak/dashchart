@@ -15,17 +15,12 @@ import { styled } from '../../../../config/Theme';
 import { AggregateChart } from '../../../../components/charts/AggregateChart';
 import { DataFrame } from 'shared/DataFrame';
 import { Ok, Result } from 'shared/utils/index';
-import {
-  ChartData,
-  ChartProps,
-  DefaultChartProps,
-  PositionalChartData,
-  UserEditableChartProps,
-} from '../../../../components/charts/common/Props';
+import { ChartProps, PositionalChartData, UserEditableChartProps } from '../../../../components/charts/common/Props';
 import { applyUserProps, mapDroppedColumns } from '../../../../components/charts/AggregateChartMapper';
 import { chain, fold } from 'fp-ts/es6/Either';
 import produce from 'immer';
 import { pipe } from 'fp-ts/es6/pipeable';
+import { DefaultChartProps } from '../../../../components/charts/common/Defaults';
 
 const ChartIcon = Icon(Chart);
 const LayoutIcon = Icon(Layout);

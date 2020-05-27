@@ -14,6 +14,7 @@ import {
 } from './common/Props';
 import { applyUserProps, mapDroppedColumns } from './AggregateChartMapper';
 import { fold } from 'fp-ts/es6/Either';
+import { DefaultAxisStyle } from './common/Defaults';
 
 export default { title: 'AggregateChart', decorators: [withKnobs] };
 
@@ -76,8 +77,13 @@ export const xyChart = () => {
       data: {
         x: {
           scale: select('X axis scale', AxisScale, AxisScale.LINEAR),
+          style: DefaultAxisStyle,
         },
-        y: { scale: select('Y axis scale', AxisScale, AxisScale.LOG) },
+        y: {
+          scale: select('Y axis scale', AxisScale, AxisScale.LOG),
+
+          style: DefaultAxisStyle,
+        },
       },
     },
   ];
@@ -114,8 +120,13 @@ export const xyyChart = () => {
       data: {
         x: {
           scale: select('1st X axis scale', AxisScale, AxisScale.LINEAR),
+          style: DefaultAxisStyle,
         },
-        y: { scale: select('1st Y axis scale', AxisScale, AxisScale.LINEAR) },
+        y: {
+          scale: select('1st Y axis scale', AxisScale, AxisScale.LINEAR),
+
+          style: DefaultAxisStyle,
+        },
       },
     },
     {
@@ -124,8 +135,9 @@ export const xyyChart = () => {
       data: {
         x: {
           scale: select('2st X axis scale', AxisScale, AxisScale.LINEAR),
+          style: DefaultAxisStyle,
         },
-        y: { scale: select('2st Y axis scale', AxisScale, AxisScale.LINEAR) },
+        y: { scale: select('2st Y axis scale', AxisScale, AxisScale.LINEAR), style: DefaultAxisStyle },
       },
     },
   ];
