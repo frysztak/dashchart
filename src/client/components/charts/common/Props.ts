@@ -12,6 +12,11 @@ export enum AxisScale {
   LOG = 'LOG',
 }
 
+export const AxisScaleMap: Record<AxisScale, string> = {
+  [AxisScale.LINEAR]: 'Linear',
+  [AxisScale.LOG]: 'Log',
+};
+
 export enum AxisDataType {
   NUMBER = 'NUMBER',
   DATE = 'DATE',
@@ -104,4 +109,26 @@ export type UserEditableChartProps = Omit<ChartProps, 'data'> & {
     x: UserEditableAxisProps;
     y: UserEditableAxisProps;
   };
+};
+
+export const DefaultChartProps: UserEditableChartProps = {
+  type: ChartType.LINE,
+  dimensions: {
+    width: 600,
+    height: 400,
+    margin: {
+      top: 40,
+      left: 40,
+      right: 80,
+      bottom: 80,
+    },
+  },
+  data: {
+    x: {
+      scale: AxisScale.LINEAR,
+    },
+    y: {
+      scale: AxisScale.LINEAR,
+    },
+  },
 };

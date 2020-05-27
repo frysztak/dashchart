@@ -14,6 +14,18 @@ import { IconWrapper } from '../../../../components/misc/IconWrapper';
 import { styled } from '../../../../config/Theme';
 import { AggregateChart } from '../../../../components/charts/AggregateChart';
 import { DataFrame } from 'shared/DataFrame';
+import { Ok, Result } from 'shared/utils/index';
+import {
+  ChartData,
+  ChartProps,
+  DefaultChartProps,
+  PositionalChartData,
+  UserEditableChartProps,
+} from '../../../../components/charts/common/Props';
+import { applyUserProps, mapDroppedColumns } from '../../../../components/charts/AggregateChartMapper';
+import { chain, fold } from 'fp-ts/es6/Either';
+import produce from 'immer';
+import { pipe } from 'fp-ts/es6/pipeable';
 
 const ChartIcon = Icon(Chart);
 const LayoutIcon = Icon(Layout);
@@ -35,10 +47,33 @@ function New() {
   const chartCreator: ChartCreatorState | null = useChartCreator();
   const [layoutMode, setLayoutMode] = useState(true);
   const toggleLayoutMode = () => setLayoutMode(!layoutMode);
+  const [userProps, setUserProps] = useState([] as UserEditableChartProps[]);
+  const onUpdateChartProps = (newProps: UserEditableChartProps, idx: number) => {
+    setUserProps(
+      produce(userProps, draft => {
+        draft[idx] = newProps;
+      }),
+    );
+  };
+  const insertDefaultUserProps = (chartData: PositionalChartData[]): Result<boolean> => {
+    const n: number = chartData.length - userProps.length;
+    if (n > 0) {
+      setUserProps([...userProps, ...Array(n).fill(DefaultChartProps)]);
+    }
+    return Ok(true);
+  };
 
   if (!project || !chartCreator) {
     return <>Project not found.</>;
   }
+
+  const chartDataR: Result<PositionalChartData[]> = mapDroppedColumns(dataFrames, chartCreator.currentColumns);
+  pipe(chartDataR, chain(insertDefaultUserProps));
+  const chartPropsR: Result<ChartProps[]> = applyUserProps(chartDataR, userProps);
+  const chart = fold(
+    (e: Error) => <div>{e.message}</div>,
+    (chartProps: ChartProps[]) => <AggregateChart chartProps={chartProps} />,
+  )(chartPropsR);
 
   return (
     <Flex height={'100%'}>
@@ -48,11 +83,7 @@ function New() {
         </RightBoxShadow>
       </Box>
       <RelativeBox flexGrow={1}>
-        {layoutMode ? (
-          <ChartCreator {...chartCreator} />
-        ) : (
-          <AggregateChart dataFrames={dataFrames} droppedColumns={chartCreator.currentColumns} />
-        )}
+        {layoutMode ? <ChartCreator {...chartCreator} /> : { ...chart }}
 
         <ModeIndicator onClick={toggleLayoutMode}>
           <IconWrapper size={42}>{layoutMode ? <LayoutIcon size={32} /> : <ChartIcon size={32} />}</IconWrapper>
@@ -60,7 +91,7 @@ function New() {
       </RelativeBox>
       <Box>
         <LeftBoxShadow>
-          <ChartPropsSidebar />
+          <ChartPropsSidebar chartProps={userProps} updateProps={onUpdateChartProps} />
         </LeftBoxShadow>
       </Box>
     </Flex>
