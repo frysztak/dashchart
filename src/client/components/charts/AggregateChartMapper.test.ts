@@ -18,10 +18,9 @@ import { DefaultAxisStyle } from './common/Defaults';
 
 describe('AggregateChartMapper', () => {
   describe('mapDroppedColumns', () => {
-    let frame: DataFrame;
-
-    beforeEach(() => {
-      frame = new DataFrame('My DF', {
+    const frame: DataFrame = {
+      name: 'My DF',
+      columns: {
         id: {
           type: ColumnType.STRING,
           values: ['1', '2', '3', '4', '5'],
@@ -48,8 +47,8 @@ describe('AggregateChartMapper', () => {
           type: ColumnType.NUMBER,
           values: [10, 20, 30, 40, 50],
         },
-      });
-    });
+      },
+    };
 
     it('fails with zero columns', () => {
       const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {});

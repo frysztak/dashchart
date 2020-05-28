@@ -1,4 +1,4 @@
-import { DataFrame, Column } from 'shared/DataFrame';
+import { DataFrame, Column, getColumns } from 'shared/DataFrame';
 import React, { useState } from 'react';
 import { ChevronRight } from '@styled-icons/boxicons-regular';
 import { Text, Flex } from 'rebass';
@@ -22,12 +22,12 @@ export function DataFrameColumnList(props: DataFrameColumnListProps) {
       <Flex alignItems={'center'}>
         <Chevron size={20} rotated={expanded} onClick={toggleExpand} />
         <Text ml={2} fontWeight={'bold'} fontSize={3}>
-          {dataFrame.name()}
+          {dataFrame.name}
         </Text>
       </Flex>
       {expanded
-        ? Array.from(dataFrame.columns()).map(([name, col]: [string, Column]) => (
-            <DraggableColumnName dataFrameName={dataFrame.name()} columnName={name} column={col} key={name} />
+        ? getColumns(dataFrame).map(([name, col]: [string, Column]) => (
+            <DraggableColumnName dataFrameName={dataFrame.name} columnName={name} column={col} key={name} />
           ))
         : null}
     </Flex>

@@ -1,5 +1,7 @@
-import produce, { Draft, enableMapSet } from 'immer';
-import { Dictionary, isNumeric } from '../utils';
+import produce from 'immer';
+import { Err, isNumeric, Result, Ok, DistributivePick } from '../utils';
+import { pipe } from 'fp-ts/es6/pipeable';
+import { filterOrElse, chain, fold } from 'fp-ts/es6/Either';
 
 export enum ColumnType {
   STRING = 'STRING',
@@ -20,121 +22,128 @@ export type Column =
       values: string[];
     });
 
-enableMapSet();
+export interface DataFrame {
+  name: string;
+  columns: Record<string, Column>;
+}
 
-export class DataFrame {
-  private _name: string;
-  private _columns: Map<string, Column>;
+export function renameDataFrame(df: DataFrame, newName: string): DataFrame {
+  return produce(df, draft => {
+    draft.name = newName;
+  });
+}
 
-  constructor(name?: string, data?: Dictionary<Column>) {
-    this._name = name || '';
+export function hasColumn(df: DataFrame, columnName: string): boolean {
+  return Object.keys(df.columns).includes(columnName);
+}
 
-    if (data) {
-      this._columns = new Map<string, Column>();
-      this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
-        for (const [colName, column] of Object.entries(data)) {
-          draft.set(colName, column);
-        }
-      });
-    } else {
-      this._columns = new Map<string, Column>();
+export function getColumn(df: DataFrame, columnName: string): Result<Column> {
+  return hasColumn(df, columnName)
+    ? Ok(df.columns[columnName])
+    : Err(`DataFrame ${df.name} doesn't have column ${columnName}`);
+}
+
+export function getColumns(df: DataFrame): Array<[string, Column]> {
+  return Array.from(Object.entries(df.columns));
+}
+
+export function createColumn(df: DataFrame, columnName: string, column: Column): Result<DataFrame> {
+  if (hasColumn(df, columnName)) {
+    return Err(`Column ${columnName} already exists`);
+  }
+
+  return Ok(
+    produce(df, draft => {
+      draft.columns[columnName] = column;
+    }),
+  );
+}
+
+export function createColumns(df: DataFrame, columnNames: string[]): Result<DataFrame> {
+  return columnNames.reduce(
+    (acc: Result<DataFrame>, colName: string) =>
+      fold(
+        (err: Error) => Err(err.message),
+        (dff: DataFrame) => createColumn(dff, colName, { type: ColumnType.STRING, values: [] }),
+      )(acc),
+    Ok(df),
+  );
+}
+
+export function columnNames(df: DataFrame): string[] {
+  return Array.from(Object.keys(df.columns));
+}
+
+function inferColumnType(column: Column): ColumnType {
+  if (column.type === ColumnType.NUMBER) {
+    // number is already specific enough
+    return ColumnType.NUMBER;
+  }
+
+  const isNumber: boolean = column.values.every((value: string) => isNumeric(value));
+  return isNumber ? ColumnType.NUMBER : ColumnType.STRING;
+}
+
+export function inferColumnTypes(df: DataFrame): DataFrame {
+  return produce(df, draft => {
+    for (const column of Object.values(draft.columns)) {
+      column.inferredType = inferColumnType(column);
     }
-  }
+  });
+}
 
-  name(): string {
-    return this._name;
-  }
-
-  setName(newName: string) {
-    this._name = newName;
-  }
-
-  createColumn(columnName: string, type: ColumnType = ColumnType.STRING) {
-    this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
-      if (!draft.has(columnName)) {
-        draft.set(columnName, { type: type, values: [] });
-      }
-    });
-  }
-
-  createColumns(columnNames: string[]) {
-    for (const columnName of columnNames) {
-      this.createColumn(columnName);
-    }
-  }
-
-  push(values: string[]) {
-    this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
-      let idx = 0;
-      for (const column of draft.values()) {
-        if (column.type === ColumnType.STRING) {
-          column.values = [...column.values, values[idx]];
-        }
-        idx++;
-      }
-    });
-  }
-
-  column(name: string): Readonly<Column> | null {
-    return this._columns.has(name) ? this._columns.get(name)! : null;
-  }
-
-  columnNames(): string[] {
-    return Array.from(this._columns.keys());
-  }
-
-  columns(): [string, Column][] {
-    return Array.from(this._columns);
-  }
-
-  inferColumnType(columnName: string) {
-    const column: Readonly<Column> | null = this.column(columnName);
-    if (!column) {
-      return;
-    }
-
-    if (column.type === ColumnType.NUMBER) {
-      // number is already specific enough
-      return;
-    }
-
-    const isNumber: boolean = column.values.every((value: string) => isNumeric(value));
-    this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
-      draft.get(columnName)!.inferredType = isNumber ? ColumnType.NUMBER : ColumnType.STRING;
-    });
-  }
-
-  inferColumnTypes() {
-    for (const columnName of this._columns.keys()) {
-      this.inferColumnType(columnName);
-    }
-  }
-
-  convertColumn(columnName: string, desiredType: ColumnType) {
-    const column: Readonly<Column> | null = this.column(columnName);
-    if (!column) {
-      throw new Error(`Column '${columnName}' doesn't exist in DataFrame.`);
-    }
-
-    if (desiredType !== ColumnType.STRING && column.inferredType !== desiredType) {
-      throw new Error(`Column '${columnName}' cannot be converted to type ${desiredType.toString()}`);
-    }
-
-    this._columns = produce(this._columns, (draft: Draft<Map<string, Column>>) => {
-      let newValues: any[];
-      if (column.type === ColumnType.STRING && desiredType === ColumnType.NUMBER) {
-        newValues = column.values.map((v: string) => parseFloat(v));
-      } else if (column.type === ColumnType.NUMBER && desiredType === ColumnType.STRING) {
-        newValues = column.values.map((v: number) => v.toString(10));
-      } else {
-        throw new Error(`Incorrect state.`);
-      }
-
-      draft.set(columnName, {
-        ...column,
-        values: newValues,
+type ColumnValues = DistributivePick<Column, 'type' | 'values'>;
+const convertColumnValues = (desiredType: ColumnType) => (col: Column): Result<ColumnValues> => {
+  if (col.type === ColumnType.STRING) {
+    if (desiredType === ColumnType.NUMBER) {
+      return Ok({
         type: desiredType,
+        values: col.values.map((v: string) => parseFloat(v)),
       });
-    });
+    }
   }
+
+  if (col.type === ColumnType.NUMBER) {
+    if (desiredType === ColumnType.STRING) {
+      return Ok({
+        type: desiredType,
+        values: col.values.map((v: number) => v.toString(10)),
+      });
+    }
+  }
+
+  return Err(`Unsupported column conversion from '${col.type}' to '${desiredType}'`);
+};
+
+export function convertColumn(df: DataFrame, columnName: string, desiredType: ColumnType): Result<DataFrame> {
+  const replaceColumn = ({ type, values }: ColumnValues): Result<DataFrame> =>
+    Ok(
+      produce(df, draft => {
+        draft.columns[columnName].type = type;
+        draft.columns[columnName].values = values;
+      }),
+    );
+
+  const column: Result<Column> = getColumn(df, columnName);
+  return pipe(
+    column,
+    filterOrElse(
+      (col: Column) => desiredType === ColumnType.STRING || col.inferredType === desiredType,
+      _ => new Error(`Column '${columnName}' cannot be converted to type ${desiredType.toString()}`),
+    ),
+    chain(convertColumnValues(desiredType)),
+    chain(replaceColumn),
+  );
+}
+
+export function pushValues(df: DataFrame, values: string[]): DataFrame {
+  return produce(df, draft => {
+    let idx = 0;
+    for (const column of Object.values(draft.columns)) {
+      if (column.type === ColumnType.STRING) {
+        column.values = [...column.values, values[idx]];
+      }
+      idx++;
+    }
+  });
 }

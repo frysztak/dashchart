@@ -1,14 +1,10 @@
 import { CSVLoader } from './CSV';
-import { Column, ColumnType, DataFrame } from '../DataFrame/DataFrame';
-import { enableMapSet } from 'immer';
-import { Dictionary } from '../utils/Dictionary';
+import { Column, ColumnType, DataFrame, getColumn } from '../DataFrame';
+import { Dictionary, Result, takeRight } from '../utils';
+import { isRight } from 'fp-ts/es6/Either';
 
 describe('CSV loader', () => {
   let loader: CSVLoader;
-
-  beforeAll(() => {
-    enableMapSet();
-  });
 
   beforeEach(() => {
     loader = new CSVLoader();
@@ -55,8 +51,9 @@ describe('CSV loader', () => {
     };
 
     for (const [name, expectedColumn] of Object.entries(columns)) {
-      const actualColumn: Column | null = frame.column(name);
-      expect(actualColumn).toEqual(expectedColumn);
+      const actualColumn: Result<Column> = getColumn(frame, name);
+      expect(isRight(actualColumn)).toBe(true);
+      expect(takeRight(actualColumn)).toEqual(expectedColumn);
     }
   });
 });
