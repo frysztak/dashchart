@@ -18,7 +18,7 @@ export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
     const { fromLocation, toLocation, columnName, dataFrameName } = action.payload;
 
     if (fromLocation) {
-      state.currentColumns[fromLocation] = undefined;
+      delete state.currentColumns[fromLocation];
     }
 
     state.currentColumns[toLocation] = {
