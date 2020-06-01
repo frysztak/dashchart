@@ -7,11 +7,17 @@ import { PropsEditor } from './PropsEditor/PropsEditor';
 import { DimensionsEditor } from './PropsEditor/DimensionsEditor';
 import { MarginsEditor } from './PropsEditor/MarginEditor';
 import produce, { Draft } from 'immer';
+import { styled } from '../../config/Theme';
 
 export interface PropsSidebarProps {
   chartProps: UserEditableChartProps[];
   updateProps: (newProps: UserEditableChartProps, idx: number) => void;
 }
+
+const Spacer = styled.div`
+  height: 50px;
+  width: 100%;
+`;
 
 export function ChartPropsSidebar(props: PropsSidebarProps) {
   const { chartProps, updateProps } = props;
@@ -56,6 +62,7 @@ export function ChartPropsSidebar(props: PropsSidebarProps) {
                   updateProps={onUpdateProps(idx)}
                 />
               ))}
+              <Spacer />
             </>
           ) : (
             <LightText fontSize={3} textAlign={'center'}>
