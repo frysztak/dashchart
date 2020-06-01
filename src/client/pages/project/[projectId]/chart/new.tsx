@@ -44,7 +44,7 @@ function New() {
   const toggleLayoutMode = () => setLayoutMode(!layoutMode);
   const [userProps, setUserProps] = useState([] as UserEditableChartProps[]);
   const onUpdateChartProps = (newProps: UserEditableChartProps, idx: number) => {
-    setUserProps(
+    setUserProps(userProps =>
       produce(userProps, draft => {
         draft[idx] = newProps;
       }),
