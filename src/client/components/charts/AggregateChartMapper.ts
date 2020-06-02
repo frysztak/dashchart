@@ -7,6 +7,7 @@ import {
   UserEditableChartProps,
   PositionalChartData,
   PositionalAxisData,
+  ChartDimensions,
 } from './common/Props';
 import { DistributivePick, dupingZip, entries, Ok, Result, zip } from 'shared/utils';
 import { Column, ColumnId, ColumnType, DataFrame, resolveColumnId } from 'shared/DataFrame';
@@ -15,6 +16,7 @@ import { array } from 'fp-ts/es6/Array';
 import { sequenceT } from 'fp-ts/es6/Apply';
 import { pipe } from 'fp-ts/es6/pipeable';
 import { tupled } from 'fp-ts/es6/function';
+import { DefaultChartProps } from './common/Defaults';
 
 interface MappedAxes {
   xAxes: PositionalAxisData[];
@@ -121,12 +123,13 @@ export function applyUserProps(
   chartDataR: Result<PositionalChartData[]>,
   chartProps: UserEditableChartProps[],
 ): Result<ChartProps[]> {
-  const mapToChartProps = (chartData: PositionalChartData[]): Result<ChartProps[]> =>
+  const mapToChartProps = (dimensions: ChartDimensions) => (chartData: PositionalChartData[]): Result<ChartProps[]> =>
     Ok(
       zip(chartData, chartProps).map(
         ([data, userProps]: [PositionalChartData, UserEditableChartProps]): ChartProps =>
           <ChartProps>{
             ...userProps,
+            dimensions: dimensions,
             data: {
               x: {
                 ...userProps.data.x,
@@ -141,12 +144,14 @@ export function applyUserProps(
       ),
     );
 
+  const dimensions: ChartDimensions = chartProps.length ? chartProps[0].dimensions : DefaultChartProps.dimensions;
+
   return pipe(
     chartDataR,
     filterOrElse(
       (chartData: PositionalChartData[]) => chartData.length === chartProps.length,
       _ => new Error(`Axis data has different length than chart props`),
     ),
-    chain(mapToChartProps),
+    chain(mapToChartProps(dimensions)),
   );
 }
