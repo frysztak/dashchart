@@ -18,7 +18,9 @@ export function ScatterChart(props: ChartProps) {
   const results: Result<[AxisScalers, AxesTransforms, PointCoords]> = sequenceT(either)(scalersR, transformsR, pointsR);
 
   return fold(
-    (e: Error) => <div>{e.message}</div>,
+    (e: Error) => {
+      throw e;
+    },
     ([_, transforms, points]: [AxisScalers, AxesTransforms, PointCoords]) => (
       <svg width={width} height={height}>
         <g transform={`translate(${margin.left}, ${margin.top})`}>

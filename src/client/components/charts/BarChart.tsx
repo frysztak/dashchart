@@ -44,7 +44,9 @@ export function BarChart(props: ChartProps) {
   );
 
   return fold(
-    (e: Error) => <div>{e.message}</div>,
+    (e: Error) => {
+      throw e;
+    },
     ([_, __, transforms, points, bandwidth]: [AxisScalers, AxisScalers, AxesTransforms, PointCoords, number]) => (
       <svg width={width} height={height}>
         <g transform={`translate(${margin.left}, ${margin.top})`}>

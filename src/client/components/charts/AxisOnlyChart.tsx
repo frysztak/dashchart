@@ -16,7 +16,9 @@ export function AxisOnlyChart(props: ChartProps) {
   const results: Result<[AxisScalers, AxesTransforms]> = sequenceT(either)(scalersR, transformsR);
 
   return fold(
-    (e: Error) => <div>{e.message}</div>,
+    (e: Error) => {
+      throw e;
+    },
     ([_, transforms]: [AxisScalers, AxesTransforms]) => (
       <svg width={width} height={height}>
         <g transform={`translate(${margin.left}, ${margin.top})`}>

@@ -4,6 +4,7 @@ import React from 'react';
 export const theme = {
   colors: {
     black: '#000',
+    almostWhite: '#FDFDFD',
     lightGrey: '#F5F7FB',
     grey: '#999999',
     grey2: '#CCCCCC',
@@ -15,7 +16,8 @@ export const theme = {
     blue: '#46539E',
     paleBlue: '#AFB6DC',
 
-    almostWhite: '#FDFDFD',
+    red: '#C1292E',
+    yellow: '#f1d302',
   },
   fonts: {
     light: "'Signika Light', sans-serif",

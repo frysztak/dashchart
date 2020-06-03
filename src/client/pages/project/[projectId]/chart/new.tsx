@@ -1,6 +1,6 @@
 import { Flex, Box } from 'reflexbox';
 import { DataFrameSidebar } from '../../../../components/dataframe/DataFrameSidebar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useChartCreator, useDataFrames } from '../../../../store/selectors';
 import { Project } from '../../../../store/project';
 import { useCurrentProject } from '../../../../store/hooks';
@@ -21,6 +21,8 @@ import { chain, fold } from 'fp-ts/es6/Either';
 import produce from 'immer';
 import { pipe } from 'fp-ts/es6/pipeable';
 import { DefaultChartProps } from '../../../../components/charts/common/Defaults';
+import { ChartErrorBoundary } from '../../../../components/charts/ChartErrorBoundary';
+import { ErrorMessage } from '../../../../components/misc/ErrorMessage';
 
 const ChartIcon = Icon(Chart);
 const LayoutIcon = Icon(Layout);
@@ -43,6 +45,7 @@ function New() {
   const [layoutMode, setLayoutMode] = useState(true);
   const toggleLayoutMode = () => setLayoutMode(!layoutMode);
   const [userProps, setUserProps] = useState([] as UserEditableChartProps[]);
+  const [errorBoundaryKey, setErrorBoundaryKey] = useState(0);
   const onUpdateChartProps = (newProps: UserEditableChartProps, idx: number) => {
     setUserProps(userProps =>
       produce(userProps, draft => {
@@ -50,6 +53,9 @@ function New() {
       }),
     );
   };
+
+  useEffect(() => setErrorBoundaryKey(errorBoundaryKey + 1), [userProps]);
+
   const insertDefaultUserProps = (chartData: PositionalChartData[]): Result<boolean> => {
     const n: number = chartData.length - userProps.length;
     if (n > 0) {
@@ -66,8 +72,12 @@ function New() {
   pipe(chartDataR, chain(insertDefaultUserProps));
   const chartPropsR: Result<ChartProps[]> = applyUserProps(chartDataR, userProps);
   const chart = fold(
-    (e: Error) => <div>{e.message}</div>,
-    (chartProps: ChartProps[]) => <AggregateChart chartProps={chartProps} />,
+    (e: Error) => <ErrorMessage message={e.message} />,
+    (chartProps: ChartProps[]) => (
+      <ChartErrorBoundary key={errorBoundaryKey}>
+        <AggregateChart chartProps={chartProps} />
+      </ChartErrorBoundary>
+    ),
   )(chartPropsR);
 
   return (

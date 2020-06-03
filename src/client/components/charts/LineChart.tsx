@@ -22,7 +22,9 @@ export function LineChart(props: ChartProps) {
   const results: Result<[AxisScalers, AxesTransforms, string]> = sequenceT(either)(scalersR, transformsR, svgPathR);
 
   return fold(
-    (e: Error) => <div>{e.message}</div>,
+    (e: Error) => {
+      throw e;
+    },
     ([_, transforms, svgPath]: [AxisScalers, AxesTransforms, string]) => (
       <svg width={width} height={height}>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
