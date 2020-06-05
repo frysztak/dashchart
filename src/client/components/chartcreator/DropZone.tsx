@@ -1,7 +1,7 @@
 import { keyframes } from 'styled-components';
 import { styled } from '../../config/Theme';
 import { DragAndDropItemType, DropZoneLocation, DropZoneValues, isHorizontal } from './DragNDrop';
-import { Flex } from 'reflexbox/styled-components';
+import { Box, Flex } from 'reflexbox/styled-components';
 import React from 'react';
 import { Table } from '@styled-icons/boxicons-regular';
 import { Icon } from '../misc/Icon';
@@ -25,33 +25,31 @@ type StyledDropZoneProps = DropZoneProps & {
   active: boolean;
 };
 
+export const DropZoneContainer = styled(Box)`
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+`;
+
 const DropZoneCommon = styled(Flex)`
-  position: absolute;
   border-radius: ${props => props.theme.dropZone.borderRadius};
   animation: ${opacity} ${props => props.theme.dropZone.animTime} ease-out;
   transition: background-color ${props => props.theme.dropZone.animTime} ease-out;
 `;
 
 const StyledDropZone = styled(DropZoneCommon)<StyledDropZoneProps>`
-  width: ${p => (isHorizontal(p.location) ? p.theme.dropZone.width : p.theme.dropZone.height)};
-  height: ${p => (isHorizontal(p.location) ? p.theme.dropZone.height : p.theme.dropZone.width)};
-  top: ${p => (p.location === DropZoneLocation.TOP ? p.theme.dropZone.margin : isHorizontal(p.location) ? '' : 0)};
-  bottom: ${p =>
-    p.location === DropZoneLocation.BOTTOM ? p.theme.dropZone.margin : isHorizontal(p.location) ? '' : 0};
-  left: ${p => (p.location === DropZoneLocation.LEFT ? p.theme.dropZone.margin : isHorizontal(p.location) ? 0 : '')};
-  right: ${p => (p.location === DropZoneLocation.RIGHT ? p.theme.dropZone.margin : isHorizontal(p.location) ? 0 : '')};
-  margin-left: ${p => (isHorizontal(p.location) ? 'auto' : '')};
-  margin-right: ${p => (isHorizontal(p.location) ? 'auto' : '')};
-  margin-top: ${p => (isHorizontal(p.location) ? '' : 'auto')};
-  margin-bottom: ${p => (isHorizontal(p.location) ? '' : 'auto')};
+  grid-column: ${p => (isHorizontal(p.location) ? '3/11' : p.location === DropZoneLocation.LEFT ? 2 : 11)};
+  grid-row: ${p => (isHorizontal(p.location) ? (p.location === DropZoneLocation.TOP ? 2 : 11) : '4/10')};
+  width: ${p => (isHorizontal(p.location) ? '' : p.theme.dropZone.height)};
+  height: ${p => (isHorizontal(p.location) ? p.theme.dropZone.height : '')};
   background-color: ${props => (props.active ? props.theme.colors.darkPink : props.theme.colors.pink)};
+  align-self: ${p => (p.location === DropZoneLocation.BOTTOM ? 'end' : '')};
+  justify-self: ${p => (p.location === DropZoneLocation.RIGHT ? 'end' : '')};
 `;
 
 export const DropZoneBackground = styled(DropZoneCommon)`
-  left: ${props => props.theme.dropZone.bgMargin};
-  right: ${props => props.theme.dropZone.bgMargin};
-  top: ${props => props.theme.dropZone.bgMargin};
-  bottom: ${props => props.theme.dropZone.bgMargin};
+  grid-column: 1/13;
+  grid-row: 1/13;
   background-color: ${props => props.theme.colors.palePink};
 `;
 
