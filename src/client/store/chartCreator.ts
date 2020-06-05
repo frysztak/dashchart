@@ -1,7 +1,7 @@
 import { DropZoneValues } from '../components/chartcreator/DragNDrop';
 import { ColumnId } from 'shared/DataFrame/index';
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { DroppedColumn } from '../components/chartcreator/DropZone';
+import { DroppedColumn, ColumnToDelete } from '../components/chartcreator/DropZone';
 
 export interface ChartCreatorState {
   currentColumns: DropZoneValues<ColumnId>;
@@ -12,18 +12,24 @@ export const initialChartCreator: ChartCreatorState = {
 };
 
 export const dropColumn = createAction<DroppedColumn>('dropColumn');
+export const deleteColumn = createAction<ColumnToDelete>('deleteColumn');
 
 export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
-  builder.addCase(dropColumn, (state, action) => {
-    const { fromLocation, toLocation, columnName, dataFrameName } = action.payload;
+  builder
+    .addCase(dropColumn, (state, action) => {
+      const { fromLocation, toLocation, columnName, dataFrameName } = action.payload;
 
-    if (fromLocation) {
+      if (fromLocation) {
+        delete state.currentColumns[fromLocation];
+      }
+
+      state.currentColumns[toLocation] = {
+        columnName,
+        dataFrameName,
+      };
+    })
+    .addCase(deleteColumn, (state, action) => {
+      const { fromLocation, columnName, dataFrameName } = action.payload;
       delete state.currentColumns[fromLocation];
-    }
-
-    state.currentColumns[toLocation] = {
-      columnName,
-      dataFrameName,
-    };
-  }),
+    }),
 );

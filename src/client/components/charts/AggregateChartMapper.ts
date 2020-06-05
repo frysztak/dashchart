@@ -155,3 +155,16 @@ export function applyUserProps(
     chain(mapToChartProps(dimensions)),
   );
 }
+
+export const synchroniseUserProps = (userProps: UserEditableChartProps[]) => (
+  chartData: PositionalChartData[],
+): UserEditableChartProps[] => {
+  const n: number = chartData.length - userProps.length;
+  if (n > 0) {
+    return [...userProps, ...Array(n).fill(DefaultChartProps)];
+  }
+  if (n < 0) {
+    return userProps.slice(0, chartData.length);
+  }
+  return userProps;
+};

@@ -9,7 +9,8 @@ import { LightText } from '../misc/LightText';
 import { ColumnId, formatColumnData } from 'shared/DataFrame';
 import { useDrag, useDrop } from 'react-dnd';
 import { useDispatch } from 'react-redux';
-import { dropColumn } from '../../store/chartCreator';
+import { deleteColumn, dropColumn } from '../../store/chartCreator';
+import { setIsDraggingDroppedColumn } from '../../store/current';
 
 const opacity = keyframes`
   from {
@@ -78,6 +79,7 @@ const NoSelectLightText = styled(LightText)`
 function ColumnName(props: DropZoneProps) {
   const { activeDropZone, currentColumns, location } = props;
   const formattedColumnName: string = formatColumnData(currentColumns ? currentColumns[location] : undefined);
+  const dispatch = useDispatch();
 
   const column: ColumnId | undefined = currentColumns ? currentColumns[location] : undefined;
   const [, drag] = useDrag({
@@ -87,6 +89,12 @@ function ColumnName(props: DropZoneProps) {
       columnName: column?.columnName,
       fromLocation: location,
     } as DraggedColumn,
+    begin: monitor => {
+      dispatch(setIsDraggingDroppedColumn(true));
+    },
+    end: monitor => {
+      dispatch(setIsDraggingDroppedColumn(false));
+    },
   });
 
   if (!formattedColumnName) {
@@ -114,6 +122,7 @@ export interface DraggedColumn {
 }
 
 export type DroppedColumn = Omit<DraggedColumn, 'type'> & { toLocation: DropZoneLocation };
+export type ColumnToDelete = Omit<DraggedColumn, 'type'> & { fromLocation: DropZoneLocation };
 
 export function DropZone(props: DropZoneProps) {
   const { activeDropZone, currentColumns, location } = props;
@@ -141,4 +150,22 @@ export function DropZone(props: DropZoneProps) {
       <ColumnName {...props} />
     </StyledDropZone>
   );
+}
+
+export function DropZoneDumpster({ children }: { children: JSX.Element }) {
+  const dispatch = useDispatch();
+  const [, drop] = useDrop({
+    accept: DragAndDropItemType.COLUMN,
+    drop: (item: DraggedColumn) => {
+      dispatch(
+        deleteColumn({
+          columnName: item.columnName,
+          dataFrameName: item.dataFrameName,
+          fromLocation: item.fromLocation!,
+        }),
+      );
+    },
+  });
+
+  return drop(<div>{children}</div>);
 }

@@ -10,6 +10,9 @@ export const useProject = (projectId: ID): Project | null =>
 
 export const useCurrentProjectId = (): number | null => useSelector((state: AppState) => state.current.projectId);
 
+export const useIsDraggingDroppedColumn = (): boolean =>
+  useSelector((state: AppState) => state.current.isDraggingDroppedColumn);
+
 export const useCurrentProjectFromStore = (): Project | null =>
   useSelector((state: AppState) => (state.current.projectId !== null ? state.projects[state.current.projectId] : null));
 
