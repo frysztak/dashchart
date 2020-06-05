@@ -1,21 +1,16 @@
 import React from 'react';
-import { Flex, Box } from 'reflexbox/styled-components';
+import { Flex } from 'reflexbox/styled-components';
 import { DropZoneBackground, DropZone, DropZoneContainer } from './DropZone';
 import { DragAndDropItemType, DropZoneLocation, DropZoneValues } from './DragNDrop';
 import { LightText } from '../misc/LightText';
 import { ColumnId } from 'shared/DataFrame';
 import { useDrop } from 'react-dnd';
-import { styled } from '../../config/Theme';
 
 export interface ChartCreatorProps {
   isDragging?: boolean;
   activeDropZone?: DropZoneLocation;
   currentColumns: DropZoneValues<ColumnId>;
 }
-
-const RelativeFlex = styled(Flex)`
-  position: relative;
-`;
 
 export function ChartCreator(props: ChartCreatorProps) {
   const { isDragging, activeDropZone, currentColumns } = props;
