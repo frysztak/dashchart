@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { setCurrentProject } from './current';
 import { Project } from './project';
+import { useCurrentProjectId } from './selectors';
 
 export function useCurrentProject(): Project | null {
   const router = useRouter();
@@ -12,8 +13,10 @@ export function useCurrentProject(): Project | null {
 
   const isProjectIdValid: boolean = 'projectId' in router.query && isNumeric(router.query.projectId);
   const projectId: ID | null = isProjectIdValid ? +router.query.projectId! : null;
+  const currentProjectId: number | null = useCurrentProjectId();
+
   useEffect(() => {
-    if (projectId !== null) {
+    if (projectId !== null && projectId !== currentProjectId) {
       dispatch(setCurrentProject(projectId));
     }
   });

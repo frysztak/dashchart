@@ -8,6 +8,8 @@ export const useProjects = (): Project[] => useSelector((state: AppState) => Obj
 export const useProject = (projectId: ID): Project | null =>
   useSelector((state: AppState) => (projectId in state.projects ? state.projects[projectId] : null));
 
+export const useCurrentProjectId = (): number | null => useSelector((state: AppState) => state.current.projectId);
+
 export const useCurrentProjectFromStore = (): Project | null =>
   useSelector((state: AppState) => (state.current.projectId !== null ? state.projects[state.current.projectId] : null));
 
