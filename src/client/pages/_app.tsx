@@ -42,7 +42,9 @@ function App({ children }: { children: ReactElement }) {
           <MenuBar {...menuBarProps} />
         </BottomBoxShadow>
       </ElevatedBox>
-      <Box flexGrow={1}>{children}</Box>
+      <Box flexGrow={1} overflowY={'hidden'}>
+        {children}
+      </Box>
     </Flex>
   );
 }

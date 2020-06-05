@@ -81,7 +81,7 @@ function New() {
   )(chartPropsR);
 
   return (
-    <Flex height={'100%'} overflowY={'hidden'}>
+    <Flex height={'100%'}>
       <Box>
         <RightBoxShadow>
           <DataFrameSidebar dataFrames={dataFrames} />
