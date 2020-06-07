@@ -3,7 +3,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { ColourSchemes, getColour } from './ColourSchemes';
 import { AxisScalers, AxesTransforms } from './common/Axis';
 import { genPath } from './common/Generators';
-import { useAxesTransforms, useAxesScalers } from './common/Hooks';
+import { useAxesTransforms, useAxesScalers, useAxesStyles, AxisStyles } from './common/Hooks';
 import { Result } from 'shared/utils';
 import { fold, either } from 'fp-ts/es6/Either';
 import { sequenceT } from 'fp-ts/es6/Apply';
@@ -20,6 +20,7 @@ export function LineChart(props: ChartProps) {
   const transformsR: Result<AxesTransforms> = useAxesTransforms(xAxisRef, yAxisRef, props, scalersR);
   const svgPathR: Result<string> = useMemo(() => genPath(props.data, scalersR), [props.data, scalersR]);
   const results: Result<[AxisScalers, AxesTransforms, string]> = sequenceT(either)(scalersR, transformsR, svgPathR);
+  const styles: AxisStyles = useAxesStyles(props);
 
   return fold(
     (e: Error) => {
@@ -28,8 +29,8 @@ export function LineChart(props: ChartProps) {
     ([_, transforms, svgPath]: [AxisScalers, AxesTransforms, string]) => (
       <svg width={width} height={height}>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
-          <g ref={xAxisRef} transform={transforms.x} />
-          <g ref={yAxisRef} transform={transforms.y} />
+          <g ref={xAxisRef} transform={transforms.x} style={styles.x} />
+          <g ref={yAxisRef} transform={transforms.y} style={styles.y} />
           <path d={svgPath} fill='none' stroke={lineColour} />
         </g>
       </svg>

@@ -2,12 +2,13 @@ import { Sidebar } from '../misc/Sidebar';
 import { Box, Flex } from 'reflexbox';
 import { LightText } from '../misc/LightText';
 import React from 'react';
-import { ChartDimensions, ChartMargin, UserEditableChartProps } from '../charts/common/Props';
+import { AxisFontStyle, ChartDimensions, ChartMargin, UserEditableChartProps } from '../charts/common/Props';
 import { PropsEditor } from './PropsEditor/PropsEditor';
 import { DimensionsEditor } from './PropsEditor/DimensionsEditor';
 import { MarginsEditor } from './PropsEditor/MarginEditor';
 import produce, { Draft } from 'immer';
 import { styled } from '../../config/Theme';
+import { AxisEditor } from './PropsEditor/AxisEditor';
 
 export interface PropsSidebarProps {
   chartProps: UserEditableChartProps[];
@@ -50,6 +51,12 @@ export function ChartPropsSidebar(props: PropsSidebarProps) {
       prop.dimensions.margin = margin;
     }),
   );
+  const onUpdateAxisStyle = updateEachChart(
+    produce((prop: UserEditableChartProps, newStyle: AxisFontStyle) => {
+      prop.data.x.style = { ...prop.data.x.style, ...newStyle };
+      prop.data.y.style = { ...prop.data.y.style, ...newStyle };
+    }),
+  );
 
   return (
     <Sidebar bgColor={'palePink'}>
@@ -63,6 +70,7 @@ export function ChartPropsSidebar(props: PropsSidebarProps) {
             <>
               <DimensionsEditor dimensions={chartProps[0].dimensions} updateDimensions={onUpdateDimensions} />
               <MarginsEditor margins={chartProps[0].dimensions.margin} updateMargins={onUpdateMargins} />
+              <AxisEditor axisStyle={chartProps[0].data.x.style} update={onUpdateAxisStyle} />
               {chartProps.map((chartProps: UserEditableChartProps, idx: number) => (
                 <PropsEditor
                   key={idx}

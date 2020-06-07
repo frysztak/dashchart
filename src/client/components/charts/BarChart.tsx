@@ -2,7 +2,7 @@ import { ChartProps, ChartType } from './common/Props';
 import React, { useRef } from 'react';
 import { AxesTransforms, AxisScalers } from './common/Axis';
 import { genBarPoints, PointCoords, useSecondaryDateAxis } from './common/Generators';
-import { useAxesScalers, useAxesTransforms } from './common/Hooks';
+import { AxisStyles, useAxesScalers, useAxesStyles, useAxesTransforms } from './common/Hooks';
 import { Result } from 'shared/utils';
 import { sequenceT } from 'fp-ts/es6/Apply';
 import { either, fold } from 'fp-ts/es6/Either';
@@ -42,6 +42,7 @@ export function BarChart(props: ChartProps) {
     pointsR,
     bandwidthR,
   );
+  const styles: AxisStyles = useAxesStyles(props);
 
   return fold(
     (e: Error) => {
@@ -50,8 +51,8 @@ export function BarChart(props: ChartProps) {
     ([_, __, transforms, points, bandwidth]: [AxisScalers, AxisScalers, AxesTransforms, PointCoords, number]) => (
       <svg width={width} height={height}>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
-          <g ref={xAxisRef} transform={transforms.x} />
-          <g ref={yAxisRef} transform={transforms.y} />
+          <g ref={xAxisRef} transform={transforms.x} style={styles.x} />
+          <g ref={yAxisRef} transform={transforms.y} style={styles.y} />
           {points.map(([x, y]: [number, number], i: number) =>
             props.type === ChartType.BAR_VERTICAL ? (
               <rect key={i} x={x} y={y} height={height - margin.bottom - y} width={bandwidth} />

@@ -29,7 +29,26 @@ export enum AxisPosition {
   HIDDEN = 'HIDDEN',
 }
 
+export enum AxisFontFamily {
+  SIGNIKA = 'SIGNIKA',
+  SIGNIKA_LIGHT = 'SIGNIKA_LIGHT',
+  SERIF = 'SERIF',
+  SANS_SERIF = 'SANS_SERIF',
+  MONOSPACE = 'MONOSPACE',
+}
+
+export const AxisFontFamilyMap: Record<AxisFontFamily, string> = {
+  [AxisFontFamily.SIGNIKA]: 'Signika',
+  [AxisFontFamily.SIGNIKA_LIGHT]: 'Signika Light',
+  [AxisFontFamily.SERIF]: 'Serif',
+  [AxisFontFamily.SANS_SERIF]: 'Sans serif',
+  [AxisFontFamily.MONOSPACE]: 'Monospace',
+};
+
 export interface AxisStyle<Domain> {
+  fontFamily: AxisFontFamily;
+  fontSize: number;
+
   tickSize: number;
   tickSizeInner?: number;
   tickSizeOuter?: number;
@@ -38,6 +57,8 @@ export interface AxisStyle<Domain> {
 
   barPadding: number;
 }
+
+export type AxisFontStyle = Pick<AxisStyle<unknown>, 'fontFamily' | 'fontSize'>;
 
 interface BaseAxis {
   scale: AxisScale;

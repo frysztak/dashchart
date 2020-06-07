@@ -1,6 +1,9 @@
-import { AxisScale, AxisStyle, ChartType, UserEditableChartProps } from './Props';
+import { AxisFontFamily, AxisScale, AxisStyle, ChartType, UserEditableChartProps } from './Props';
 
 export const DefaultAxisStyle: AxisStyle<any> = {
+  fontFamily: AxisFontFamily.SIGNIKA_LIGHT,
+  fontSize: 16,
+
   tickSize: 6,
   tickPadding: 3,
   barPadding: 0.5,
@@ -9,8 +12,8 @@ export const DefaultAxisStyle: AxisStyle<any> = {
 export const DefaultChartProps: UserEditableChartProps = {
   type: ChartType.LINE,
   dimensions: {
-    width: 600,
-    height: 400,
+    width: 800,
+    height: 600,
     margin: {
       top: 40,
       left: 40,
