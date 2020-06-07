@@ -16,5 +16,9 @@ module.exports = {
       presets: ['next/babel'],
       plugins: [['styled-components', { ssr: true }]],
     },
+    prod: {
+      presets: ['next/babel'],
+      plugins: [['styled-components', { ssr: true }]],
+    },
   },
 };
