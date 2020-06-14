@@ -5,7 +5,8 @@
   "author": "Sebastian Frysztak",
   "license": "MIT",
   "dependencies": {
-    "fp-ts": "^2.5.3"
+    "fp-ts": "^2.5.3",
+    "wretch": "^1.7.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.9.5",

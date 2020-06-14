@@ -11,7 +11,7 @@ describe('CSV loader', () => {
   });
 
   test('CSV with column names', async () => {
-    const frame: DataFrame = await loader.load(
+    const result: Result<DataFrame> = await loader.loadString(
       `id,first_name,last_name,email
 1,Prentiss,Passey,ppassey0@amazonaws.com
 2,Bessie,Docker,bdocker1@pagesperso-orange.fr
@@ -19,7 +19,7 @@ describe('CSV loader', () => {
 4,Felix,Freak,ffreak3@google.nl
 5,Gay,Cutchee,gcutchee4@ifeng.com
 `,
-    );
+    )();
 
     const columns: Dictionary<Column> = {
       id: {
@@ -49,6 +49,9 @@ describe('CSV loader', () => {
         ],
       },
     };
+
+    expect(isRight(result)).toBe(true);
+    const frame = takeRight(result);
 
     for (const [name, expectedColumn] of Object.entries(columns)) {
       const actualColumn: Result<Column> = getColumn(frame, name);
