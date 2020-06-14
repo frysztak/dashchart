@@ -67,7 +67,7 @@ function New() {
 
   const chartDataR: Result<PositionalChartData[]> = mapDroppedColumns(dataFrames, chartCreator.currentColumns);
   fold(
-    () => {},
+    () => (userProps.length !== 0 ? setUserProps([]) : {}),
     (newUserProps: UserEditableChartProps[]) => (newUserProps !== userProps ? setUserProps(newUserProps) : {}),
   )(map(synchroniseUserProps(userProps))(chartDataR));
   const chartPropsR: Result<ChartProps[]> = applyUserProps(chartDataR, userProps);
