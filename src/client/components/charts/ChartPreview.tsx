@@ -3,22 +3,35 @@ import { styled } from '../../config/Theme';
 import { BottomBoxShadow, RightBoxShadow } from '../misc/BoxShadow';
 import { LightText } from '../misc/LightText';
 import { Flex } from 'reflexbox';
+import { ChartState } from '../../store/project';
+import { AggregateChart } from './AggregateChart';
+import { AxisPosition } from './common/Props';
+import produce from 'immer';
+
+const width = 350;
+const height = 200;
+const nbsp = '\u00A0';
 
 const Background = styled.div`
-  width: 350px;
-  height: 200px;
+  width: ${width}px;
+  height: ${height}px;
   background-color: ${p => p.theme.colors.almostWhite};
   border-radius: 8px;
   cursor: pointer;
 `;
 
-function Base({ children }: { children: ReactElement }) {
+function Base({ children, title }: { children: ReactElement; title: string }) {
   return (
-    <Background>
-      <BottomBoxShadow>
-        <RightBoxShadow>{children}</RightBoxShadow>
-      </BottomBoxShadow>
-    </Background>
+    <Flex flexDirection={'column'}>
+      <LightText fontSize={3} marginBottom={2}>
+        {title || nbsp}
+      </LightText>
+      <Background>
+        <BottomBoxShadow>
+          <RightBoxShadow>{children}</RightBoxShadow>
+        </BottomBoxShadow>
+      </Background>
+    </Flex>
   );
 }
 
@@ -30,10 +43,34 @@ export type CreateNewChartProps = BaseProps;
 
 export function CreateNewChart(props: CreateNewChartProps) {
   return (
-    <Base>
+    <Base title={''}>
       <Flex justifyContent={'center'} height={'100%'} alignItems={'center'} onClick={props.onClick}>
         <LightText fontSize={3}>Create new chart...</LightText>
       </Flex>
+    </Base>
+  );
+}
+
+export function ChartPreview(props: ChartState) {
+  const chartProps = props.props.chartProps.map(chartProp =>
+    produce(chartProp, draft => {
+      draft.data.x.position = AxisPosition.HIDDEN;
+      draft.data.y.position = AxisPosition.HIDDEN;
+      draft.dimensions = {
+        width,
+        height,
+        margin: {
+          top: 8,
+          right: 16,
+          bottom: 16,
+          left: 8,
+        },
+      };
+    }),
+  );
+  return (
+    <Base title={props.name}>
+      <AggregateChart chartProps={chartProps} />
     </Base>
   );
 }

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useCharts } from '../../../store/selectors';
-import { CreateNewChart } from '../../../components/charts/ChartPreview';
+import { ChartPreview, CreateNewChart } from '../../../components/charts/ChartPreview';
 import { Flex, Box } from 'reflexbox';
 import { routes } from '../../../config/routes';
 import { useCurrentProject } from '../../../store/hooks';
@@ -23,7 +23,13 @@ function Charts() {
 
   return (
     <Flex flexWrap={'wrap'}>
-      <Box m={5}>
+      {charts.map(chart => (
+        <Box m={5} marginTop={0} key={chart.id}>
+          <ChartPreview {...chart} />
+        </Box>
+      ))}
+
+      <Box m={5} marginTop={0}>
         <CreateNewChart onClick={navigateToNewChartPage} />
       </Box>
     </Flex>
