@@ -1,4 +1,5 @@
 import { AxisFontFamily, AxisScale, AxisStyle, ChartType, UserEditableChartProps } from './Props';
+import { ColourScheme } from '../ColourScheme';
 
 export const DefaultAxisStyle: AxisStyle<any> = {
   fontFamily: AxisFontFamily.SIGNIKA_LIGHT,
@@ -31,4 +32,5 @@ export const DefaultChartProps: UserEditableChartProps = {
       style: DefaultAxisStyle,
     },
   },
+  colourScheme: ColourScheme.Ocean,
 };

@@ -1,25 +1,26 @@
-import { AxisFontFamily, AxisFontFamilyMap, AxisFontStyle } from '../../charts/common/Props';
+import { AxisFontFamily, AxisFontFamilyMap, AxisFontStyle, ChartStyle } from '../../charts/common/Props';
 import { Formik } from 'formik';
 import { FormikWrapper, Group, PropEditorGroups, WideForm } from './PropsEditorGroups';
 import { PropEditor, PropType } from './PropEditor';
 import React from 'react';
 import { AutoSubmit } from '../../misc/AutoSubmit';
+import { ColourScheme, ColourSchemeMap } from '../../charts/ColourScheme';
 
-export interface AxisEditorProps {
-  axisStyle: AxisFontStyle;
-  update: (newStyle: AxisFontStyle) => void;
+export interface StyleEditorProps {
+  style: ChartStyle;
+  update: (newStyle: ChartStyle) => void;
 }
 
-export function AxisEditor(props: AxisEditorProps) {
-  const { axisStyle, update } = props;
+export function StyleEditor(props: StyleEditorProps) {
+  const { style, update } = props;
 
   return (
     <FormikWrapper>
-      <Formik initialValues={axisStyle} onSubmit={update}>
+      <Formik initialValues={style} onSubmit={update}>
         {props => (
           <WideForm onSubmit={props.handleSubmit}>
             <PropEditorGroups>
-              <Group groupName={'Axis Style'} collapsed={true}>
+              <Group groupName={'Style'} collapsed={true}>
                 <PropEditor
                   name={'Font'}
                   field={'fontFamily'}
@@ -37,6 +38,16 @@ export function AxisEditor(props: AxisEditorProps) {
                   type={PropType.NUMBER}
                   value={props.values.fontSize}
                   min={0}
+                />
+
+                <PropEditor
+                  name={'Colour scheme'}
+                  field={'colourScheme'}
+                  handleChange={props.handleChange}
+                  type={PropType.ENUM}
+                  value={props.values.colourScheme}
+                  enum={ColourScheme}
+                  enumMap={ColourSchemeMap}
                 />
               </Group>
             </PropEditorGroups>

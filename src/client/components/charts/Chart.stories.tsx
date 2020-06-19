@@ -11,6 +11,7 @@ export const singlePlot = () => {
   const y = x.map(x => x * x);
 
   const props: ChartProps = {
+    colour: 'black',
     dimensions: {
       height: number('Height', 600),
       width: number('Width', 800),
@@ -63,6 +64,7 @@ export const plotWithDates = () => {
   const y = [5, 15, 20, 22, 25, 33];
 
   const props: ChartProps = {
+    colour: 'black',
     dimensions: {
       height: number('Height', 600),
       width: number('Width', 800),
@@ -112,6 +114,7 @@ export const plotWithDatesAndStrings = () => {
   const y = ['Ulrich', 'Pszemek', 'Egon', 'Bartosz', 'Helge'];
 
   const props: ChartProps = {
+    colour: 'black',
     dimensions: {
       height: number('Height', 600),
       width: number('Width', 800),
@@ -155,6 +158,7 @@ export const axisOnlyPlot = () => {
   const y = x.map(x => x * x);
 
   const props: ChartProps = {
+    colour: 'black',
     dimensions: {
       height: number('Height', 600),
       width: number('Width', 800),

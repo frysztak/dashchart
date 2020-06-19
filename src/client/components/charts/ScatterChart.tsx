@@ -28,7 +28,7 @@ export function ScatterChart(props: ChartProps) {
           <g ref={xAxisRef} transform={transforms.x} style={styles.x} />
           <g ref={yAxisRef} transform={transforms.y} style={styles.y} />
           {points.map(([x, y]: [number, number], i: number) => (
-            <circle cx={x} cy={y} r={2} key={i} />
+            <circle cx={x} cy={y} r={2} key={i} fill={props.colour} />
           ))}
         </g>
       </svg>

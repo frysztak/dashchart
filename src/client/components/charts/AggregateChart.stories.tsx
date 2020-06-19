@@ -14,7 +14,7 @@ import {
 } from './common/Props';
 import { applyUserProps, mapDroppedColumns } from './AggregateChartMapper';
 import { fold } from 'fp-ts/es6/Either';
-import { DefaultAxisStyle } from './common/Defaults';
+import { DefaultAxisStyle, DefaultChartProps } from './common/Defaults';
 
 export default { title: 'AggregateChart', decorators: [withKnobs] };
 
@@ -75,6 +75,7 @@ export const xyChart = () => {
 
   const userProps: UserEditableChartProps[] = [
     {
+      ...DefaultChartProps,
       type: select('Chart type', ChartType, ChartType.SCATTER),
       dimensions,
       data: {
@@ -118,6 +119,7 @@ export const xyyChart = () => {
 
   const userProps: UserEditableChartProps[] = [
     {
+      ...DefaultChartProps,
       type: select('1st Chart type', ChartType, ChartType.SCATTER),
       dimensions,
       data: {
@@ -133,6 +135,7 @@ export const xyyChart = () => {
       },
     },
     {
+      ...DefaultChartProps,
       type: select('2st Chart type', ChartType, ChartType.SCATTER),
       dimensions,
       data: {

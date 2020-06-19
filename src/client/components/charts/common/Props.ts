@@ -1,4 +1,5 @@
 import { DistributivePick } from 'shared/utils/Types';
+import { ColourScheme } from '../ColourScheme';
 
 export interface ChartMargin {
   top: number;
@@ -60,6 +61,10 @@ export interface AxisStyle<Domain> {
 
 export type AxisFontStyle = Pick<AxisStyle<unknown>, 'fontFamily' | 'fontSize'>;
 
+export type ChartStyle = AxisFontStyle & {
+  colourScheme: ColourScheme;
+};
+
 interface BaseAxis {
   scale: AxisScale;
   position: AxisPosition;
@@ -116,6 +121,7 @@ export interface ChartProps {
   dimensions: ChartDimensions;
   type: ChartType;
   data: ChartData;
+  colour: string;
 }
 
 export type PositionalAxisData = DistributivePick<Axis, 'position' | 'dataType' | 'data'>;
@@ -125,7 +131,8 @@ export type PositionalChartData = {
 };
 
 type UserEditableAxisProps = DistributivePick<Axis, 'scale' | 'style' | 'domain'>;
-export type UserEditableChartProps = Omit<ChartProps, 'data'> & {
+export type UserEditableChartProps = Omit<ChartProps, 'data' | 'colour'> & {
+  colourScheme: ColourScheme;
   data: {
     x: UserEditableAxisProps;
     y: UserEditableAxisProps;

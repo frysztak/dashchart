@@ -2,13 +2,19 @@ import { Sidebar } from '../misc/Sidebar';
 import { Box, Flex } from 'reflexbox';
 import { LightText } from '../misc/LightText';
 import React from 'react';
-import { AxisFontStyle, ChartDimensions, ChartMargin, UserEditableChartProps } from '../charts/common/Props';
+import {
+  AxisFontStyle,
+  ChartDimensions,
+  ChartMargin,
+  ChartStyle,
+  UserEditableChartProps,
+} from '../charts/common/Props';
 import { PropsEditor } from './PropsEditor/PropsEditor';
 import { DimensionsEditor } from './PropsEditor/DimensionsEditor';
 import { MarginsEditor } from './PropsEditor/MarginEditor';
 import produce, { Draft } from 'immer';
 import { styled } from '../../config/Theme';
-import { AxisEditor } from './PropsEditor/AxisEditor';
+import { StyleEditor } from './PropsEditor/StyleEditor';
 
 export interface PropsSidebarProps {
   chartProps: UserEditableChartProps[];
@@ -51,10 +57,11 @@ export function ChartPropsSidebar(props: PropsSidebarProps) {
       prop.dimensions.margin = margin;
     }),
   );
-  const onUpdateAxisStyle = updateEachChart(
-    produce((prop: UserEditableChartProps, newStyle: AxisFontStyle) => {
+  const onUpdateStyle = updateEachChart(
+    produce((prop: UserEditableChartProps, newStyle: ChartStyle) => {
       prop.data.x.style = { ...prop.data.x.style, ...newStyle };
       prop.data.y.style = { ...prop.data.y.style, ...newStyle };
+      prop.colourScheme = newStyle.colourScheme;
     }),
   );
 
@@ -70,7 +77,10 @@ export function ChartPropsSidebar(props: PropsSidebarProps) {
             <>
               <DimensionsEditor dimensions={chartProps[0].dimensions} updateDimensions={onUpdateDimensions} />
               <MarginsEditor margins={chartProps[0].dimensions.margin} updateMargins={onUpdateMargins} />
-              <AxisEditor axisStyle={chartProps[0].data.x.style} update={onUpdateAxisStyle} />
+              <StyleEditor
+                style={{ ...chartProps[0].data.x.style, colourScheme: chartProps[0].colourScheme }}
+                update={onUpdateStyle}
+              />
               {chartProps.map((chartProps: UserEditableChartProps, idx: number) => (
                 <PropsEditor
                   key={idx}

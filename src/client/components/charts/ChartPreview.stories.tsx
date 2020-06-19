@@ -12,7 +12,7 @@ import {
   UserEditableChartProps,
 } from './common/Props';
 import { DropZoneLocation } from '../chartcreator/DragNDrop';
-import { DefaultAxisStyle } from './common/Defaults';
+import { DefaultAxisStyle, DefaultChartProps } from './common/Defaults';
 import { Result, takeRight } from 'shared/utils/index';
 import { applyUserProps, mapDroppedColumns } from './AggregateChartMapper';
 import { isLeft } from 'fp-ts/es6/Either';
@@ -80,6 +80,7 @@ export const ChartPreviewSingle = () => {
 
   const userProps: UserEditableChartProps[] = [
     {
+      ...DefaultChartProps,
       type: select('Chart type', ChartType, ChartType.SCATTER),
       dimensions,
       data: {
@@ -130,6 +131,7 @@ export const ChartPreviewDouble = () => {
 
   const userProps: UserEditableChartProps[] = [
     {
+      ...DefaultChartProps,
       type: select('Chart type', ChartType, ChartType.SCATTER),
       dimensions,
       data: {
@@ -144,6 +146,7 @@ export const ChartPreviewDouble = () => {
       },
     },
     {
+      ...DefaultChartProps,
       type: select('Chart type 2', ChartType, ChartType.LINE),
       dimensions,
       data: {

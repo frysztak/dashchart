@@ -1,6 +1,5 @@
 import { ChartProps } from './common/Props';
-import React, { useMemo, useRef, useState } from 'react';
-import { ColourSchemes, getColour } from './ColourSchemes';
+import React, { useMemo, useRef } from 'react';
 import { AxisScalers, AxesTransforms } from './common/Axis';
 import { genPath } from './common/Generators';
 import { useAxesTransforms, useAxesScalers, useAxesStyles, AxisStyles } from './common/Hooks';
@@ -12,9 +11,6 @@ export function LineChart(props: ChartProps) {
   const xAxisRef = useRef<SVGGElement | null>(null);
   const yAxisRef = useRef<SVGGElement | null>(null);
   const { width, height, margin } = props.dimensions;
-
-  const colourScheme = ColourSchemes.Ocean;
-  const [lineColour, setLineColour] = useState<string>(getColour(colourScheme, 0));
 
   const scalersR: Result<AxisScalers> = useAxesScalers(props);
   const transformsR: Result<AxesTransforms> = useAxesTransforms(xAxisRef, yAxisRef, props, scalersR);
@@ -31,7 +27,7 @@ export function LineChart(props: ChartProps) {
         <g transform={`translate(${margin.left}, ${margin.top})`}>
           <g ref={xAxisRef} transform={transforms.x} style={styles.x} />
           <g ref={yAxisRef} transform={transforms.y} style={styles.y} />
-          <path d={svgPath} fill='none' stroke={lineColour} />
+          <path d={svgPath} fill='none' stroke={props.colour} />
         </g>
       </svg>
     ),

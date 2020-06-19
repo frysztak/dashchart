@@ -1,9 +1,9 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import React from 'react';
 import { PropsEditor } from './PropsEditor';
-import { AxisScale, ChartType, UserEditableChartProps } from '../../charts/common/Props';
+import { UserEditableChartProps } from '../../charts/common/Props';
 import { styled } from '../../../config/Theme';
-import { DefaultAxisStyle } from '../../charts/common/Defaults';
+import { DefaultChartProps } from '../../charts/common/Defaults';
 
 export default { title: 'PropsEditor', decorators: [withKnobs] };
 
@@ -13,27 +13,7 @@ const Wrapper = styled.div`
 
 export const SinglePropsEditor = () => {
   let userProps: UserEditableChartProps = {
-    dimensions: {
-      height: 600,
-      width: 800,
-      margin: {
-        top: 20,
-        right: 80,
-        bottom: 40,
-        left: 20,
-      },
-    },
-    type: ChartType.LINE,
-    data: {
-      x: {
-        scale: AxisScale.LINEAR,
-        style: DefaultAxisStyle,
-      },
-      y: {
-        scale: AxisScale.LINEAR,
-        style: DefaultAxisStyle,
-      },
-    },
+    ...DefaultChartProps,
   };
 
   const handleUpdateProps = (newProps: UserEditableChartProps) => {
@@ -50,27 +30,7 @@ export const SinglePropsEditor = () => {
 
 export const DoublePropsEditor = () => {
   let userProps: UserEditableChartProps = {
-    dimensions: {
-      height: 600,
-      width: 800,
-      margin: {
-        top: 20,
-        right: 80,
-        bottom: 40,
-        left: 20,
-      },
-    },
-    type: ChartType.LINE,
-    data: {
-      x: {
-        scale: AxisScale.LINEAR,
-        style: DefaultAxisStyle,
-      },
-      y: {
-        scale: AxisScale.LINEAR,
-        style: DefaultAxisStyle,
-      },
-    },
+    ...DefaultChartProps,
   };
 
   const handleUpdateProps = (newProps: UserEditableChartProps) => {

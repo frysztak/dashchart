@@ -17,6 +17,7 @@ import { sequenceT } from 'fp-ts/es6/Apply';
 import { pipe } from 'fp-ts/es6/pipeable';
 import { tupled } from 'fp-ts/es6/function';
 import { DefaultChartProps } from './common/Defaults';
+import { getColour } from './ColourScheme';
 
 interface MappedAxes {
   xAxes: PositionalAxisData[];
@@ -126,10 +127,11 @@ export function applyUserProps(
   const mapToChartProps = (dimensions: ChartDimensions) => (chartData: PositionalChartData[]): Result<ChartProps[]> =>
     Ok(
       zip(chartData, chartProps).map(
-        ([data, userProps]: [PositionalChartData, UserEditableChartProps]): ChartProps =>
+        ([data, userProps]: [PositionalChartData, UserEditableChartProps], index: number): ChartProps =>
           <ChartProps>{
             ...userProps,
             dimensions: dimensions,
+            colour: getColour(userProps.colourScheme, index),
             data: {
               x: {
                 ...userProps.data.x,
@@ -161,7 +163,8 @@ export const synchroniseUserProps = (userProps: UserEditableChartProps[]) => (
 ): UserEditableChartProps[] => {
   const n: number = chartData.length - userProps.length;
   if (n > 0) {
-    return [...userProps, ...Array(n).fill(DefaultChartProps)];
+    const colourScheme = userProps.length ? userProps[0].colourScheme : DefaultChartProps.colourScheme;
+    return [...userProps, ...Array(n).fill({ ...DefaultChartProps, colourScheme })];
   }
   if (n < 0) {
     return userProps.slice(0, chartData.length);

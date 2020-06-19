@@ -14,7 +14,7 @@ import {
   PositionalChartData,
 } from './common/Props';
 import { Ok, Result, takeRight } from 'shared/utils';
-import { DefaultAxisStyle } from './common/Defaults';
+import { DefaultAxisStyle, DefaultChartProps } from './common/Defaults';
 
 describe('AggregateChartMapper', () => {
   describe('mapDroppedColumns', () => {
@@ -230,6 +230,7 @@ describe('AggregateChartMapper', () => {
 
       const userProps: UserEditableChartProps[] = [
         {
+          ...DefaultChartProps,
           dimensions: dimensions,
           type: ChartType.SCATTER,
           data: {

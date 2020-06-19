@@ -55,9 +55,9 @@ export function BarChart(props: ChartProps) {
           <g ref={yAxisRef} transform={transforms.y} style={styles.y} />
           {points.map(([x, y]: [number, number], i: number) =>
             props.type === ChartType.BAR_VERTICAL ? (
-              <rect key={i} x={x} y={y} height={height - margin.bottom - y} width={bandwidth} />
+              <rect key={i} x={x} y={y} height={height - margin.bottom - y} width={bandwidth} fill={props.colour} />
             ) : (
-              <rect key={i} x={margin.left} y={y} width={x} height={bandwidth} />
+              <rect key={i} x={margin.left} y={y} width={x} height={bandwidth} fill={props.colour} />
             ),
           )}
         </g>
