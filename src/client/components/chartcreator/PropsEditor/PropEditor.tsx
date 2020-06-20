@@ -36,7 +36,14 @@ export function PropEditor(props: PropEditorProps) {
     switch (props.type) {
       case PropType.ENUM:
         return (
-          <Select id={field} name={field} value={props.value} onChange={handleChange}>
+          <Select
+            id={field}
+            name={field}
+            value={props.value}
+            onChange={handleChange}
+            css={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+            paddingRight={3}
+          >
             {keys(props.enum).map(enumValue => (
               <option value={enumValue} key={enumValue}>
                 {props.enumMap[enumValue]}
@@ -67,7 +74,7 @@ export function PropEditor(props: PropEditorProps) {
       </Flex>
 
       <Box width={1 / 2}>
-        <Label ml={2} htmlFor={field}>
+        <Label ml={2} htmlFor={field} maxWidth={'calc(100% - 8px)'}>
           {name}
         </Label>
       </Box>
