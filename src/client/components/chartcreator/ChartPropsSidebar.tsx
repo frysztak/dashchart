@@ -29,11 +29,11 @@ const Spacer = styled.div`
 export function ChartPropsSidebar(props: PropsSidebarProps) {
   const { chartProps, updateProps } = props;
   const onUpdateProps = (idx: number) => (newProps: UserEditableChartProps) => {
-    const dimensions = chartProps[0].dimensions;
     updateProps(
       {
         ...newProps,
-        dimensions,
+        dimensions: chartProps[0].dimensions,
+        colourScheme: chartProps[0].colourScheme,
       },
       idx,
     );
