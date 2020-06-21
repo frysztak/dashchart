@@ -16,6 +16,7 @@ import { DndProvider } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend';
 
 import '../assets/fonts/font.css';
+import { routes } from '../config/routes';
 
 const ElevatedBox = styled(Box)`
   z-index: 1;
@@ -33,11 +34,28 @@ function App({ children }: { children: ReactElement }) {
   const router = useRouter();
   const currentProject: Project | null = useCurrentProjectFromStore();
 
+  const navigateToPage = (menuItem: MenuItem) => {
+    switch (menuItem) {
+      case MenuItem.PROJECTS: {
+        const route = routes.projects;
+        router.push(route.href, route.as);
+        break;
+      }
+      case MenuItem.CHARTS: {
+        if (currentProject) {
+          const route = routes.charts(currentProject.id);
+          router.push(route.href, route.as);
+          break;
+        }
+      }
+    }
+  };
+
   const menuBarProps: MenuBarProps = {
     projectName: currentProject?.name || '',
     currentMenuItem: findCurrentMenuItem(router.pathname),
     onBackClicked: router.back,
-    onItemClicked: (menuItem: MenuItem) => console.log(`Item ${menuItem} clicked`),
+    onItemClicked: navigateToPage,
     onUserClicked: () => console.log('User clicked'),
     onNotificationsClicked: () => console.log('Notifications clicked'),
     onSettingsClicked: () => console.log('Settings clicked'),
