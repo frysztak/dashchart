@@ -21,13 +21,21 @@ const ElevatedBox = styled(Box)`
   z-index: 1;
 `;
 
+function findCurrentMenuItem(pathname: string): MenuItem {
+  if (pathname.includes('chart')) {
+    return MenuItem.CHARTS;
+  }
+
+  return MenuItem.PROJECTS;
+}
+
 function App({ children }: { children: ReactElement }) {
   const router = useRouter();
   const currentProject: Project | null = useCurrentProjectFromStore();
 
   const menuBarProps: MenuBarProps = {
     projectName: currentProject?.name || '',
-    currentMenuItem: MenuItem.CHARTS,
+    currentMenuItem: findCurrentMenuItem(router.pathname),
     onBackClicked: router.back,
     onItemClicked: (menuItem: MenuItem) => console.log(`Item ${menuItem} clicked`),
     onUserClicked: () => console.log('User clicked'),

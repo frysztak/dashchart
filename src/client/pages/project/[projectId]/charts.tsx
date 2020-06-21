@@ -6,6 +6,7 @@ import { routes } from '../../../config/routes';
 import { useCurrentProject } from '../../../store/hooks';
 import { Project, ChartState } from '../../../store/project';
 import React from 'react';
+import Head from 'next/head';
 
 function Charts() {
   const router = useRouter();
@@ -22,17 +23,22 @@ function Charts() {
   };
 
   return (
-    <Flex flexWrap={'wrap'}>
-      {charts.map(chart => (
-        <Box m={5} marginTop={0} key={chart.id}>
-          <ChartPreview {...chart} />
-        </Box>
-      ))}
+    <>
+      <Head>
+        <title>{project.name} :: charts</title>
+      </Head>
+      <Flex flexWrap={'wrap'}>
+        {charts.map(chart => (
+          <Box m={5} marginTop={0} key={chart.id}>
+            <ChartPreview {...chart} />
+          </Box>
+        ))}
 
-      <Box m={5} marginTop={0}>
-        <CreateNewChart onClick={navigateToNewChartPage} />
-      </Box>
-    </Flex>
+        <Box m={5} marginTop={0}>
+          <CreateNewChart onClick={navigateToNewChartPage} />
+        </Box>
+      </Flex>
+    </>
   );
 }
 

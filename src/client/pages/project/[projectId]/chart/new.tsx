@@ -26,6 +26,7 @@ import produce from 'immer';
 import { ChartErrorBoundary } from '../../../../components/charts/ChartErrorBoundary';
 import { ErrorMessage } from '../../../../components/misc/ErrorMessage';
 import { DropZoneDumpster } from '../../../../components/chartcreator/DropZone';
+import Head from 'next/head';
 
 const ChartIcon = Icon(Chart);
 const LayoutIcon = Icon(Layout);
@@ -91,25 +92,30 @@ function New() {
   );
 
   return (
-    <Flex height={'100%'}>
-      <Box>
-        <RightBoxShadow>
-          <DataFrameSidebar dataFrames={dataFrames} />
-        </RightBoxShadow>
-      </Box>
-      <RelativeBox flexGrow={1}>
-        {layoutMode ? <ChartCreator {...chartCreator} /> : { ...chart }}
+    <>
+      <Head>
+        <title>{project.name} :: new chart</title>
+      </Head>
+      <Flex height={'100%'}>
+        <Box>
+          <RightBoxShadow>
+            <DataFrameSidebar dataFrames={dataFrames} />
+          </RightBoxShadow>
+        </Box>
+        <RelativeBox flexGrow={1}>
+          {layoutMode ? <ChartCreator {...chartCreator} /> : { ...chart }}
 
-        <ModeIndicator onClick={toggleLayoutMode}>
-          <IconWrapper size={42}>{ModeIcon}</IconWrapper>
-        </ModeIndicator>
-      </RelativeBox>
-      <Box>
-        <LeftBoxShadow>
-          <ChartPropsSidebar chartProps={userProps} updateProps={onUpdateChartProps} />
-        </LeftBoxShadow>
-      </Box>
-    </Flex>
+          <ModeIndicator onClick={toggleLayoutMode}>
+            <IconWrapper size={42}>{ModeIcon}</IconWrapper>
+          </ModeIndicator>
+        </RelativeBox>
+        <Box>
+          <LeftBoxShadow>
+            <ChartPropsSidebar chartProps={userProps} updateProps={onUpdateChartProps} />
+          </LeftBoxShadow>
+        </Box>
+      </Flex>
+    </>
   );
 }
 
