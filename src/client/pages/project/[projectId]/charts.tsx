@@ -30,7 +30,7 @@ function Charts() {
       <Flex flexWrap={'wrap'}>
         {charts.map(chart => (
           <Box m={5} marginTop={0} key={chart.id}>
-            <ChartPreview {...chart} />
+            <ChartPreview {...chart} projectId={project.id} />
           </Box>
         ))}
 

@@ -1,8 +1,10 @@
 import { DataFrame } from 'shared/DataFrame';
-import { AggregateChartProps } from '../components/charts/AggregateChart';
-import { createReducer } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { ID } from './state';
 import { ColumnType } from '../../shared/DataFrame';
+import { DropZoneValues } from '../components/chartcreator/DragNDrop';
+import { ColumnId } from 'shared/DataFrame/index';
+import { UserEditableChartProps } from '../components/charts/common/Props';
 
 export type Projects = Record<ID, Project>;
 
@@ -23,7 +25,8 @@ export interface DataFrameState {
 export interface ChartState {
   id: number;
   name: string;
-  props: AggregateChartProps;
+  columns: DropZoneValues<ColumnId>;
+  userProps: UserEditableChartProps[];
 }
 
 export interface DashboardState {}
@@ -74,4 +77,15 @@ export const initialProjects: Projects = {
   },
 };
 
-export const projectReducer = createReducer(initialProjects, builder => builder);
+export interface SaveChartPayload {
+  projectId: number;
+  chart: ChartState;
+}
+export const saveChart = createAction<SaveChartPayload>('saveChart');
+
+export const projectReducer = createReducer(initialProjects, builder =>
+  builder.addCase(saveChart, (state, action) => {
+    const { projectId, chart } = action.payload;
+    state[projectId].charts[chart.id] = chart;
+  }),
+);

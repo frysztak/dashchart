@@ -1,21 +1,10 @@
 import React from 'react';
 import { select, withKnobs } from '@storybook/addon-knobs';
-import { ChartPreview, CreateNewChart } from './ChartPreview';
-import { ChartState } from '../../store/project';
+import { ChartPreview, ChartPreviewProps, CreateNewChart } from './ChartPreview';
 import { ColumnType, DataFrame } from 'shared/DataFrame/index';
-import {
-  AxisScale,
-  ChartDimensions,
-  ChartProps,
-  ChartType,
-  PositionalChartData,
-  UserEditableChartProps,
-} from './common/Props';
+import { AxisScale, ChartDimensions, ChartType, UserEditableChartProps } from './common/Props';
 import { DropZoneLocation } from '../chartcreator/DragNDrop';
 import { DefaultAxisStyle, DefaultChartProps } from './common/Defaults';
-import { Result, takeRight } from 'shared/utils/index';
-import { applyUserProps, mapDroppedColumns } from './AggregateChartMapper';
-import { isLeft } from 'fp-ts/es6/Either';
 
 export default { title: 'Chart Preview', decorators: [withKnobs] };
 
@@ -96,18 +85,12 @@ export const ChartPreviewSingle = () => {
     },
   ];
 
-  const chartData: Result<PositionalChartData[]> = mapDroppedColumns([dataFrame], droppedColumns);
-  const chartPropsR: Result<ChartProps[]> = applyUserProps(chartData, userProps);
-  if (isLeft(chartPropsR)) {
-    return <div>{chartPropsR.left}</div>;
-  }
-  const chartProps: ChartProps[] = takeRight(chartPropsR);
-  const props: ChartState = {
+  const props: ChartPreviewProps = {
     id: 1,
+    projectId: 1,
     name: 'Chart #1',
-    props: {
-      chartProps,
-    },
+    userProps: userProps,
+    columns: droppedColumns,
   };
 
   return <ChartPreview {...props} />;
@@ -162,18 +145,12 @@ export const ChartPreviewDouble = () => {
     },
   ];
 
-  const chartData: Result<PositionalChartData[]> = mapDroppedColumns([dataFrame], droppedColumns);
-  const chartPropsR: Result<ChartProps[]> = applyUserProps(chartData, userProps);
-  if (isLeft(chartPropsR)) {
-    return <div>{chartPropsR.left}</div>;
-  }
-  const chartProps: ChartProps[] = takeRight(chartPropsR);
-  const props: ChartState = {
+  const props: ChartPreviewProps = {
     id: 1,
+    projectId: 1,
     name: 'Chart #1',
-    props: {
-      chartProps,
-    },
+    userProps: userProps,
+    columns: droppedColumns,
   };
 
   return <ChartPreview {...props} />;

@@ -3,11 +3,11 @@ import {
   Axis,
   AxisDataType,
   AxisPosition,
-  ChartProps,
-  UserEditableChartProps,
-  PositionalChartData,
-  PositionalAxisData,
   ChartDimensions,
+  ChartProps,
+  PositionalAxisData,
+  PositionalChartData,
+  UserEditableChartProps,
 } from './common/Props';
 import { DistributivePick, dupingZip, entries, Ok, Result, zip } from 'shared/utils';
 import { Column, ColumnId, ColumnType, DataFrame, resolveColumnId } from 'shared/DataFrame';
@@ -171,3 +171,19 @@ export const synchroniseUserProps = (userProps: UserEditableChartProps[]) => (
   }
   return userProps;
 };
+
+export function synchroniseAndApplyUserProps(
+  dataFrames: DataFrame[],
+  columns: DropZoneValues<ColumnId>,
+  userProps: UserEditableChartProps[],
+): Result<[UserEditableChartProps[], ChartProps[]]> {
+  const positionalChartDataR: Result<PositionalChartData[]> = mapDroppedColumns(dataFrames, columns);
+  return pipe(
+    positionalChartDataR,
+    chain((positionalChartData: PositionalChartData[]) => {
+      const newUserProps: UserEditableChartProps[] = synchroniseUserProps(userProps)(positionalChartData);
+      const chartProps: Result<ChartProps[]> = applyUserProps(positionalChartDataR, newUserProps);
+      return sequenceT(either)(Ok(newUserProps), chartProps);
+    }),
+  );
+}
