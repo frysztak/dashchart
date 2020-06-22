@@ -29,12 +29,12 @@ function Charts() {
       </Head>
       <Flex flexWrap={'wrap'}>
         {charts.map(chart => (
-          <Box m={5} marginTop={0} key={chart.id}>
+          <Box m={5} marginTop={4} key={chart.id}>
             <ChartPreview {...chart} projectId={project.id} />
           </Box>
         ))}
 
-        <Box m={5} marginTop={0}>
+        <Box m={5} marginTop={4}>
           <CreateNewChart onClick={navigateToNewChartPage} />
         </Box>
       </Flex>

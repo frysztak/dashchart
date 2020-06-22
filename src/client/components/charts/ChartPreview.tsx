@@ -14,6 +14,7 @@ import { ErrorMessage } from '../misc/ErrorMessage';
 import { DataFrame } from 'shared/DataFrame';
 import { useDataFrames, useProject } from '../../store/selectors';
 import { pipe } from 'fp-ts/es6/pipeable';
+import { Text } from 'rebass';
 
 const width = 350;
 const height = 200;
@@ -23,6 +24,7 @@ const Background = styled.div`
   width: ${width}px;
   height: ${height}px;
   background-color: ${p => p.theme.colors.almostWhite};
+  border: 1px ${p => p.theme.colors.lightGrey} solid;
   border-radius: 8px;
   cursor: pointer;
 `;
@@ -30,9 +32,9 @@ const Background = styled.div`
 function Base({ children, title }: { children: ReactElement; title: string }) {
   return (
     <Flex flexDirection={'column'}>
-      <LightText fontSize={3} marginBottom={2}>
+      <Text fontSize={3} marginBottom={2} marginLeft={4}>
         {title || nbsp}
-      </LightText>
+      </Text>
       <Background>
         <BottomBoxShadow>
           <RightBoxShadow>{children}</RightBoxShadow>
