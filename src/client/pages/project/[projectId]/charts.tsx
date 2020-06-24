@@ -7,6 +7,7 @@ import { useCurrentProject } from '../../../store/hooks';
 import { Project, ChartState } from '../../../store/project';
 import React from 'react';
 import Head from 'next/head';
+import { ID } from '../../../store/state';
 
 function Charts() {
   const router = useRouter();
@@ -17,8 +18,8 @@ function Charts() {
     return <>Project not found.</>;
   }
 
-  const navigateToNewChartPage = () => {
-    const route = routes.newChart(project.id);
+  const navigateToChartPage = (chartId?: ID) => () => {
+    const route = chartId === undefined ? routes.newChart(project.id) : routes.chart(project.id, chartId);
     router.push(route.href, route.as);
   };
 
@@ -30,12 +31,12 @@ function Charts() {
       <Flex flexWrap={'wrap'}>
         {charts.map(chart => (
           <Box m={5} marginTop={4} key={chart.id}>
-            <ChartPreview {...chart} projectId={project.id} />
+            <ChartPreview {...chart} projectId={project.id} onClick={navigateToChartPage(chart.id)} />
           </Box>
         ))}
 
         <Box m={5} marginTop={4}>
-          <CreateNewChart onClick={navigateToNewChartPage} />
+          <CreateNewChart onClick={navigateToChartPage()} />
         </Box>
       </Flex>
     </>

@@ -91,6 +91,9 @@ export const ChartPreviewSingle = () => {
     name: 'Chart #1',
     userProps: userProps,
     columns: droppedColumns,
+    onClick: () => {
+      console.log('click');
+    },
   };
 
   return <ChartPreview {...props} />;
@@ -151,6 +154,9 @@ export const ChartPreviewDouble = () => {
     name: 'Chart #1',
     userProps: userProps,
     columns: droppedColumns,
+    onClick: () => {
+      console.log('click');
+    },
   };
 
   return <ChartPreview {...props} />;

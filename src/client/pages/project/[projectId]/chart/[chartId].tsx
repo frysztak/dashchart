@@ -2,8 +2,8 @@ import { Flex, Box } from 'reflexbox';
 import { DataFrameSidebar } from '../../../../components/dataframe/DataFrameSidebar';
 import React, { useEffect, useState } from 'react';
 import { useChartCreator, useDataFrames, useIsDraggingDroppedColumn } from '../../../../store/selectors';
-import { Project, saveChart } from '../../../../store/project';
-import { useCurrentProject } from '../../../../store/hooks';
+import { Project, saveChart, ChartState } from '../../../../store/project';
+import { useCurrentChart, useCurrentProject } from '../../../../store/hooks';
 import { ChartCreator } from '../../../../components/chartcreator/ChartCreator';
 import { LeftBoxShadow, RightBoxShadow } from '../../../../components/misc/BoxShadow';
 import { ChartCreatorState } from '../../../../store/chartCreator';
@@ -47,15 +47,16 @@ const RelativeBox = styled(Box)`
   position: relative;
 `;
 
-function New() {
+function ChartPage() {
   const dispatch = useDispatch();
   const project: Project | null = useCurrentProject();
+  const chart: ChartState | null = useCurrentChart();
   const dataFrames: DataFrame[] = useDataFrames(project);
   const chartCreator: ChartCreatorState | null = useChartCreator();
   const [layoutMode, setLayoutMode] = useState(true);
   const toggleLayoutMode = () => setLayoutMode(!layoutMode);
   const isDraggingDroppedColumn: boolean = useIsDraggingDroppedColumn();
-  const [userProps, setUserProps] = useState([] as UserEditableChartProps[]);
+  const [userProps, setUserProps] = useState(chart?.userProps || []);
   const [errorBoundaryKey, setErrorBoundaryKey] = useState(0);
   const onUpdateChartProps = (newProps: UserEditableChartProps, idx: number) => {
     setUserProps(userProps =>
@@ -72,8 +73,8 @@ function New() {
   }
 
   const onSaveChart = () => {
-    const chartId: number = Object.values(project.charts).length + 1;
-    const chartName = `Chart ${chartId}`;
+    const chartId: number = chart?.id || Object.values(project.charts).length + 1;
+    const chartName = chart?.name || `Chart ${chartId}`;
     const columns = chartCreator.currentColumns;
     dispatch(
       saveChart({
@@ -89,11 +90,8 @@ function New() {
   };
 
   const synchronisedProps = synchroniseAndApplyUserProps(dataFrames, chartCreator.currentColumns, userProps);
-  const chart = fold(
-    (e: Error) => {
-      if (userProps.length !== 0) setUserProps([]);
-      return <ErrorMessage message={e.message} />;
-    },
+  const chartElement = fold(
+    (e: Error) => <ErrorMessage message={e.message} />,
     ([newUserProps, chartProps]: [UserEditableChartProps[], ChartProps[]]) => {
       if (newUserProps !== userProps) setUserProps(newUserProps);
       return (
@@ -117,7 +115,9 @@ function New() {
   return (
     <>
       <Head>
-        <title>{project.name} :: new chart</title>
+        <title>
+          {project.name} :: {chart?.name || 'new chart'}
+        </title>
       </Head>
       <Flex height={'100%'}>
         <Box>
@@ -126,7 +126,7 @@ function New() {
           </RightBoxShadow>
         </Box>
         <RelativeBox flexGrow={1}>
-          {layoutMode ? <ChartCreator {...chartCreator} /> : { ...chart }}
+          {layoutMode ? <ChartCreator {...chartCreator} /> : { ...chartElement }}
 
           <Toolbar>
             <ModeIndicator onClick={toggleLayoutMode}>
@@ -150,4 +150,4 @@ function New() {
   );
 }
 
-export default New;
+export default ChartPage;

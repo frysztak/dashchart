@@ -7,5 +7,5 @@ export const routes = {
   charts: (projectId: number) => createRoute('/project/[projectId]/charts', { projectId }),
   chart: (projectId: number, chartId: number) =>
     createRoute('/project/[projectId]/chart/[chartId]', { projectId, chartId }),
-  newChart: (projectId: number) => createRoute('/project/[projectId]/chart/new', { projectId }),
+  newChart: (projectId: number) => createRoute('/project/[projectId]/chart/[chartId]', { projectId, chartId: 'new' }),
 };

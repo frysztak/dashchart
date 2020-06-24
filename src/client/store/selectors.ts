@@ -18,6 +18,13 @@ export const useCurrentProjectFromStore = (): Project | null =>
 
 export const useCharts = (project: Project): ChartState[] => Object.values(project.charts);
 
+export const useChartById = (chartId: ID | null): ChartState | null => {
+  if (chartId === null) return null;
+  const project: Project | null = useCurrentProjectFromStore();
+  if (project === null) return null;
+  return chartId in project.charts ? project.charts[chartId] : null;
+};
+
 export const useDataFrames = (project: Project | null): DataFrame[] =>
   project ? Object.values(project.dataFrames).map((s: DataFrameState) => s.dataFrame) : [];
 

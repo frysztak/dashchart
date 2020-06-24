@@ -29,9 +29,9 @@ const Background = styled.div`
   cursor: pointer;
 `;
 
-function Base({ children, title }: { children: ReactElement; title: string }) {
+function Base({ children, title, onClick }: { children: ReactElement; title: string; onClick?: () => void }) {
   return (
-    <Flex flexDirection={'column'}>
+    <Flex flexDirection={'column'} onClick={onClick}>
       <Text fontSize={3} marginBottom={2} marginLeft={4}>
         {title || nbsp}
       </Text>
@@ -62,6 +62,7 @@ export function CreateNewChart(props: CreateNewChartProps) {
 
 export type ChartPreviewProps = ChartState & {
   projectId: number;
+  onClick: () => void;
 };
 
 export function ChartPreview(props: ChartPreviewProps) {
@@ -93,7 +94,7 @@ export function ChartPreview(props: ChartPreviewProps) {
   return fold(
     (e: Error) => <ErrorMessage message={e.message} />,
     (chartProps: ChartProps[]) => (
-      <Base title={props.name}>
+      <Base title={props.name} onClick={props.onClick}>
         <AggregateChart chartProps={chartProps} />
       </Base>
     ),

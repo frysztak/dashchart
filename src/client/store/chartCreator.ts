@@ -13,6 +13,8 @@ export const initialChartCreator: ChartCreatorState = {
 
 export const dropColumn = createAction<DroppedColumn>('dropColumn');
 export const deleteColumn = createAction<ColumnToDelete>('deleteColumn');
+export const resetCurrentColumns = createAction('resetCurrentColumns');
+export const setCurrentColumns = createAction<DropZoneValues<ColumnId>>('setCurrentColumns');
 
 export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
   builder
@@ -31,5 +33,11 @@ export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
     .addCase(deleteColumn, (state, action) => {
       const { fromLocation, columnName, dataFrameName } = action.payload;
       delete state.currentColumns[fromLocation];
+    })
+    .addCase(resetCurrentColumns, (state, action) => {
+      state.currentColumns = {};
+    })
+    .addCase(setCurrentColumns, (state, action) => {
+      state.currentColumns = action.payload;
     }),
 );
