@@ -1,6 +1,4 @@
-import React, { ReactElement } from 'react';
-import { styled } from '../../config/Theme';
-import { BottomBoxShadow, RightBoxShadow } from '../misc/BoxShadow';
+import React from 'react';
 import { LightText } from '../misc/LightText';
 import { Flex } from 'reflexbox';
 import { ChartState, Project } from '../../store/project';
@@ -14,35 +12,8 @@ import { ErrorMessage } from '../misc/ErrorMessage';
 import { DataFrame } from 'shared/DataFrame';
 import { useDataFrames, useProject } from '../../store/selectors';
 import { pipe } from 'fp-ts/es6/pipeable';
-import { Text } from 'rebass';
-
-const width = 350;
-const height = 200;
-const nbsp = '\u00A0';
-
-const Background = styled.div`
-  width: ${width}px;
-  height: ${height}px;
-  background-color: ${p => p.theme.colors.almostWhite};
-  border: 1px ${p => p.theme.colors.lightGrey} solid;
-  border-radius: 8px;
-  cursor: pointer;
-`;
-
-function Base({ children, title, onClick }: { children: ReactElement; title: string; onClick?: () => void }) {
-  return (
-    <Flex flexDirection={'column'} onClick={onClick}>
-      <Text fontSize={3} marginBottom={2} marginLeft={4}>
-        {title || nbsp}
-      </Text>
-      <Background>
-        <BottomBoxShadow>
-          <RightBoxShadow>{children}</RightBoxShadow>
-        </BottomBoxShadow>
-      </Background>
-    </Flex>
-  );
-}
+import { PreviewCard } from '../misc/PreviewCard';
+import { Theme, useTheme } from '../../config/Theme';
 
 interface BaseProps {
   onClick: () => void;
@@ -52,11 +23,11 @@ export type CreateNewChartProps = BaseProps;
 
 export function CreateNewChart(props: CreateNewChartProps) {
   return (
-    <Base title={''}>
+    <PreviewCard title={''}>
       <Flex justifyContent={'center'} height={'100%'} alignItems={'center'} onClick={props.onClick}>
         <LightText fontSize={3}>Create new chart...</LightText>
       </Flex>
-    </Base>
+    </PreviewCard>
   );
 }
 
@@ -68,6 +39,7 @@ export type ChartPreviewProps = ChartState & {
 export function ChartPreview(props: ChartPreviewProps) {
   const project: Project | null = useProject(props.projectId);
   const dataFrames: DataFrame[] = useDataFrames(project);
+  const theme: Theme = useTheme();
 
   const mappedChartProps = pipe(
     synchroniseAndApplyUserProps(dataFrames, props.columns, props.userProps),
@@ -78,8 +50,8 @@ export function ChartPreview(props: ChartPreviewProps) {
           draft.data.x.position = AxisPosition.HIDDEN;
           draft.data.y.position = AxisPosition.HIDDEN;
           draft.dimensions = {
-            width,
-            height,
+            width: theme.previewCard.width,
+            height: theme.previewCard.height,
             margin: {
               top: 8,
               right: 16,
@@ -94,9 +66,9 @@ export function ChartPreview(props: ChartPreviewProps) {
   return fold(
     (e: Error) => <ErrorMessage message={e.message} />,
     (chartProps: ChartProps[]) => (
-      <Base title={props.name} onClick={props.onClick}>
+      <PreviewCard title={props.name} onClick={props.onClick}>
         <AggregateChart chartProps={chartProps} />
-      </Base>
+      </PreviewCard>
     ),
   )(mappedChartProps);
 }

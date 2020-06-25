@@ -1,4 +1,4 @@
-import baseStyled, { ThemedStyledInterface } from 'styled-components';
+import baseStyled, { ThemedStyledInterface, useTheme as useThemeStyled } from 'styled-components';
 import React from 'react';
 
 export const theme = {
@@ -37,8 +37,13 @@ export const theme = {
     blur: '5px',
     color: '#333',
   },
+  previewCard: {
+    width: 350,
+    height: 200,
+  },
 };
 
 export type Theme = typeof theme;
 export const styled = baseStyled as ThemedStyledInterface<Theme>;
 export type ThemeColors = keyof Theme['colors'];
+export const useTheme = useThemeStyled as () => Theme;
