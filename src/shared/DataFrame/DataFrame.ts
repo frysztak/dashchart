@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { Err, isNumeric, Result, Ok, DistributivePick } from '../utils';
+import { Err, isNumeric, Result, Ok, DistributivePick, Dictionary } from '../utils';
 import { pipe } from 'fp-ts/es6/pipeable';
 import { filterOrElse, chain, fold } from 'fp-ts/es6/Either';
 
@@ -146,4 +146,36 @@ export function pushValues(df: DataFrame, values: string[]): DataFrame {
       idx++;
     }
   });
+}
+
+export type TableColumn = {
+  name: string;
+};
+
+type TableRow = {
+  __id: number;
+} & Dictionary<string | number>;
+
+export function convertToDataTable(df: DataFrame): [TableColumn[], TableRow[]] {
+  const dfColumns: Array<[string, Column]> = getColumns(df);
+  const columns: TableColumn[] = dfColumns.map(([columnName, _]) => ({
+    name: columnName,
+    selector: columnName,
+  }));
+
+  const nRows: number = Math.min(...dfColumns.map(([_, col]) => col.values.length));
+  const rows: TableRow[] = [...Array(nRows)].map((_, rowIdx: number) => {
+    return {
+      __id: rowIdx,
+      ...dfColumns.reduce(
+        (acc, [colName, col]) => ({
+          ...acc,
+          [colName]: col.values[rowIdx],
+        }),
+        {},
+      ),
+    };
+  });
+
+  return [columns, rows];
 }

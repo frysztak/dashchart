@@ -7,6 +7,7 @@ import {
   getColumn,
   convertColumn,
   Column,
+  convertToDataTable,
 } from './DataFrame';
 import { takeRight, Result } from '../utils';
 import { isRight } from 'fp-ts/es6/Either';
@@ -98,5 +99,58 @@ describe('DataFrame', () => {
 
     const column: Column = takeRight(columnR);
     expect(column.values).toEqual(['10', '20', '30', '40', '50']);
+  });
+
+  test('`convertToDataTable` works', () => {
+    const [columns, rows] = convertToDataTable(frame);
+    expect(columns).toEqual([
+      { name: 'id', selector: 'id' },
+      { name: 'first_name', selector: 'first_name' },
+      { name: 'last_name', selector: 'last_name' },
+      { name: 'email', selector: 'email' },
+      { name: 'numbers', selector: 'numbers' },
+    ]);
+    expect(rows).toEqual([
+      {
+        __id: 0,
+        id: '1',
+        first_name: 'Prentiss',
+        last_name: 'Passey',
+        email: 'ppassey0@amazonaws.com',
+        numbers: 10,
+      },
+      {
+        __id: 1,
+        id: '2',
+        first_name: 'Bessie',
+        last_name: 'Docker',
+        email: 'bdocker1@pagesperso-orange.fr',
+        numbers: 20,
+      },
+      {
+        __id: 2,
+        id: '3',
+        first_name: 'Tybi',
+        last_name: 'Fantini',
+        email: 'tfantini2@reference.com',
+        numbers: 30,
+      },
+      {
+        __id: 3,
+        id: '4',
+        first_name: 'Felix',
+        last_name: 'Freak',
+        email: 'ffreak3@google.nl',
+        numbers: 40,
+      },
+      {
+        __id: 4,
+        id: '5',
+        first_name: 'Gay',
+        last_name: 'Cutchee',
+        email: 'gcutchee4@ifeng.com',
+        numbers: 50,
+      },
+    ]);
   });
 });
