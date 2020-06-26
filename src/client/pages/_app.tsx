@@ -25,6 +25,8 @@ const ElevatedBox = styled(Box)`
 function findCurrentMenuItem(pathname: string): MenuItem {
   if (pathname.includes('chart')) {
     return MenuItem.CHARTS;
+  } else if (pathname.includes('dataframes')) {
+    return MenuItem.DATAFRAMES;
   }
 
   return MenuItem.PROJECTS;
@@ -45,8 +47,15 @@ function App({ children }: { children: ReactElement }) {
         if (currentProject) {
           const route = routes.charts(currentProject.id);
           router.push(route.href, route.as);
-          break;
         }
+        break;
+      }
+      case MenuItem.DATAFRAMES: {
+        if (currentProject) {
+          const route = routes.dataFrames(currentProject.id);
+          router.push(route.href, route.as);
+        }
+        break;
       }
     }
   };

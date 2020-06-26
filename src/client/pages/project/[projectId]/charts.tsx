@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useCharts } from '../../../store/selectors';
-import { ChartPreview, CreateNewChart } from '../../../components/charts/ChartPreview';
+import { ChartPreview } from '../../../components/charts/ChartPreview';
 import { Flex, Box } from 'reflexbox';
 import { routes } from '../../../config/routes';
 import { useCurrentProject } from '../../../store/hooks';
@@ -8,6 +8,7 @@ import { Project, ChartState } from '../../../store/project';
 import React from 'react';
 import Head from 'next/head';
 import { ID } from '../../../store/state';
+import { CreateNewCard } from '../../../components/misc/PreviewCard';
 
 function Charts() {
   const router = useRouter();
@@ -36,7 +37,7 @@ function Charts() {
         ))}
 
         <Box m={5} marginTop={4}>
-          <CreateNewChart onClick={navigateToChartPage()} />
+          <CreateNewCard label={'Create new chart...'} onClick={navigateToChartPage()} />
         </Box>
       </Flex>
     </>

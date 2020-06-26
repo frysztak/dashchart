@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import { Flex } from 'reflexbox';
 import { Text } from 'rebass';
 import { BottomBoxShadow, RightBoxShadow } from './BoxShadow';
+import { LightText } from './LightText';
 
 const nbsp = '\u00A0';
 
@@ -35,5 +36,15 @@ export function PreviewCard({
         </BottomBoxShadow>
       </Background>
     </Flex>
+  );
+}
+
+export function CreateNewCard({ label, onClick }: { label: string; onClick?: () => void }) {
+  return (
+    <PreviewCard title={''} onClick={onClick}>
+      <Flex justifyContent={'center'} height={'100%'} alignItems={'center'}>
+        <LightText fontSize={3}>{label}</LightText>
+      </Flex>
+    </PreviewCard>
   );
 }

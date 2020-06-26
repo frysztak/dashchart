@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "shared": {
-      "signature": "c59d0c6de392b21eb1cab87817dcfb6b",
+      "signature": "6192dd2548eee9b7a7e2cac2ff0c402d",
       "file": true,
       "replaced": "^0.2.0"
     }

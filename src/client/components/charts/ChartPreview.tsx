@@ -1,6 +1,4 @@
 import React from 'react';
-import { LightText } from '../misc/LightText';
-import { Flex } from 'reflexbox';
 import { ChartState, Project } from '../../store/project';
 import { AggregateChart } from './AggregateChart';
 import { AxisPosition, ChartProps } from './common/Props';
@@ -14,22 +12,6 @@ import { useDataFrames, useProject } from '../../store/selectors';
 import { pipe } from 'fp-ts/es6/pipeable';
 import { PreviewCard } from '../misc/PreviewCard';
 import { Theme, useTheme } from '../../config/Theme';
-
-interface BaseProps {
-  onClick: () => void;
-}
-
-export type CreateNewChartProps = BaseProps;
-
-export function CreateNewChart(props: CreateNewChartProps) {
-  return (
-    <PreviewCard title={''}>
-      <Flex justifyContent={'center'} height={'100%'} alignItems={'center'} onClick={props.onClick}>
-        <LightText fontSize={3}>Create new chart...</LightText>
-      </Flex>
-    </PreviewCard>
-  );
-}
 
 export type ChartPreviewProps = ChartState & {
   projectId: number;

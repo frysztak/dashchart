@@ -1,6 +1,6 @@
 import React from 'react';
 import { select, withKnobs } from '@storybook/addon-knobs';
-import { ChartPreview, ChartPreviewProps, CreateNewChart } from './ChartPreview';
+import { ChartPreview, ChartPreviewProps } from './ChartPreview';
 import { ColumnType, DataFrame } from 'shared/DataFrame/index';
 import { AxisScale, ChartDimensions, ChartType, UserEditableChartProps } from './common/Props';
 import { DropZoneLocation } from '../chartcreator/DragNDrop';
@@ -49,10 +49,6 @@ const dimensions: ChartDimensions = {
     right: 80,
     bottom: 50,
   },
-};
-
-export const CreateNewChartStory = () => {
-  return <CreateNewChart onClick={() => {}} />;
 };
 
 export const ChartPreviewSingle = () => {
