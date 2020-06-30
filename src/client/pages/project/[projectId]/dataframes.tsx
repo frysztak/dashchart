@@ -1,20 +1,19 @@
 import { useRouter } from 'next/router';
-import { useDataFrames } from '../../../store/selectors';
+import { useDataFrameContainers } from '../../../store/selectors';
 import { Flex, Box } from 'reflexbox';
 import { routes } from '../../../config/routes';
 import { useCurrentProject } from '../../../store/hooks';
-import { Project } from '../../../store/project';
+import { Project, DataFrameContainer } from '../../../store/project';
 import React from 'react';
 import Head from 'next/head';
 import { ID } from '../../../store/state';
-import { DataFrame } from 'shared/DataFrame';
 import { DataFramePreview } from '../../../components/dataframe/DataFramePreview';
 import { CreateNewCard } from '../../../components/misc/PreviewCard';
 
 function DataFrames() {
   const router = useRouter();
   const project: Project | null = useCurrentProject();
-  const dataFrames: DataFrame[] = useDataFrames(project);
+  const dataFrames: DataFrameContainer[] = useDataFrameContainers(project);
 
   if (project === null) {
     return <>Project not found.</>;
@@ -32,14 +31,14 @@ function DataFrames() {
         <title>{project.name} :: data frames</title>
       </Head>
       <Flex flexWrap={'wrap'}>
-        {dataFrames.map(df => (
-          <Box m={5} marginTop={4} key={df.name}>
-            <DataFramePreview dataFrame={df} onClick={navigateToDataFramePage} />
+        {dataFrames.map(dfContainer => (
+          <Box m={5} marginTop={4} key={dfContainer.dataFrame.name}>
+            <DataFramePreview dataFrame={dfContainer.dataFrame} onClick={navigateToDataFramePage(dfContainer.id)} />
           </Box>
         ))}
 
         <Box m={5} marginTop={4}>
-          <CreateNewCard label={'Create new Data Frame...'} onClick={navigateToDataFramePage} />
+          <CreateNewCard label={'Create new Data Frame...'} onClick={navigateToDataFramePage()} />
         </Box>
       </Flex>
     </>

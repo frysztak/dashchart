@@ -1,24 +1,27 @@
 import baseStyled, { ThemedStyledInterface, useTheme as useThemeStyled } from 'styled-components';
 import React from 'react';
+import { darken } from 'polished';
+
+const colors = {
+  black: '#000',
+  almostWhite: '#FDFDFD',
+  lightGrey: '#F5F7FB',
+  grey: '#999999',
+  grey2: '#CCCCCC',
+
+  pink: '#e7d8d8',
+  palePink: '#F7F2F2',
+  darkPink: '#CAA9A9',
+
+  blue: '#46539E',
+  paleBlue: '#AFB6DC',
+
+  red: '#C1292E',
+  yellow: '#f1d302',
+};
 
 export const theme = {
-  colors: {
-    black: '#000',
-    almostWhite: '#FDFDFD',
-    lightGrey: '#F5F7FB',
-    grey: '#999999',
-    grey2: '#CCCCCC',
-
-    pink: '#e7d8d8',
-    palePink: '#F7F2F2',
-    darkPink: '#CAA9A9',
-
-    blue: '#46539E',
-    paleBlue: '#AFB6DC',
-
-    red: '#C1292E',
-    yellow: '#f1d302',
-  },
+  colors,
   fonts: {
     light: "'Signika Light', sans-serif",
   },
@@ -40,6 +43,17 @@ export const theme = {
   previewCard: {
     width: 350,
     height: 200,
+  },
+  buttons: {
+    primary: {
+      bg: 'darkPink',
+      color: 'almostWhite',
+      '&:hover': {
+        cursor: 'pointer',
+        bg: darken(0.1, colors.darkPink),
+        transition: 'background-color 0.25s ease',
+      },
+    },
   },
 };
 

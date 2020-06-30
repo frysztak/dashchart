@@ -7,6 +7,7 @@ import { keys } from 'shared/utils/Collection';
 export enum PropType {
   ENUM = 'ENUM',
   NUMBER = 'NUMBER',
+  STRING = 'STRING',
 }
 
 type BaseEditorProps = {
@@ -27,6 +28,10 @@ export type PropEditorProps =
       value: number;
       min?: number;
       max?: number;
+    })
+  | (BaseEditorProps & {
+      type: PropType.STRING;
+      value: string;
     });
 
 export function PropEditor(props: PropEditorProps) {
@@ -63,6 +68,10 @@ export function PropEditor(props: PropEditorProps) {
             required={true}
             onChange={handleChange}
           />
+        );
+      case PropType.STRING:
+        return (
+          <Input id={field} name={field} type='text' value={props.value} required={true} onChange={handleChange} />
         );
     }
   };

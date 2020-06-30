@@ -13,7 +13,7 @@ export const routes = {
 
   dataFrames: (projectId: ID) => createRoute('/project/[projectId]/dataframes', { projectId }),
   dataFrame: (projectId: ID, dataFrameId: ID) =>
-    createRoute('/project/[projectId]/dataframes/[dataFrameId]', { projectId, dataFrameId }),
+    createRoute('/project/[projectId]/dataframe/[dataFrameId]', { projectId, dataFrameId }),
   newDataFrame: (projectId: ID) =>
-    createRoute('/project/[projectId]/dataframes/[dataFrameId]', { projectId, dataFrameId: 'new' }),
+    createRoute('/project/[projectId]/dataframe/[dataFrameId]', { projectId, dataFrameId: 'new' }),
 };

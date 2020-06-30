@@ -25,7 +25,7 @@ const ElevatedBox = styled(Box)`
 function findCurrentMenuItem(pathname: string): MenuItem {
   if (pathname.includes('chart')) {
     return MenuItem.CHARTS;
-  } else if (pathname.includes('dataframes')) {
+  } else if (pathname.includes('dataframe')) {
     return MenuItem.DATAFRAMES;
   }
 
