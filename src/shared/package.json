@@ -10,8 +10,11 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.9.5",
+    "@types/fetch-mock": "^7.3.2",
     "@types/jest": "^25.2.1",
+    "fetch-mock": "^9.10.3",
     "jest": "^25.4.0",
+    "node-fetch": "^2.6.0",
     "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
   },

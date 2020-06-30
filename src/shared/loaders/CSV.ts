@@ -23,7 +23,10 @@ const defaultSettings: CSVLoaderSettings = {
 export class CSVLoader implements ILoader {
   loadUrl(url: string, settings: CSVLoaderSettings = defaultSettings): TaskEither<Error, DataFrame> {
     const fetchTask = tryCatch<Error, any>(
-      () => wretch(url).get(),
+      () =>
+        wretch(url)
+          .get()
+          .text(),
       reason => new Error(String(reason)),
     );
 
