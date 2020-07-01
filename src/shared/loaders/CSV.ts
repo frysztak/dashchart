@@ -70,18 +70,24 @@ export class CSVLoader implements ILoader {
       () =>
         new Promise(async (resolve, reject) => {
           let df: Result<DataFrame> = Ok(frame);
-          for await (const line of parser) {
-            df = processLine(df, line);
+
+          parser.on('readable', () => {
+            let line;
+            while ((line = parser.read())) {
+              df = processLine(df, line);
+            }
+          });
+
+          parser.on('error', err => {
+            reject(err);
+          });
+
+          parser.on('end', () => {
             fold(
               error => reject(error),
-              _ => {},
+              (frame: DataFrame) => resolve(frame),
             )(df);
-          }
-
-          fold(
-            error => reject(error),
-            (frame: DataFrame) => resolve(frame),
-          )(df);
+          });
         }),
       reason => new Error(String(reason)),
     );

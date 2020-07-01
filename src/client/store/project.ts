@@ -109,9 +109,7 @@ export const downloadDataFrame = createAsyncThunk(
   'dataFrame/download',
   async (payload: DownloadDataFramePayload, thunkAPI) => {
     const loader = new CSVLoader();
-    debugger;
-    const task = loader.loadUrl(payload.source);
-    const result: Result<DataFrame> = await task();
+    const result: Result<DataFrame> = await loader.loadUrl(payload.source)();
     console.log('result', result);
     if (isLeft(result)) {
       return thunkAPI.rejectWithValue(result.left);

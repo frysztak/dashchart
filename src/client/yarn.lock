@@ -10939,7 +10939,7 @@ shallowequal@^1.1.0:
   integrity sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==
 
 "shared@file:.yalc/shared":
-  version "1.0.0-6192dd25"
+  version "1.0.0-cf810f17"
   dependencies:
     fp-ts "^2.5.3"
     wretch "^1.7.2"
