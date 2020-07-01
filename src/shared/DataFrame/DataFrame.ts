@@ -164,18 +164,20 @@ export function convertToDataTable(df: DataFrame): [TableColumn[], TableRow[]] {
   }));
 
   const nRows: number = Math.min(...dfColumns.map(([_, col]) => col.values.length));
-  const rows: TableRow[] = [...Array(nRows)].map((_, rowIdx: number) => {
-    return {
-      __id: rowIdx,
-      ...dfColumns.reduce(
-        (acc, [colName, col]) => ({
-          ...acc,
-          [colName]: col.values[rowIdx],
-        }),
-        {},
-      ),
-    };
-  });
+  const rows: TableRow[] = isFinite(nRows)
+    ? [...Array(nRows)].map((_, rowIdx: number) => {
+        return {
+          __id: rowIdx,
+          ...dfColumns.reduce(
+            (acc, [colName, col]) => ({
+              ...acc,
+              [colName]: col.values[rowIdx],
+            }),
+            {},
+          ),
+        };
+      })
+    : [];
 
   return [columns, rows];
 }
