@@ -3,9 +3,11 @@ import { useEffect } from 'react';
 
 export const AutoSubmit = () => {
   // Grab values and submitForm from context
-  const { values, submitForm } = useFormikContext();
+  const { values, submitForm, dirty } = useFormikContext();
   useEffect(() => {
-    submitForm();
+    if (dirty) {
+      submitForm();
+    }
   }, [values, submitForm]);
   return null;
 };
