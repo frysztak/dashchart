@@ -2,10 +2,17 @@ import { useRouter } from 'next/router';
 import { AppState, ID } from './state';
 import { isNumeric } from 'shared/utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { setCurrentProject } from './current';
-import { Project, ChartState } from './project';
-import { useChartById, useCurrentProjectId } from './selectors';
+import { useEffect, useState } from 'react';
+import { setCurrentProject, setEditedDataFrame } from './current';
+import { Project, ChartState, DataFrameContainer, DataFrameLoadingState } from './project';
+import {
+  useChartById,
+  useCurrentProjectFromStore,
+  useCurrentProjectId,
+  useDataFrameById,
+  useDataFrameContainers,
+  useEditedDataFrame,
+} from './selectors';
 import { resetCurrentColumns, setCurrentColumns } from './chartCreator';
 
 export function useCurrentProject(): Project | null {
@@ -43,4 +50,62 @@ export function useCurrentChart(): ChartState | null {
   }, []);
 
   return chart;
+}
+
+export function useNextDataFrameId(): ID {
+  const project: Project | null = useCurrentProjectFromStore();
+  const dataFrames: DataFrameContainer[] = useDataFrameContainers(project);
+  const maxId: ID = Math.max(...dataFrames.map(df => df.id));
+  const nextDataFrameId: ID = isFinite(maxId) ? maxId + 1 : 1;
+  return nextDataFrameId;
+}
+
+export function useCurrentDataFrame(): [DataFrameContainer | null, boolean] {
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const isNewDataFrame: boolean = 'dataFrameId' in router.query && router.query.dataFrameId === 'new';
+  const isChartIdValid: boolean = 'dataFrameId' in router.query && isNumeric(router.query.dataFrameId);
+  const dataFrameId: ID | null = isChartIdValid ? +router.query.dataFrameId! : null;
+  const [newDataFrameEmitted, setNewDataFrameEmitted] = useState(false);
+  const editedDataFrame: DataFrameContainer | null = useEditedDataFrame();
+  const dataFrameFromStore: DataFrameContainer | null = useDataFrameById(dataFrameId);
+  const nextDataFrameId: ID = useNextDataFrameId();
+  const container = editedDataFrame ?? dataFrameFromStore;
+
+  useEffect(() => {
+    if (isNewDataFrame && !newDataFrameEmitted) {
+      dispatch(
+        setEditedDataFrame({
+          id: nextDataFrameId,
+          source: '',
+          state: DataFrameLoadingState.IDLE,
+          dataFrame: {
+            name: 'New Data Frame',
+            columns: {},
+          },
+        }),
+      );
+      setNewDataFrameEmitted(true);
+    }
+  }, [isNewDataFrame, newDataFrameEmitted]);
+
+  useEffect(() => {
+    if (isNewDataFrame && container) {
+      dispatch(
+        setEditedDataFrame({
+          ...container,
+          id: nextDataFrameId,
+        }),
+      );
+    }
+  }, [nextDataFrameId, isNewDataFrame]);
+
+  useEffect(() => {
+    if (dataFrameId !== null && container && editedDataFrame === null) {
+      dispatch(setEditedDataFrame(container));
+    }
+  }, [container]);
+
+  return [container, isNewDataFrame];
 }

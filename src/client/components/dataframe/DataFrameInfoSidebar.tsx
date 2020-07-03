@@ -26,7 +26,7 @@ export function DataFrameInfoSidebar(props: DataFrameInfoSidebarProps) {
         </Flex>
 
         <Box mx={2}>
-          <Formik initialValues={dataFrameContainer} onSubmit={update}>
+          <Formik enableReinitialize={true} initialValues={dataFrameContainer} onSubmit={update}>
             {props => (
               <WideForm onSubmit={props.handleSubmit}>
                 <PropEditor

@@ -1,23 +1,22 @@
 import { useDispatch } from 'react-redux';
-import { DataFrameContainer, Project } from '../../../../store/project';
-import { useCurrentProject } from '../../../../store/hooks';
-import { useRouter } from 'next/router';
-import { isNumeric } from 'shared/utils/index';
-import { ID } from '../../../../store/state';
-import { useDataFrameById } from '../../../../store/selectors';
+import { DataFrameContainer, Project, saveDataFrame as saveDataFrameAction } from '../../../../store/project';
+import { useCurrentDataFrame, useCurrentProject } from '../../../../store/hooks';
+import {
+  downloadDataFrame as downloadDataFrameAction,
+  resetEditedDataFrame,
+  setEditedDataFrame,
+} from '../../../../store/current';
 import { ErrorMessage } from '../../../../components/misc/ErrorMessage';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { Box, Flex } from 'reflexbox';
 import { LeftBoxShadow } from '../../../../components/misc/BoxShadow';
-import { convertToDataTable } from 'shared/DataFrame/index';
+import { convertToDataTable } from 'shared/DataFrame';
 import { DataFrameInfoSidebar } from '../../../../components/dataframe/DataFrameInfoSidebar';
 import DataTable from 'react-data-table-component';
 import { styled } from '../../../../config/Theme';
-import {
-  saveDataFrame as saveDataFrameAction,
-  downloadDataFrame as downloadDataFrameAction,
-} from '../../../../store/project';
+import { useRouter } from 'next/router';
+import { routes } from '../../../../config/routes';
 
 const StyledDataTable = styled(DataTable)`
   width: auto;
@@ -28,41 +27,32 @@ function DataFramePage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const project: Project | null = useCurrentProject();
+  const [container, isNew] = useCurrentDataFrame();
 
-  const isNewDataFrame: boolean = 'dataFrameId' in router.query && router.query.dataFrameId === 'new';
-  const isChartIdValid: boolean = 'dataFrameId' in router.query && isNumeric(router.query.dataFrameId);
-  const dataFrameId: ID | null = isChartIdValid ? +router.query.dataFrameId! : null;
-  const dfContainerFromStore: DataFrameContainer | null = useDataFrameById(dataFrameId);
-
-  const [dfContainer, setDFContainer] = useState(
-    dfContainerFromStore ??
-      ({
-        id: dataFrameId,
-        source: '',
-        dataFrame: {
-          name: 'New Data Frame',
-        },
-      } as DataFrameContainer),
-  );
+  useEffect(() => {
+    return () => {
+      dispatch(resetEditedDataFrame());
+    };
+  }, []);
 
   if (project === null) {
     return <ErrorMessage message={'Project not found.'} />;
   }
 
-  if (dfContainer === null && !isNewDataFrame) {
+  if (container === null) {
     return <ErrorMessage message={'Data Frame not found.'} />;
   }
 
   const updateDataFrame = (newDataFrameContainer: DataFrameContainer) => {
-    setDFContainer(newDataFrameContainer);
+    dispatch(setEditedDataFrame(newDataFrameContainer));
   };
 
   const downloadDataFrame = () => {
     dispatch(
       downloadDataFrameAction({
         projectId: project.id,
-        dataFrameId: dfContainer.id,
-        source: dfContainer.source,
+        dataFrameId: container.id,
+        source: container.source,
       }),
     );
   };
@@ -71,12 +61,17 @@ function DataFramePage() {
     dispatch(
       saveDataFrameAction({
         projectId: project.id,
-        container: dfContainer,
+        container: container,
       }),
     );
+
+    if (isNew) {
+      const route = routes.dataFrame(project.id, container.id);
+      router.push(route.href, route.as);
+    }
   };
 
-  const [columns, rows] = convertToDataTable(dfContainer.dataFrame);
+  const [columns, rows] = convertToDataTable(container.dataFrame);
   const styledColumns = columns.map(col => ({
     ...col,
     sortable: true,
@@ -86,7 +81,7 @@ function DataFramePage() {
     <>
       <Head>
         <title>
-          {project.name} :: {dfContainer?.dataFrame.name || 'new Data Frame'}
+          {project.name} :: {container?.dataFrame.name || 'new Data Frame'}
         </title>
       </Head>
       <Flex height={'100%'}>
@@ -96,7 +91,7 @@ function DataFramePage() {
         <Box>
           <LeftBoxShadow>
             <DataFrameInfoSidebar
-              dataFrameContainer={dfContainer}
+              dataFrameContainer={container}
               update={updateDataFrame}
               onDownloadClick={downloadDataFrame}
               onSaveClick={saveDataFrame}

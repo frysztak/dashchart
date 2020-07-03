@@ -32,10 +32,12 @@ export const useDataFrameContainers = (project: Project | null): DataFrameContai
   project ? Object.values(project.dataFrames) : [];
 
 export const useDataFrameById = (dataFrameId: ID | null): DataFrameContainer | null => {
-  if (dataFrameId === null) return null;
   const project: Project | null = useCurrentProjectFromStore();
-  if (project === null) return null;
+  if (project === null || dataFrameId === null) return null;
   return dataFrameId in project.dataFrames ? project.dataFrames[dataFrameId] : null;
 };
+
+export const useEditedDataFrame = (): DataFrameContainer | null =>
+  useSelector((state: AppState) => state.current.editedDataFrame);
 
 export const useChartCreator = () => useSelector((state: AppState) => state.chartCreator);

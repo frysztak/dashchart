@@ -1,13 +1,10 @@
 import { DataFrame } from 'shared/DataFrame';
-import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { ID } from './state';
 import { ColumnType } from '../../shared/DataFrame';
 import { DropZoneValues } from '../components/chartcreator/DragNDrop';
 import { ColumnId } from 'shared/DataFrame/index';
 import { UserEditableChartProps } from '../components/charts/common/Props';
-import { CSVLoader } from 'shared/loaders/CSV';
-import { Result, takeRight } from 'shared/utils';
-import { isLeft } from 'fp-ts/es6/Either';
 
 export type Projects = Record<ID, Project>;
 
@@ -100,25 +97,6 @@ export interface SaveDataFramePayload {
 }
 export const saveDataFrame = createAction<SaveDataFramePayload>('dataFrame/save');
 
-export interface DownloadDataFramePayload {
-  projectId: ID;
-  dataFrameId: ID;
-  source: string;
-}
-export const downloadDataFrame = createAsyncThunk(
-  'dataFrame/download',
-  async (payload: DownloadDataFramePayload, thunkAPI) => {
-    const loader = new CSVLoader();
-    const result: Result<DataFrame> = await loader.loadUrl(payload.source)();
-    console.log('result', result);
-    if (isLeft(result)) {
-      return thunkAPI.rejectWithValue(result.left);
-    }
-
-    return takeRight(result);
-  },
-);
-
 export const projectReducer = createReducer(initialProjects, builder =>
   builder
     .addCase(saveChart, (state, action) => {
@@ -128,19 +106,5 @@ export const projectReducer = createReducer(initialProjects, builder =>
     .addCase(saveDataFrame, (state, action) => {
       const { projectId, container } = action.payload;
       state[projectId].dataFrames[container.id] = container;
-    })
-    .addCase(downloadDataFrame.pending, (state, action) => {
-      const { projectId, dataFrameId } = action.meta.arg;
-      state[projectId].dataFrames[dataFrameId].state = DataFrameLoadingState.LOADING;
-    })
-    .addCase(downloadDataFrame.fulfilled, (state, action) => {
-      const dataFrame: DataFrame = action.payload;
-      const { projectId, dataFrameId } = action.meta.arg;
-      state[projectId].dataFrames[dataFrameId].state = DataFrameLoadingState.IDLE;
-      state[projectId].dataFrames[dataFrameId].dataFrame = dataFrame;
-    })
-    .addCase(downloadDataFrame.rejected, (state, action) => {
-      const { projectId, dataFrameId } = action.meta.arg;
-      state[projectId].dataFrames[dataFrameId].state = DataFrameLoadingState.ERROR;
     }),
 );
