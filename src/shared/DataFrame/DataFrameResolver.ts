@@ -2,6 +2,7 @@ import { Result, Err } from '../utils';
 import { DataFrame, Column, getColumn } from './DataFrame';
 
 export interface ColumnId {
+  dataFrameId: number;
   dataFrameName: string;
   columnName: string;
 }
@@ -15,9 +16,9 @@ export function resolveColumnId(dataFrames: DataFrame[], id: ColumnId): Result<C
     return Err('DataFrames list is empty.');
   }
 
-  const dataFrame: DataFrame | undefined = dataFrames.find(df => df.name === id.dataFrameName);
+  const dataFrame: DataFrame | undefined = dataFrames.find(df => df.id === id.dataFrameId);
   if (!dataFrame) {
-    return Err(`DataFrame of name '${id.dataFrameName}' not found.`);
+    return Err(`DataFrame of name '${id.dataFrameId}' not found.`);
   }
 
   return getColumn(dataFrame, id.columnName);

@@ -7,6 +7,7 @@ export default { title: 'DataFrame', decorators: [withKnobs] };
 
 export const DataFrameSidebarStory = () => {
   const frame: DataFrame = {
+    id: 1,
     name: 'My DF',
     columns: {
       id: {

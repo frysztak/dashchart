@@ -9,16 +9,18 @@ import { DraggedColumn } from '../chartcreator/DropZone';
 
 export interface DraggableColumnNameProps {
   columnName: string;
+  dataFrameId: number;
   dataFrameName: string;
   column: Column;
 }
 
 export function DraggableColumnName(props: DraggableColumnNameProps) {
-  const { columnName, dataFrameName, column } = props;
+  const { columnName, dataFrameId, dataFrameName, column } = props;
 
   const [, drag] = useDrag({
     item: {
       type: DragAndDropItemType.COLUMN,
+      dataFrameId: dataFrameId,
       dataFrameName: dataFrameName,
       columnName: columnName,
     } as DraggedColumn,

@@ -6,6 +6,7 @@ import { DataFramePreview } from './DataFramePreview';
 export default { title: 'DataFrame Preview', decorators: [withKnobs] };
 
 const dataFrame: DataFrame = {
+  id: 1,
   name: 'My DF',
   columns: {
     id: {

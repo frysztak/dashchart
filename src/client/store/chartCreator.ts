@@ -19,7 +19,7 @@ export const setCurrentColumns = createAction<DropZoneValues<ColumnId>>('setCurr
 export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
   builder
     .addCase(dropColumn, (state, action) => {
-      const { fromLocation, toLocation, columnName, dataFrameName } = action.payload;
+      const { fromLocation, toLocation, columnName, dataFrameId, dataFrameName } = action.payload;
 
       if (fromLocation) {
         delete state.currentColumns[fromLocation];
@@ -27,11 +27,12 @@ export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
 
       state.currentColumns[toLocation] = {
         columnName,
-        dataFrameName,
+        dataFrameId: dataFrameId,
+        dataFrameName: dataFrameName,
       };
     })
     .addCase(deleteColumn, (state, action) => {
-      const { fromLocation, columnName, dataFrameName } = action.payload;
+      const { fromLocation, columnName, dataFrameId } = action.payload;
       delete state.currentColumns[fromLocation];
     })
     .addCase(resetCurrentColumns, (state, action) => {

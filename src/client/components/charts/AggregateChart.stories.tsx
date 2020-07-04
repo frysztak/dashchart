@@ -19,6 +19,7 @@ import { DefaultAxisStyle, DefaultChartProps } from './common/Defaults';
 export default { title: 'AggregateChart', decorators: [withKnobs] };
 
 const dataFrame: DataFrame = {
+  id: 1,
   name: 'My DF',
   columns: {
     id: {
@@ -64,10 +65,12 @@ const dimensions: ChartDimensions = {
 export const xyChart = () => {
   const droppedColumns = {
     [DropZoneLocation.BOTTOM]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'id',
     },
     [DropZoneLocation.LEFT]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'numbers',
     },
@@ -104,14 +107,17 @@ export const xyChart = () => {
 export const xyyChart = () => {
   const droppedColumns = {
     [DropZoneLocation.BOTTOM]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'id',
     },
     [DropZoneLocation.LEFT]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'numbers',
     },
     [DropZoneLocation.RIGHT]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'last_name',
     },

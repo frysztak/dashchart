@@ -50,8 +50,8 @@ const RelativeBox = styled(Box)`
 function ChartPage() {
   const dispatch = useDispatch();
   const project: Project | null = useCurrentProject();
-  const chart: ChartState | null = useCurrentChart();
   const dataFrames: DataFrame[] = useDataFrames(project);
+  const chart: ChartState | null = useCurrentChart(dataFrames);
   const chartCreator: ChartCreatorState | null = useChartCreator();
   const [layoutMode, setLayoutMode] = useState(true);
   const toggleLayoutMode = () => setLayoutMode(!layoutMode);

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { AppState, ID } from './state';
-import { isNumeric } from 'shared/utils';
+import { isNumeric, keys } from 'shared/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { setCurrentProject, setEditedDataFrame } from './current';
@@ -14,6 +14,8 @@ import {
   useEditedDataFrame,
 } from './selectors';
 import { resetCurrentColumns, setCurrentColumns } from './chartCreator';
+import { DropZoneValues } from '../components/chartcreator/DragNDrop';
+import { ColumnId, DataFrame } from 'shared/DataFrame';
 
 export function useCurrentProject(): Project | null {
   const router = useRouter();
@@ -32,7 +34,7 @@ export function useCurrentProject(): Project | null {
   return useSelector((state: AppState) => (projectId === null ? null : state.projects[projectId]));
 }
 
-export function useCurrentChart(): ChartState | null {
+export function useCurrentChart(dataFrames: DataFrame[]): ChartState | null {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -45,7 +47,17 @@ export function useCurrentChart(): ChartState | null {
     if (isNewChart) {
       dispatch(resetCurrentColumns());
     } else if (chartId !== null && chart) {
-      dispatch(setCurrentColumns(chart.columns));
+      const columnsWithNames: DropZoneValues<ColumnId> = keys(chart.columns).reduce((acc, location) => {
+        const column = chart.columns[location]!;
+        return {
+          ...acc,
+          [location]: {
+            ...chart.columns[location]!,
+            dataFrameName: dataFrames.find(df => df.id === column.dataFrameId)?.name || 'Unknown DF',
+          },
+        };
+      }, {});
+      dispatch(setCurrentColumns(columnsWithNames));
     }
   }, []);
 
@@ -81,6 +93,7 @@ export function useCurrentDataFrame(): [DataFrameContainer | null, boolean] {
           source: '',
           state: DataFrameLoadingState.IDLE,
           dataFrame: {
+            id: nextDataFrameId,
             name: 'New Data Frame',
             columns: {},
           },

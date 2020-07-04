@@ -17,6 +17,7 @@ describe('DataFrame', () => {
 
   beforeEach(() => {
     frame = {
+      id: 1,
       name: 'My DF',
       columns: {
         id: {
@@ -157,6 +158,7 @@ describe('DataFrame', () => {
 
     test('works with empty Data Frame', () => {
       const [columns, rows] = convertToDataTable({
+        id: 1,
         name: '',
         columns: {},
       });

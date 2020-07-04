@@ -49,6 +49,7 @@ export const initialProjects: Projects = {
         source: '',
         state: DataFrameLoadingState.IDLE,
         dataFrame: {
+          id: 1,
           name: 'My DF',
           columns: {
             id: {

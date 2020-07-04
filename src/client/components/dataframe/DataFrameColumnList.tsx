@@ -27,7 +27,13 @@ export function DataFrameColumnList(props: DataFrameColumnListProps) {
       </Flex>
       {expanded
         ? getColumns(dataFrame).map(([name, col]: [string, Column]) => (
-            <DraggableColumnName dataFrameName={dataFrame.name} columnName={name} column={col} key={name} />
+            <DraggableColumnName
+              dataFrameId={dataFrame.id}
+              dataFrameName={dataFrame.name}
+              columnName={name}
+              column={col}
+              key={name}
+            />
           ))
         : null}
     </Flex>

@@ -23,6 +23,7 @@ export type Column =
     });
 
 export interface DataFrame {
+  id: number;
   name: string;
   columns: Record<string, Column>;
 }

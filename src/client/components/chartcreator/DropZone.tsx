@@ -85,6 +85,7 @@ function ColumnName(props: DropZoneProps) {
   const [, drag] = useDrag({
     item: {
       type: DragAndDropItemType.COLUMN,
+      dataFrameId: column?.dataFrameId,
       dataFrameName: column?.dataFrameName,
       columnName: column?.columnName,
       fromLocation: location,
@@ -117,6 +118,7 @@ function ColumnName(props: DropZoneProps) {
 export interface DraggedColumn {
   type: DragAndDropItemType;
   columnName: string;
+  dataFrameId: number;
   dataFrameName: string;
   fromLocation?: DropZoneLocation;
 }
@@ -134,6 +136,7 @@ export function DropZone(props: DropZoneProps) {
       dispatch(
         dropColumn({
           columnName: item.columnName,
+          dataFrameId: item.dataFrameId,
           dataFrameName: item.dataFrameName,
           fromLocation: item.fromLocation,
           toLocation: location,
@@ -160,6 +163,7 @@ export function DropZoneDumpster({ children }: { children: JSX.Element }) {
       dispatch(
         deleteColumn({
           columnName: item.columnName,
+          dataFrameId: item.dataFrameId,
           dataFrameName: item.dataFrameName,
           fromLocation: item.fromLocation!,
         }),

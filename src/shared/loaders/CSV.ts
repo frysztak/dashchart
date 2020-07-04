@@ -46,7 +46,7 @@ export class CSVLoader implements ILoader {
       info: true,
     });
 
-    let frame: DataFrame = { name: 'Imported CSV', columns: {} };
+    let frame: DataFrame = { id: 1, name: 'Imported CSV', columns: {} };
     return pipe(
       this.parseCSV(parser, frame, settings),
       chainTE((df: DataFrame) => right(inferColumnTypes(df))),

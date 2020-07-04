@@ -9,6 +9,7 @@ import { DefaultAxisStyle, DefaultChartProps } from './common/Defaults';
 export default { title: 'Chart Preview', decorators: [withKnobs] };
 
 const dataFrame: DataFrame = {
+  id: 1,
   name: 'My DF',
   columns: {
     id: {
@@ -54,10 +55,12 @@ const dimensions: ChartDimensions = {
 export const ChartPreviewSingle = () => {
   const droppedColumns = {
     [DropZoneLocation.BOTTOM]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'id',
     },
     [DropZoneLocation.LEFT]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'numbers',
     },
@@ -98,14 +101,17 @@ export const ChartPreviewSingle = () => {
 export const ChartPreviewDouble = () => {
   const droppedColumns = {
     [DropZoneLocation.BOTTOM]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'id',
     },
     [DropZoneLocation.LEFT]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'numbers',
     },
     [DropZoneLocation.TOP]: {
+      dataFrameId: 1,
       dataFrameName: 'My DF',
       columnName: 'last_name',
     },

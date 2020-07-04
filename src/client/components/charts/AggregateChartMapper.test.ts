@@ -19,6 +19,7 @@ import { DefaultAxisStyle, DefaultChartProps } from './common/Defaults';
 describe('AggregateChartMapper', () => {
   describe('mapDroppedColumns', () => {
     const frame: DataFrame = {
+      id: 1,
       name: 'My DF',
       columns: {
         id: {
@@ -58,7 +59,8 @@ describe('AggregateChartMapper', () => {
     it('fails with zero X axes', () => {
       const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.LEFT]: {
-          dataFrameName: 'DF',
+          dataFrameId: 1,
+          dataFrameName: 'My DF',
           columnName: 'col1',
         },
       });
@@ -68,7 +70,8 @@ describe('AggregateChartMapper', () => {
     it('fails with zero Y axes', () => {
       const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.BOTTOM]: {
-          dataFrameName: 'DF',
+          dataFrameId: 1,
+          dataFrameName: 'My DF',
           columnName: 'col1',
         },
       });
@@ -78,10 +81,12 @@ describe('AggregateChartMapper', () => {
     it('works with simple XY chart', () => {
       const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.BOTTOM]: {
+          dataFrameId: 1,
           dataFrameName: 'My DF',
           columnName: 'id',
         },
         [DropZoneLocation.LEFT]: {
+          dataFrameId: 1,
           dataFrameName: 'My DF',
           columnName: 'numbers',
         },
@@ -107,14 +112,17 @@ describe('AggregateChartMapper', () => {
     it('works with XYY chart', () => {
       const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.BOTTOM]: {
+          dataFrameId: 1,
           dataFrameName: 'My DF',
           columnName: 'id',
         },
         [DropZoneLocation.LEFT]: {
+          dataFrameId: 1,
           dataFrameName: 'My DF',
           columnName: 'numbers',
         },
         [DropZoneLocation.RIGHT]: {
+          dataFrameId: 1,
           dataFrameName: 'My DF',
           columnName: 'last_name',
         },
@@ -152,14 +160,17 @@ describe('AggregateChartMapper', () => {
     it('works with XXY chart', () => {
       const result: Result<PositionalChartData[]> = mapDroppedColumns([frame], {
         [DropZoneLocation.BOTTOM]: {
+          dataFrameId: 1,
           dataFrameName: 'My DF',
           columnName: 'id',
         },
         [DropZoneLocation.LEFT]: {
+          dataFrameId: 1,
           dataFrameName: 'My DF',
           columnName: 'numbers',
         },
         [DropZoneLocation.TOP]: {
+          dataFrameId: 1,
           dataFrameName: 'My DF',
           columnName: 'last_name',
         },
