@@ -51,7 +51,7 @@ function ChartPage() {
   const dispatch = useDispatch();
   const project: Project | null = useCurrentProject();
   const dataFrames: DataFrame[] = useDataFrames(project);
-  const chart: ChartState | null = useCurrentChart(dataFrames);
+  const [chart, isNewChart] = useCurrentChart(dataFrames);
   const chartCreator: ChartCreatorState | null = useChartCreator();
   const [layoutMode, setLayoutMode] = useState(true);
   const toggleLayoutMode = () => setLayoutMode(!layoutMode);
@@ -69,7 +69,10 @@ function ChartPage() {
   useEffect(() => setErrorBoundaryKey(errorBoundaryKey + 1), [userProps]);
 
   if (!project || !chartCreator) {
-    return <>Project not found.</>;
+    return <ErrorMessage message={'Project not found.'} />;
+  }
+  if (!isNewChart && !chart) {
+    return <ErrorMessage message={'Chart not found.'} />;
   }
 
   const onSaveChart = () => {

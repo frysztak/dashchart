@@ -34,7 +34,7 @@ export function useCurrentProject(): Project | null {
   return useSelector((state: AppState) => (projectId === null ? null : state.projects[projectId]));
 }
 
-export function useCurrentChart(dataFrames: DataFrame[]): ChartState | null {
+export function useCurrentChart(dataFrames: DataFrame[]): [ChartState | null, boolean] {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -61,7 +61,7 @@ export function useCurrentChart(dataFrames: DataFrame[]): ChartState | null {
     }
   }, []);
 
-  return chart;
+  return [chart, isNewChart];
 }
 
 export function useNextDataFrameId(): ID {
