@@ -35,7 +35,7 @@ export const downloadDataFrame = createAsyncThunk(
     const loader = new CSVLoader();
     const result: Result<DataFrame> = await loader.loadUrl(payload.source)();
     if (isLeft(result)) {
-      return thunkAPI.rejectWithValue(result.left);
+      return thunkAPI.rejectWithValue(result.left.message);
     }
 
     return takeRight(result);
@@ -75,8 +75,10 @@ export const currentReducer = createReducer(initialCurrent, builder =>
       }
     })
     .addCase(downloadDataFrame.rejected, (state, action) => {
+      const message = action.payload as string;
       if (state.editedDataFrame) {
         state.editedDataFrame.state = DataFrameLoadingState.ERROR;
+        state.editedDataFrame.errorMessage = message;
       }
     }),
 );

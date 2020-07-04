@@ -38,7 +38,8 @@
     "reflexbox": "^4.0.6",
     "shared": "file:.yalc/shared",
     "styled-components": "^5.1.0",
-    "styled-normalize": "^8.0.7"
+    "styled-normalize": "^8.0.7",
+    "yup": "^0.29.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -62,6 +63,7 @@
     "@types/reflexbox": "^4.0.0",
     "@types/styled-components": "^5.1.0",
     "@types/styled-jsx": "^2.2.8",
+    "@types/yup": "^0.29.3",
     "babel-jest": "^25.5.1",
     "babel-loader": "^8.1.0",
     "babel-plugin-styled-components": "^1.10.7",

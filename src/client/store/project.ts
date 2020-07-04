@@ -27,6 +27,7 @@ export interface DataFrameContainer {
   source: string;
   dataFrame: DataFrame;
   state: DataFrameLoadingState;
+  errorMessage?: string;
 }
 
 export interface ChartState {

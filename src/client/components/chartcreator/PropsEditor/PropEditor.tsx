@@ -3,6 +3,7 @@ import { Box, Flex } from 'reflexbox';
 import { Circle } from '@styled-icons/boxicons-solid';
 import { Label, Select, Input } from '@rebass/forms';
 import { keys } from 'shared/utils/Collection';
+import { FormErrorMessage } from './FormErrorMessage';
 
 export enum PropType {
   ENUM = 'ENUM',
@@ -14,6 +15,7 @@ type BaseEditorProps = {
   name: string;
   field: string;
   handleChange: (e: React.ChangeEvent<any>) => void;
+  errorMessage?: string;
 };
 
 export type PropEditorProps =
@@ -35,7 +37,7 @@ export type PropEditorProps =
     });
 
 export function PropEditor(props: PropEditorProps) {
-  const { name, field, handleChange } = props;
+  const { name, field, handleChange, errorMessage } = props;
 
   const valueInput = () => {
     switch (props.type) {
@@ -88,7 +90,10 @@ export function PropEditor(props: PropEditorProps) {
         </Label>
       </Box>
 
-      <Box width={1 / 2}>{valueInput()}</Box>
+      <Box width={1 / 2}>
+        {valueInput()}
+        <FormErrorMessage message={errorMessage} />
+      </Box>
     </Flex>
   );
 }

@@ -53,6 +53,10 @@ export const theme = {
         bg: darken(0.1, colors.darkPink),
         transition: 'background-color 0.25s ease',
       },
+      '&:disabled': {
+        cursor: 'not-allowed',
+        opacity: 0.5,
+      },
     },
   },
 };
