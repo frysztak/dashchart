@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_ENV=dev next dev",
-    "build": "NODE_ENV=prod next build",
+    "dev": "cross-env NODE_ENV=dev next dev",
+    "build": "cross-env NODE_ENV=prod next build",
     "start": "next start",
-    "storybook": "NODE_ENV=dev start-storybook -p 6006 -c .storybook --ci",
-    "test": "NODE_ENV=test jest"
+    "storybook": "cross-env NODE_ENV=dev start-storybook -p 6006 -c .storybook --ci",
+    "test": "cross-env NODE_ENV=test jest",
+    "analyze": "cross-env NODE_ENV=prod ANALYZE=true next build",
+    "analyze:server": "cross-env NODE_ENV=prod BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "cross-env NODE_ENV=prod BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
     "@rebass/forms": "^4.0.6",
@@ -45,6 +48,7 @@
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-export-default-from": "^7.8.3",
     "@babel/plugin-proposal-export-namespace-from": "^7.8.3",
+    "@next/bundle-analyzer": "9.3.5",
     "@storybook/addon-knobs": "^6.0.0-beta.12",
     "@storybook/addons": "^6.0.0-beta.12",
     "@storybook/preset-typescript": "^3.0.0",
@@ -68,6 +72,7 @@
     "babel-loader": "^8.1.0",
     "babel-plugin-styled-components": "^1.10.7",
     "babel-preset-react-app": "^9.1.2",
+    "cross-env": "^7.0.2",
     "jest": "^25.5.4",
     "ts-jest": "^25.4.0",
     "ts-loader": "^7.0.1",

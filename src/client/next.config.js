@@ -27,4 +27,8 @@ const withPolyfills = (nextConfig = {}) => {
   });
 };
 
-module.exports = pipe(withImages, withFonts, withTM)();
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+module.exports = pipe(withImages, withFonts, withTM, withBundleAnalyzer)();
