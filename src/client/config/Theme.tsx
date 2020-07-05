@@ -37,8 +37,8 @@ export const theme = {
     offsetX: '5px',
     offsetY: '5px',
     spread: '5px',
-    blur: '5px',
-    color: '#333',
+    blur: '10px',
+    color: 'rgba(0,0,0,0.3)',
   },
   previewCard: {
     width: 350,
