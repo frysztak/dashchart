@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 import { Box, Flex } from 'reflexbox';
 import { BottomBoxShadow } from '../components/misc/BoxShadow';
 import { DndProvider } from 'react-dnd';
-import Backend from 'react-dnd-html5-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import '../assets/fonts/font.css';
 import { routes } from '../config/routes';
@@ -90,7 +90,7 @@ export default ({ Component, pageProps }: AppProps) => {
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <DndProvider backend={Backend}>
+          <DndProvider backend={HTML5Backend}>
             <App>
               <Component {...pageProps} />
             </App>

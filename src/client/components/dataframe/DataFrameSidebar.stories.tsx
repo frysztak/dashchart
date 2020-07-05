@@ -3,7 +3,7 @@ import { ColumnType, DataFrame } from 'shared/DataFrame/index';
 import React from 'react';
 import { DataFrameSidebarProps, DataFrameSidebar } from './DataFrameSidebar';
 
-export default { title: 'DataFrame', decorators: [withKnobs] };
+export default { title: 'DataFrame Sidebar', decorators: [withKnobs] };
 
 export const DataFrameSidebarStory = () => {
   const frame: DataFrame = {

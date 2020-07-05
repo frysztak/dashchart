@@ -3,9 +3,9 @@ import { withKnobs } from '@storybook/addon-knobs';
 import { ColumnType, DataFrame } from 'shared/DataFrame';
 import { DataFrameColumnList, DataFrameColumnListProps } from './DataFrameColumnList';
 
-export default { title: 'DataFrame', decorators: [withKnobs] };
+export default { title: 'DataFrameColumnList', decorators: [withKnobs] };
 
-export const DataFrameColumns = () => {
+export const DataFrameColumnsListStory = () => {
   const frame: DataFrame = {
     id: 1,
     name: 'My DF',
