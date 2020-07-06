@@ -1,4 +1,4 @@
-import { DataFrameContainer, DataFrameLoadingState } from '../../store/project';
+import { DataFrameContainer, LoadingState } from '../../store/project';
 import { Sidebar } from '../misc/Sidebar';
 import { Box, Flex } from 'reflexbox';
 import { LightText } from '../misc/LightText';
@@ -82,7 +82,7 @@ export function DataFrameInfoSidebar(props: DataFrameInfoSidebarProps) {
                   <Button
                     type={'submit'}
                     onClick={onSaveClick}
-                    disabled={!isValid || dataFrameContainer.state !== DataFrameLoadingState.IDLE}
+                    disabled={!isValid || dataFrameContainer.state !== LoadingState.IDLE}
                   >
                     Save
                   </Button>

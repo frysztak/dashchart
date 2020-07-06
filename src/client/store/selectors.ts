@@ -1,12 +1,12 @@
 import { ID, AppState } from './state';
-import { Project, ChartState, DataFrameContainer } from './project';
+import { Project, ChartState, DataFrameContainer, ProjectsState } from './project';
 import { useSelector } from 'react-redux';
 import { DataFrame } from 'shared/DataFrame';
 
-export const useProjects = (): Project[] => useSelector((state: AppState) => Object.values(state.projects));
+export const useProjects = (): ProjectsState => useSelector((state: AppState) => state.projects);
 
 export const useProject = (projectId: ID): Project | null =>
-  useSelector((state: AppState) => (projectId in state.projects ? state.projects[projectId] : null));
+  useSelector((state: AppState) => (projectId in state.projects.projects ? state.projects.projects[projectId] : null));
 
 export const useCurrentProjectId = (): number | null => useSelector((state: AppState) => state.current.projectId);
 
@@ -14,7 +14,9 @@ export const useIsDraggingDroppedColumn = (): boolean =>
   useSelector((state: AppState) => state.current.isDraggingDroppedColumn);
 
 export const useCurrentProjectFromStore = (): Project | null =>
-  useSelector((state: AppState) => (state.current.projectId !== null ? state.projects[state.current.projectId] : null));
+  useSelector((state: AppState) =>
+    state.current.projectId !== null ? state.projects.projects[state.current.projectId] : null,
+  );
 
 export const useCharts = (project: Project): ChartState[] => Object.values(project.charts);
 

@@ -1,12 +1,16 @@
-import { DataFrame } from 'shared/DataFrame';
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
 import { ID } from './state';
-import { ColumnType } from '../../shared/DataFrame';
 import { DropZoneValues } from '../components/chartcreator/DragNDrop';
-import { ColumnId } from 'shared/DataFrame/index';
+import { DataFrame, ColumnId } from 'shared/DataFrame';
 import { UserEditableChartProps } from '../components/charts/common/Props';
+import { http } from './http';
+import { Project as PrismaProject } from '@prisma/client';
 
-export type Projects = Record<ID, Project>;
+export type ProjectsState = {
+  projects: Record<ID, Project>;
+  state: LoadingState;
+  errorMessage?: string;
+};
 
 export interface Project {
   name: string;
@@ -16,7 +20,7 @@ export interface Project {
   dashboards: Record<ID, DashboardState>;
 }
 
-export enum DataFrameLoadingState {
+export enum LoadingState {
   IDLE = 'IDLE',
   LOADING = 'LOADING',
   ERROR = 'ERROR',
@@ -26,7 +30,7 @@ export interface DataFrameContainer {
   id: number;
   source: string;
   dataFrame: DataFrame;
-  state: DataFrameLoadingState;
+  state: LoadingState;
   errorMessage?: string;
 }
 
@@ -39,53 +43,18 @@ export interface ChartState {
 
 export interface DashboardState {}
 
-export const initialProjects: Projects = {
-  1: {
-    name: 'My Project',
-    id: 1,
-    dataFrames: {
-      1: {
-        id: 1,
-        source: '',
-        state: DataFrameLoadingState.IDLE,
-        dataFrame: {
-          id: 1,
-          name: 'My DF',
-          columns: {
-            id: {
-              type: ColumnType.STRING,
-              values: ['1', '2', '3', '4', '5'],
-            },
-            first_name: {
-              type: ColumnType.STRING,
-              values: ['Prentiss', 'Bessie', 'Tybi', 'Felix', 'Gay'],
-            },
-            last_name: {
-              type: ColumnType.STRING,
-              values: ['Passey', 'Docker', 'Fantini', 'Freak', 'Cutchee'],
-            },
-            email: {
-              type: ColumnType.STRING,
-              values: [
-                'ppassey0@amazonaws.com',
-                'bdocker1@pagesperso-orange.fr',
-                'tfantini2@reference.com',
-                'ffreak3@google.nl',
-                'gcutchee4@ifeng.com',
-              ],
-            },
-            numbers: {
-              type: ColumnType.NUMBER,
-              values: [10, 20, 30, 40, 50],
-            },
-          },
-        },
-      },
-    },
-    charts: {},
-    dashboards: {},
-  },
+export const initialProjectsState: ProjectsState = {
+  state: LoadingState.IDLE,
+  projects: {},
 };
+
+export const fetchProjects = createAsyncThunk('projects/fetch', async () => {
+  const projects = await http
+    .url('/projects')
+    .get()
+    .json<PrismaProject[]>();
+  return projects;
+});
 
 export interface SaveChartPayload {
   projectId: ID;
@@ -99,14 +68,39 @@ export interface SaveDataFramePayload {
 }
 export const saveDataFrame = createAction<SaveDataFramePayload>('dataFrame/save');
 
-export const projectReducer = createReducer(initialProjects, builder =>
+export const projectReducer = createReducer(initialProjectsState, builder =>
   builder
     .addCase(saveChart, (state, action) => {
       const { projectId, chart } = action.payload;
-      state[projectId].charts[chart.id] = chart;
+      state.projects[projectId].charts[chart.id] = chart;
     })
     .addCase(saveDataFrame, (state, action) => {
       const { projectId, container } = action.payload;
-      state[projectId].dataFrames[container.id] = container;
+      state.projects[projectId].dataFrames[container.id] = container;
+    })
+    .addCase(fetchProjects.pending, (state, action) => {
+      return { projects: {}, state: LoadingState.LOADING };
+    })
+    .addCase(fetchProjects.fulfilled, (state, action) => {
+      const projects: PrismaProject[] = action.payload;
+      return {
+        state: LoadingState.IDLE,
+        projects: projects.reduce(
+          (acc: Record<ID, Project>, project: PrismaProject): Record<ID, Project> => ({
+            ...acc,
+            [project.id]: {
+              id: project.id,
+              name: project.name,
+              dataFrames: {},
+              charts: {},
+              dashboards: {},
+            },
+          }),
+          {},
+        ),
+      };
+    })
+    .addCase(fetchProjects.rejected, (state, action) => {
+      return { projects: {}, state: LoadingState.ERROR };
     }),
 );

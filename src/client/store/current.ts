@@ -1,6 +1,6 @@
 import { ID } from './state';
 import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
-import { DataFrameContainer, DataFrameLoadingState } from './project';
+import { DataFrameContainer, LoadingState } from './project';
 import { CSVLoader } from 'shared/loaders/CSV';
 import { Result, takeRight } from 'shared/utils/index';
 import { DataFrame } from 'shared/DataFrame/index';
@@ -59,7 +59,7 @@ export const currentReducer = createReducer(initialCurrent, builder =>
     })
     .addCase(downloadDataFrame.pending, (state, action) => {
       if (state.editedDataFrame) {
-        state.editedDataFrame.state = DataFrameLoadingState.LOADING;
+        state.editedDataFrame.state = LoadingState.LOADING;
       }
     })
     .addCase(downloadDataFrame.fulfilled, (state, action) => {
@@ -68,7 +68,7 @@ export const currentReducer = createReducer(initialCurrent, builder =>
       if (state.editedDataFrame) {
         state.editedDataFrame = {
           id: dataFrameId,
-          state: DataFrameLoadingState.IDLE,
+          state: LoadingState.IDLE,
           source: source,
           dataFrame: dataFrame,
         };
@@ -77,7 +77,7 @@ export const currentReducer = createReducer(initialCurrent, builder =>
     .addCase(downloadDataFrame.rejected, (state, action) => {
       const message = action.payload as string;
       if (state.editedDataFrame) {
-        state.editedDataFrame.state = DataFrameLoadingState.ERROR;
+        state.editedDataFrame.state = LoadingState.ERROR;
         state.editedDataFrame.errorMessage = message;
       }
     }),

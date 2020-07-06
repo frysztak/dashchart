@@ -4,7 +4,7 @@ import { isNumeric, keys } from 'shared/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { setCurrentProject, setEditedDataFrame } from './current';
-import { Project, ChartState, DataFrameContainer, DataFrameLoadingState } from './project';
+import { Project, ChartState, DataFrameContainer, LoadingState } from './project';
 import {
   useChartById,
   useCurrentProjectFromStore,
@@ -31,7 +31,7 @@ export function useCurrentProject(): Project | null {
     }
   });
 
-  return useSelector((state: AppState) => (projectId === null ? null : state.projects[projectId]));
+  return useSelector((state: AppState) => (projectId === null ? null : state.projects.projects[projectId]));
 }
 
 export function useCurrentChart(dataFrames: DataFrame[]): [ChartState | null, boolean] {
@@ -91,7 +91,7 @@ export function useCurrentDataFrame(): [DataFrameContainer | null, boolean] {
         setEditedDataFrame({
           id: nextDataFrameId,
           source: '',
-          state: DataFrameLoadingState.IDLE,
+          state: LoadingState.IDLE,
           dataFrame: {
             id: nextDataFrameId,
             name: 'New Data Frame',
