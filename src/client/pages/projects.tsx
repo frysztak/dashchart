@@ -13,7 +13,9 @@ function Projects() {
   const { projects, state, errorMessage } = useProjects();
 
   useEffect(() => {
-    dispatch(fetchProjects());
+    if (Object.keys(projects).length === 0) {
+      dispatch(fetchProjects());
+    }
   }, []);
 
   const body = () => {
@@ -25,7 +27,7 @@ function Projects() {
           <ul>
             {Object.values(projects).map((project: Project) => (
               <li key={project.id}>
-                <Link {...routes.project(project.id)}>
+                <Link {...routes.dataFrames(project.id)}>
                   <a>{project.name}</a>
                 </Link>
               </li>

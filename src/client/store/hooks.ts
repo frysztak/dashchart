@@ -4,7 +4,7 @@ import { isNumeric, keys } from 'shared/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { setCurrentProject, setEditedDataFrame } from './current';
-import { Project, ChartState, DataFrameContainer, LoadingState } from './project';
+import { Project, ChartState, DataFrameContainer, LoadingState, fetchProjects } from './project';
 import {
   useChartById,
   useCurrentProjectFromStore,
@@ -12,6 +12,7 @@ import {
   useDataFrameById,
   useDataFrameContainers,
   useEditedDataFrame,
+  useProjects,
 } from './selectors';
 import { resetCurrentColumns, setCurrentColumns } from './chartCreator';
 import { DropZoneValues } from '../components/chartcreator/DragNDrop';
@@ -21,6 +22,7 @@ export function useCurrentProject(): Project | null {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const { projects } = useProjects();
   const isProjectIdValid: boolean = 'projectId' in router.query && isNumeric(router.query.projectId);
   const projectId: ID | null = isProjectIdValid ? +router.query.projectId! : null;
   const currentProjectId: number | null = useCurrentProjectId();
@@ -31,7 +33,19 @@ export function useCurrentProject(): Project | null {
     }
   });
 
-  return useSelector((state: AppState) => (projectId === null ? null : state.projects.projects[projectId]));
+  useEffect(() => {
+    if (Object.keys(projects).length === 0) {
+      dispatch(fetchProjects());
+    }
+  }, []);
+
+  // prettier-ignore
+  return useSelector((state: AppState) => (projectId === null
+    ? null
+    : projectId in state.projects.projects
+      ? state.projects.projects[projectId]
+      : null
+  ));
 }
 
 export function useCurrentChart(dataFrames: DataFrame[]): [ChartState | null, boolean] {
