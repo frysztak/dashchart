@@ -4,7 +4,7 @@ import { isNumeric, keys } from 'shared/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { setCurrentProject, setEditedDataFrame } from './current';
-import { Project, ChartState, DataFrameContainer, LoadingState, fetchProjects } from './project';
+import { Project, ChartState, DataFrameContainer, LoadingState, fetchProjects, fetchDataFrames } from './project';
 import {
   useChartById,
   useCurrentProjectFromStore,
@@ -18,11 +18,11 @@ import { resetCurrentColumns, setCurrentColumns } from './chartCreator';
 import { DropZoneValues } from '../components/chartcreator/DragNDrop';
 import { ColumnId, DataFrame } from 'shared/DataFrame';
 
-export function useCurrentProject(): Project | null {
+export function useCurrentProject(): [Project | null, LoadingState] {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const { projects } = useProjects();
+  const { projects, state } = useProjects();
   const isProjectIdValid: boolean = 'projectId' in router.query && isNumeric(router.query.projectId);
   const projectId: ID | null = isProjectIdValid ? +router.query.projectId! : null;
   const currentProjectId: number | null = useCurrentProjectId();
@@ -40,12 +40,26 @@ export function useCurrentProject(): Project | null {
   }, []);
 
   // prettier-ignore
-  return useSelector((state: AppState) => (projectId === null
+  const project: Project | null =  useSelector((state: AppState) => (projectId === null
     ? null
     : projectId in state.projects.projects
       ? state.projects.projects[projectId]
       : null
   ));
+
+  const [dispatchedFetch, setDispatchedFetch] = useState(false);
+  useEffect(() => {
+    if (projectId === null) return;
+    const currentProject = projects[projectId];
+    if (!dispatchedFetch && currentProject) {
+      if (Object.keys(currentProject.dataFrames.data).length === 0) {
+        dispatch(fetchDataFrames(currentProject.id));
+      }
+      setDispatchedFetch(true);
+    }
+  }, [projects]);
+
+  return [project, state];
 }
 
 export function useCurrentChart(dataFrames: DataFrame[]): [ChartState | null, boolean] {

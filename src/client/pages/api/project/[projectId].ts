@@ -1,18 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { isNumeric } from 'shared/utils/Collection';
+import { parseNumericParameter } from '../../../utils/APIRouterParsers';
 
 const prisma = new PrismaClient();
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
-  const projectIdQuery: string | string[] = req.query.projectId;
-
-  if (Array.isArray(projectIdQuery) || !isNumeric(projectIdQuery)) {
-    res.status(500).send({ error: `ProjectId ${projectIdQuery} is invalid` });
+  const projectId: number | Error = parseNumericParameter(req, 'projectId');
+  if (projectId instanceof Error) {
+    res.status(500).send(projectId.message);
     return;
   }
 
-  const projectId: number = +projectIdQuery;
   if (req.method === 'GET') {
     const project = await prisma.project.findOne({
       where: {

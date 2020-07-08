@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { DataFrameContainer, Project, saveDataFrame as saveDataFrameAction } from '../../../../store/project';
+import { DataFrameContainer, LoadingState, saveDataFrame as saveDataFrameAction } from '../../../../store/project';
 import { useCurrentDataFrame, useCurrentProject } from '../../../../store/hooks';
 import {
   downloadDataFrame as downloadDataFrameAction,
@@ -7,7 +7,7 @@ import {
   setEditedDataFrame,
 } from '../../../../store/current';
 import { ErrorMessage } from '../../../../components/misc/ErrorMessage';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import { Box, Flex } from 'reflexbox';
 import { LeftBoxShadow } from '../../../../components/misc/BoxShadow';
@@ -17,6 +17,7 @@ import DataTable from 'react-data-table-component';
 import { styled } from '../../../../config/Theme';
 import { useRouter } from 'next/router';
 import { routes } from '../../../../config/routes';
+import { Spinner } from '../../../../components/misc/Spinner';
 
 const StyledDataTable = styled(DataTable)`
   width: auto;
@@ -26,7 +27,7 @@ const StyledDataTable = styled(DataTable)`
 function DataFramePage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const project: Project | null = useCurrentProject();
+  const [project, projectState] = useCurrentProject();
   const [container, isNew] = useCurrentDataFrame();
 
   useEffect(() => {
@@ -34,6 +35,10 @@ function DataFramePage() {
       dispatch(resetEditedDataFrame());
     };
   }, []);
+
+  if (projectState === LoadingState.LOADING) {
+    return <Spinner />;
+  }
 
   if (project === null) {
     return <ErrorMessage message={'Project not found.'} />;

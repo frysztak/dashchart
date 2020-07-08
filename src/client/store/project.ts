@@ -4,7 +4,7 @@ import { DropZoneValues } from '../components/chartcreator/DragNDrop';
 import { DataFrame, ColumnId } from 'shared/DataFrame';
 import { UserEditableChartProps } from '../components/charts/common/Props';
 import { http } from './http';
-import { Project as PrismaProject } from '@prisma/client';
+import { Project as PrismaProject, DataFrame as PrismaDataFrame } from '@prisma/client';
 
 export type ProjectsState = {
   projects: Record<ID, Project>;
@@ -12,10 +12,16 @@ export type ProjectsState = {
   errorMessage?: string;
 };
 
+export type DataFramesState = {
+  data: Record<ID, DataFrameContainer>;
+  state: LoadingState;
+  errorMessage?: string;
+};
+
 export interface Project {
   name: string;
   id: number;
-  dataFrames: Record<ID, DataFrameContainer>;
+  dataFrames: DataFramesState;
   charts: Record<ID, ChartState>;
   dashboards: Record<ID, DashboardState>;
 }
@@ -44,7 +50,7 @@ export interface ChartState {
 export interface DashboardState {}
 
 export const initialProjectsState: ProjectsState = {
-  state: LoadingState.IDLE,
+  state: LoadingState.LOADING,
   projects: {},
 };
 
@@ -54,6 +60,14 @@ export const fetchProjects = createAsyncThunk('projects/fetch', async () => {
     .get()
     .json<PrismaProject[]>();
   return projects;
+});
+
+export const fetchDataFrames = createAsyncThunk('dataFrames/fetch', async (projectId: ID) => {
+  const dataFrames = await http
+    .url(`/project/${projectId}/dataframes`)
+    .get()
+    .json<PrismaDataFrame[]>();
+  return dataFrames;
 });
 
 export interface SaveChartPayload {
@@ -66,17 +80,23 @@ export interface SaveDataFramePayload {
   projectId: ID;
   container: DataFrameContainer;
 }
-export const saveDataFrame = createAction<SaveDataFramePayload>('dataFrame/save');
+export const saveDataFrame = createAsyncThunk('dataFrame/save', async (payload: SaveDataFramePayload) => {
+  const {
+    projectId,
+    container: { id },
+  } = payload;
+  const dataFrame = await http
+    .url(`/project/${projectId}/dataframe/${id}`)
+    .put(payload.container.dataFrame)
+    .json<PrismaDataFrame>();
+  return dataFrame;
+});
 
 export const projectReducer = createReducer(initialProjectsState, builder =>
   builder
     .addCase(saveChart, (state, action) => {
       const { projectId, chart } = action.payload;
       state.projects[projectId].charts[chart.id] = chart;
-    })
-    .addCase(saveDataFrame, (state, action) => {
-      const { projectId, container } = action.payload;
-      state.projects[projectId].dataFrames[container.id] = container;
     })
     .addCase(fetchProjects.pending, (state, action) => {
       return { projects: {}, state: LoadingState.LOADING };
@@ -91,7 +111,10 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
             [project.id]: {
               id: project.id,
               name: project.name,
-              dataFrames: {},
+              dataFrames: {
+                state: LoadingState.LOADING,
+                data: {},
+              },
               charts: {},
               dashboards: {},
             },
@@ -102,5 +125,65 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
     })
     .addCase(fetchProjects.rejected, (state, action) => {
       return { projects: {}, state: LoadingState.ERROR };
+    })
+    .addCase(fetchDataFrames.pending, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      state.projects[projectId].dataFrames = {
+        state: LoadingState.LOADING,
+        data: {},
+      };
+    })
+    .addCase(fetchDataFrames.fulfilled, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      const dataFrames: PrismaDataFrame[] = action.payload;
+      state.projects[projectId].dataFrames.state = LoadingState.IDLE;
+      state.projects[projectId].dataFrames.data = dataFrames.reduce(
+        (acc: Record<ID, DataFrameContainer>, df: PrismaDataFrame) => ({
+          ...acc,
+          [df.id]: {
+            id: df.id,
+            source: df.source,
+            state: LoadingState.IDLE,
+            // TODO: use something like io-ts to parse the json
+            dataFrame: (df as unknown) as DataFrame,
+          },
+        }),
+        {},
+      );
+    })
+    .addCase(fetchDataFrames.rejected, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      state.projects[projectId].dataFrames = {
+        state: LoadingState.ERROR,
+        data: {},
+      };
+    })
+    .addCase(saveDataFrame.pending, (state, action) => {
+      const {
+        projectId,
+        container: { id },
+      } = action.meta.arg;
+      state.projects[projectId].dataFrames.data[id].state = LoadingState.LOADING;
+    })
+    .addCase(saveDataFrame.fulfilled, (state, action) => {
+      const {
+        projectId,
+        container: { id },
+      } = action.meta.arg;
+      const dataFrame: PrismaDataFrame = action.payload;
+      state.projects[projectId].dataFrames.data[id] = {
+        state: LoadingState.IDLE,
+        source: dataFrame.source,
+        id: dataFrame.id,
+        // TODO: use something like io-ts to parse the json
+        dataFrame: (dataFrame as unknown) as DataFrame,
+      };
+    })
+    .addCase(saveDataFrame.rejected, (state, action) => {
+      const {
+        projectId,
+        container: { id },
+      } = action.meta.arg;
+      state.projects[projectId].dataFrames.data[id].state = LoadingState.ERROR;
     }),
 );
