@@ -4,7 +4,7 @@ import { DropZoneValues } from '../components/chartcreator/DragNDrop';
 import { DataFrame, ColumnId } from 'shared/DataFrame';
 import { UserEditableChartProps } from '../components/charts/common/Props';
 import { http } from './http';
-import { Project as PrismaProject, DataFrame as PrismaDataFrame } from '@prisma/client';
+import { Project as PrismaProject, DataFrame as PrismaDataFrame, Chart as PrismaChart } from '@prisma/client';
 
 export type ProjectsState = {
   projects: Record<ID, Project>;
@@ -18,11 +18,17 @@ export type DataFramesState = {
   errorMessage?: string;
 };
 
+export type ChartsState = {
+  data: Record<ID, ChartStateContainer>;
+  state: LoadingState;
+  errorMessage?: string;
+};
+
 export interface Project {
   name: string;
   id: number;
   dataFrames: DataFramesState;
-  charts: Record<ID, ChartState>;
+  charts: ChartsState;
   dashboards: Record<ID, DashboardState>;
 }
 
@@ -45,6 +51,12 @@ export interface ChartState {
   name: string;
   columns: DropZoneValues<ColumnId>;
   userProps: UserEditableChartProps[];
+}
+
+export interface ChartStateContainer {
+  state: LoadingState;
+  errorMessage?: string;
+  data: ChartState;
 }
 
 export interface DashboardState {}
@@ -70,11 +82,29 @@ export const fetchDataFrames = createAsyncThunk('dataFrames/fetch', async (proje
   return dataFrames;
 });
 
+export const fetchCharts = createAsyncThunk('charts/fetch', async (projectId: ID) => {
+  const charts = await http
+    .url(`/project/${projectId}/charts`)
+    .get()
+    .json<PrismaChart[]>();
+  return charts;
+});
+
 export interface SaveChartPayload {
   projectId: ID;
   chart: ChartState;
 }
-export const saveChart = createAction<SaveChartPayload>('chart/save');
+export const saveChart = createAsyncThunk('chart/save', async (payload: SaveChartPayload) => {
+  const { projectId, chart } = payload;
+  return await http
+    .url(`/project/${projectId}/chart/${chart.id}`)
+    .put({
+      name: chart.name,
+      columns: chart.columns,
+      props: chart.userProps,
+    })
+    .json<PrismaChart>();
+});
 
 export interface SaveDataFramePayload {
   projectId: ID;
@@ -94,10 +124,6 @@ export const saveDataFrame = createAsyncThunk('dataFrame/save', async (payload: 
 
 export const projectReducer = createReducer(initialProjectsState, builder =>
   builder
-    .addCase(saveChart, (state, action) => {
-      const { projectId, chart } = action.payload;
-      state.projects[projectId].charts[chart.id] = chart;
-    })
     .addCase(fetchProjects.pending, (state, action) => {
       return { projects: {}, state: LoadingState.LOADING };
     })
@@ -115,7 +141,10 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
                 state: LoadingState.LOADING,
                 data: {},
               },
-              charts: {},
+              charts: {
+                state: LoadingState.LOADING,
+                data: {},
+              },
               dashboards: {},
             },
           }),
@@ -185,5 +214,66 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
         container: { id },
       } = action.meta.arg;
       state.projects[projectId].dataFrames.data[id].state = LoadingState.ERROR;
+    })
+    .addCase(fetchCharts.pending, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      state.projects[projectId].charts = {
+        state: LoadingState.LOADING,
+        data: {},
+      };
+    })
+    .addCase(fetchCharts.fulfilled, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      const charts: PrismaChart[] = action.payload;
+      state.projects[projectId].charts.state = LoadingState.IDLE;
+      state.projects[projectId].charts.data = charts.reduce(
+        (acc: Record<ID, ChartStateContainer>, ch: PrismaChart) => ({
+          ...acc,
+          [ch.id]: {
+            state: LoadingState.IDLE,
+            data: {
+              id: ch.id,
+              name: ch.name,
+              // TODO: use something like io-ts to parse the json
+              columns: (ch.columns as unknown) as DropZoneValues<ColumnId>,
+              userProps: (ch.props as unknown) as UserEditableChartProps[],
+            },
+          },
+        }),
+        {},
+      );
+    })
+    .addCase(fetchCharts.rejected, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      state.projects[projectId].charts = {
+        state: LoadingState.ERROR,
+        data: {},
+      };
+    })
+    .addCase(saveChart.pending, (state, action) => {
+      const { projectId, chart } = action.meta.arg;
+      state.projects[projectId].charts.data[chart.id].state = LoadingState.LOADING;
+    })
+    .addCase(saveChart.fulfilled, (state, action) => {
+      const {
+        projectId,
+        chart: { id },
+      } = action.meta.arg;
+      const chart: PrismaChart = action.payload;
+      state.projects[projectId].charts.data[id] = {
+        state: LoadingState.IDLE,
+        data: {
+          id: chart.id,
+          name: chart.name,
+          columns: chart.columns as DropZoneValues<ColumnId>,
+          userProps: (chart.props as unknown) as UserEditableChartProps[],
+        },
+      };
+    })
+    .addCase(saveChart.rejected, (state, action) => {
+      const { projectId, chart } = action.meta.arg;
+      console.error(action.error);
+      state.projects[projectId].charts.data[chart.id].state = LoadingState.ERROR;
+      state.projects[projectId].charts.data[chart.id].errorMessage = action.error.message;
     }),
 );

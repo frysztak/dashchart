@@ -4,7 +4,15 @@ import { isNumeric, keys } from 'shared/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { setCurrentProject, setEditedDataFrame } from './current';
-import { Project, ChartState, DataFrameContainer, LoadingState, fetchProjects, fetchDataFrames } from './project';
+import {
+  Project,
+  ChartState,
+  DataFrameContainer,
+  LoadingState,
+  fetchProjects,
+  fetchDataFrames,
+  fetchCharts,
+} from './project';
 import {
   useChartById,
   useCurrentProjectFromStore,
@@ -55,6 +63,9 @@ export function useCurrentProject(): [Project | null, LoadingState] {
       if (Object.keys(currentProject.dataFrames.data).length === 0) {
         dispatch(fetchDataFrames(currentProject.id));
       }
+      if (Object.keys(currentProject.charts.data).length === 0) {
+        dispatch(fetchCharts(currentProject.id));
+      }
       setDispatchedFetch(true);
     }
   }, [projects]);
@@ -71,9 +82,13 @@ export function useCurrentChart(dataFrames: DataFrame[]): [ChartState | null, bo
   const chartId: ID | null = isChartIdValid ? +router.query.chartId! : null;
   const chart: ChartState | null = useChartById(chartId);
 
+  const [columnsDispatched, setColumnsDispatched] = useState(false);
   useEffect(() => {
+    if (columnsDispatched) return;
+
     if (isNewChart) {
       dispatch(resetCurrentColumns());
+      setColumnsDispatched(true);
     } else if (chartId !== null && chart) {
       const columnsWithNames: DropZoneValues<ColumnId> = keys(chart.columns).reduce((acc, location) => {
         const column = chart.columns[location]!;
@@ -86,8 +101,9 @@ export function useCurrentChart(dataFrames: DataFrame[]): [ChartState | null, bo
         };
       }, {});
       dispatch(setCurrentColumns(columnsWithNames));
+      setColumnsDispatched(true);
     }
-  }, []);
+  }, [chartId, chart, columnsDispatched, dispatch]);
 
   return [chart, isNewChart];
 }

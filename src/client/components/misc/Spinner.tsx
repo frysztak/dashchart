@@ -1,6 +1,7 @@
 import { useTheme } from '../../config/Theme';
 import { DoubleBounce } from 'styled-spinkit';
 import { Flex } from 'reflexbox';
+import React from 'react';
 
 export function Spinner() {
   const theme = useTheme();

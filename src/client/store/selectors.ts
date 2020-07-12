@@ -24,12 +24,12 @@ export const useCurrentProjectFromStore = (): Project | null =>
       : null;
   });
 
-export const useCharts = (project: Project): ChartState[] => Object.values(project.charts);
+export const useCharts = (project: Project): ChartState[] => Object.values(project.charts.data).map(c => c.data);
 
 export const useChartById = (chartId: ID | null): ChartState | null => {
   const project: Project | null = useCurrentProjectFromStore();
   if (chartId === null || project === null) return null;
-  return chartId in project.charts ? project.charts[chartId] : null;
+  return chartId in project.charts.data ? project.charts.data[chartId].data : null;
 };
 
 export const useDataFrames = (project: Project | null): DataFrame[] =>

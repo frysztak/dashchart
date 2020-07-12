@@ -1,3 +1,4 @@
 # Prisma Migrate lockfile v1
 
 20200705230921-init
+20200708213322-chart--fix-props-type

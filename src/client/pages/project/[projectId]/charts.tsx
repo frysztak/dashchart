@@ -1,19 +1,25 @@
 import { useRouter } from 'next/router';
-import { useCharts } from '../../../store/selectors';
+import { useCharts, useDataFramesState } from '../../../store/selectors';
 import { ChartPreview } from '../../../components/charts/ChartPreview';
-import { Flex, Box } from 'reflexbox';
+import { Box, Flex } from 'reflexbox';
 import { routes } from '../../../config/routes';
 import { useCurrentProject } from '../../../store/hooks';
-import { Project, ChartState } from '../../../store/project';
+import { ChartState, LoadingState } from '../../../store/project';
 import React from 'react';
 import Head from 'next/head';
 import { ID } from '../../../store/state';
 import { CreateNewCard } from '../../../components/misc/PreviewCard';
+import { Spinner } from '../../../components/misc/Spinner';
 
 function Charts() {
   const router = useRouter();
-  const project: Project | null = useCurrentProject();
+  const [project, projectState] = useCurrentProject();
+  const dataFramesState = useDataFramesState(project);
   const charts: ChartState[] = project !== null ? useCharts(project) : [];
+
+  if (projectState === LoadingState.LOADING || dataFramesState?.state === LoadingState.LOADING) {
+    return <Spinner />;
+  }
 
   if (project === null) {
     return <>Project not found.</>;
