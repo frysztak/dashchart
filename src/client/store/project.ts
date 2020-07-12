@@ -1,10 +1,11 @@
-import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
+import { createAsyncThunk, createReducer } from '@reduxjs/toolkit';
 import { ID } from './state';
 import { DropZoneValues } from '../components/chartcreator/DragNDrop';
 import { DataFrame, ColumnId } from 'shared/DataFrame';
 import { UserEditableChartProps } from '../components/charts/common/Props';
 import { http } from './http';
 import { Project as PrismaProject, DataFrame as PrismaDataFrame, Chart as PrismaChart } from '@prisma/client';
+import { pick } from 'lodash';
 
 export type ProjectsState = {
   projects: Record<ID, Project>;
@@ -174,7 +175,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
             source: df.source,
             state: LoadingState.IDLE,
             // TODO: use something like io-ts to parse the json
-            dataFrame: (df as unknown) as DataFrame,
+            dataFrame: pick((df as unknown) as DataFrame, ['id', 'name', 'columns']),
           },
         }),
         {},
@@ -205,7 +206,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
         source: dataFrame.source,
         id: dataFrame.id,
         // TODO: use something like io-ts to parse the json
-        dataFrame: (dataFrame as unknown) as DataFrame,
+        dataFrame: pick((dataFrame as unknown) as DataFrame, ['id', 'name', 'columns']),
       };
     })
     .addCase(saveDataFrame.rejected, (state, action) => {
