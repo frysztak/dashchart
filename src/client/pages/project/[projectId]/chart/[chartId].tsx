@@ -16,7 +16,7 @@ import { ChartPropsSidebar } from '../../../../components/chartcreator/ChartProp
 import { Icon } from '../../../../components/misc/Icon';
 import { Chart, ErrorCircle, Layout, Save, Trash } from '@styled-icons/boxicons-regular';
 import { IconWrapper } from '../../../../components/misc/IconWrapper';
-import { styled, useTheme } from '../../../../config/Theme';
+import { styled } from '../../../../config/Theme';
 import { AggregateChart } from '../../../../components/charts/AggregateChart';
 import { DataFrame } from 'shared/DataFrame';
 import { ChartProps, UserEditableChartProps } from '../../../../components/charts/common/Props';
@@ -31,7 +31,7 @@ import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { routes } from '../../../../config/routes';
 import { Spinner } from '../../../../components/misc/Spinner';
-import { DoubleBounce, ThreeBounce } from 'styled-spinkit';
+import { ThreeBounce } from 'styled-spinkit';
 
 const ChartIcon = Icon(Chart);
 const LayoutIcon = Icon(Layout);
@@ -69,6 +69,7 @@ function ChartPage() {
   const toggleLayoutMode = () => setLayoutMode(!layoutMode);
   const isDraggingDroppedColumn: boolean = useIsDraggingDroppedColumn();
   const [userProps, setUserProps] = useState(chart?.userProps || []);
+  const [chartName, setChartName] = useState(chart?.name || 'New chart');
   const [errorBoundaryKey, setErrorBoundaryKey] = useState(0);
   const onUpdateChartProps = (newProps: UserEditableChartProps, idx: number) => {
     setUserProps(userProps =>
@@ -76,6 +77,9 @@ function ChartPage() {
         draft[idx] = newProps;
       }),
     );
+  };
+  const onUpdateChartName = (newName: string) => {
+    setChartName(newName);
   };
 
   useEffect(() => setErrorBoundaryKey(errorBoundaryKey + 1), [userProps]);
@@ -90,10 +94,9 @@ function ChartPage() {
   useEffect(() => {
     if (chart) {
       setUserProps(chart.userProps);
+      setChartName(chart.name);
     }
   }, [chart]);
-
-  const theme = useTheme();
 
   if (
     projectState === LoadingState.LOADING ||
@@ -116,7 +119,6 @@ function ChartPage() {
     }
 
     const chartId: number = chart?.id || Object.values(project.charts).length + 1;
-    const chartName = chart?.name || `Chart ${chartId}`;
     const columns = chartCreator.currentColumns;
     const payload: SaveChartPayload = {
       projectId: project.id,
@@ -198,7 +200,12 @@ function ChartPage() {
         </RelativeBox>
         <Box>
           <LeftBoxShadow>
-            <ChartPropsSidebar chartProps={userProps} updateProps={onUpdateChartProps} />
+            <ChartPropsSidebar
+              chartName={chartName}
+              updateName={onUpdateChartName}
+              chartProps={userProps}
+              updateProps={onUpdateChartProps}
+            />
           </LeftBoxShadow>
         </Box>
       </Flex>
