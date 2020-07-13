@@ -7,7 +7,7 @@ import {
   useDataFramesState,
   useIsDraggingDroppedColumn,
 } from '../../../../store/selectors';
-import { fetchCharts, LoadingState, saveChart, SaveChartPayload } from '../../../../store/project';
+import { LoadingState, saveChart, SaveChartPayload } from '../../../../store/project';
 import { useCurrentChart, useCurrentProject } from '../../../../store/hooks';
 import { ChartCreator } from '../../../../components/chartcreator/ChartCreator';
 import { LeftBoxShadow, RightBoxShadow } from '../../../../components/misc/BoxShadow';
@@ -131,7 +131,6 @@ function ChartPage() {
     };
     if (isNewChart && project) {
       dispatch(createChart(payload));
-      dispatch(fetchCharts(project.id));
     } else {
       dispatch(saveChart(payload));
     }

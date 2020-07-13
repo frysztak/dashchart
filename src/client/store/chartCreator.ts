@@ -4,7 +4,7 @@ import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit'
 import { ColumnToDelete, DroppedColumn } from '../components/chartcreator/DropZone';
 import { http } from './http';
 import { Chart as PrismaChart } from '@prisma/client';
-import { LoadingState, SaveChartPayload } from './project';
+import { fetchCharts, LoadingState, SaveChartPayload } from './project';
 import { ID } from './state';
 
 export interface ChartCreatorState {
@@ -25,9 +25,9 @@ export const deleteColumn = createAction<ColumnToDelete>('deleteColumn');
 export const resetCurrentColumns = createAction('resetCurrentColumns');
 export const setCurrentColumns = createAction<DropZoneValues<ColumnId>>('setCurrentColumns');
 
-export const createChart = createAsyncThunk('chart/create', async (payload: SaveChartPayload) => {
+export const createChart = createAsyncThunk('chart/create', async (payload: SaveChartPayload, thunkAPI) => {
   const { projectId, chart } = payload;
-  return await http
+  const response = await http
     .url(`/project/${projectId}/charts`)
     .post({
       name: chart.name,
@@ -35,6 +35,9 @@ export const createChart = createAsyncThunk('chart/create', async (payload: Save
       props: chart.userProps,
     })
     .json<PrismaChart>();
+
+  thunkAPI.dispatch(fetchCharts(projectId));
+  return response;
 });
 
 export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
