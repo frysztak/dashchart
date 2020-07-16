@@ -1,10 +1,11 @@
 import { ID } from './state';
 import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
-import { DataFrameContainer, LoadingState } from './project';
+import { DataFrameContainer } from './project';
 import { CSVLoader } from 'shared/loaders/CSV';
 import { Result, takeRight } from 'shared/utils/index';
 import { DataFrame } from 'shared/DataFrame/index';
 import { isLeft } from 'fp-ts/es6/Either';
+import { IOStatus } from './common';
 
 export interface Current {
   projectId: ID | null;
@@ -59,7 +60,7 @@ export const currentReducer = createReducer(initialCurrent, builder =>
     })
     .addCase(downloadDataFrame.pending, (state, action) => {
       if (state.editedDataFrame) {
-        state.editedDataFrame.state = LoadingState.LOADING;
+        state.editedDataFrame.state = IOStatus.LOADING;
       }
     })
     .addCase(downloadDataFrame.fulfilled, (state, action) => {
@@ -68,7 +69,7 @@ export const currentReducer = createReducer(initialCurrent, builder =>
       if (state.editedDataFrame) {
         state.editedDataFrame = {
           id: dataFrameId,
-          state: LoadingState.IDLE,
+          state: IOStatus.OK,
           source: source,
           dataFrame: dataFrame,
         };
@@ -77,7 +78,7 @@ export const currentReducer = createReducer(initialCurrent, builder =>
     .addCase(downloadDataFrame.rejected, (state, action) => {
       const message = action.payload as string;
       if (state.editedDataFrame) {
-        state.editedDataFrame.state = LoadingState.ERROR;
+        state.editedDataFrame.state = IOStatus.ERROR;
         state.editedDataFrame.errorMessage = message;
       }
     }),

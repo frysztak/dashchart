@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { DataFrameContainer, LoadingState, saveDataFrame as saveDataFrameAction } from '../../../../store/project';
+import { DataFrameContainer, saveDataFrame as saveDataFrameAction } from '../../../../store/project';
 import { useCurrentDataFrame, useCurrentProject } from '../../../../store/hooks';
 import {
   downloadDataFrame as downloadDataFrameAction,
@@ -18,6 +18,7 @@ import { styled } from '../../../../config/Theme';
 import { useRouter } from 'next/router';
 import { routes } from '../../../../config/routes';
 import { Spinner } from '../../../../components/misc/Spinner';
+import { IOStatus } from '../../../../store/common';
 
 const StyledDataTable = styled(DataTable)`
   width: auto;
@@ -36,7 +37,7 @@ function DataFramePage() {
     };
   }, []);
 
-  if (projectState === LoadingState.LOADING) {
+  if (projectState === IOStatus.LOADING) {
     return <Spinner />;
   }
 

@@ -1,5 +1,5 @@
 import { useProjects } from '../store/selectors';
-import { fetchProjects, LoadingState, createProject as createProjectAction } from '../store/project';
+import { fetchProjects, createProject as createProjectAction } from '../store/project';
 import React, { useEffect } from 'react';
 import { routes } from '../config/routes';
 import Head from 'next/head';
@@ -11,6 +11,7 @@ import { ProjectPreview } from '../components/misc/ProjectPreview';
 import { useRouter } from 'next/router';
 import { ID } from '../store/state';
 import { CreateNewProjectCard } from '../components/misc/CreateNewProjectCard';
+import { IOStatus } from '../store/common';
 
 function Projects() {
   const dispatch = useDispatch();
@@ -34,9 +35,9 @@ function Projects() {
 
   const body = () => {
     switch (state) {
-      case LoadingState.LOADING:
+      case IOStatus.LOADING:
         return <Spinner />;
-      case LoadingState.IDLE:
+      case IOStatus.OK:
         return (
           <Flex flexWrap={'wrap'}>
             {Object.values(projects).map(project => (
@@ -50,7 +51,7 @@ function Projects() {
             </Box>
           </Flex>
         );
-      case LoadingState.ERROR:
+      case IOStatus.ERROR:
         return <ErrorMessage message={errorMessage || 'Unknown error'} />;
     }
   };

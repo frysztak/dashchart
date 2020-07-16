@@ -3,7 +3,7 @@ import { useDataFramesState } from '../../../store/selectors';
 import { Box, Flex } from 'reflexbox';
 import { routes } from '../../../config/routes';
 import { useCurrentProject } from '../../../store/hooks';
-import { DataFramesState, LoadingState } from '../../../store/project';
+import { DataFramesState } from '../../../store/project';
 import React from 'react';
 import Head from 'next/head';
 import { ID } from '../../../store/state';
@@ -11,13 +11,14 @@ import { DataFramePreview } from '../../../components/dataframe/DataFramePreview
 import { CreateNewCard } from '../../../components/misc/PreviewCard';
 import { Spinner } from '../../../components/misc/Spinner';
 import { ErrorMessage } from '../../../components/misc/ErrorMessage';
+import { IOStatus } from '../../../store/common';
 
 function DataFrames() {
   const router = useRouter();
   const [project, projectState] = useCurrentProject();
   const dataFrames: DataFramesState | null = useDataFramesState(project);
 
-  if (projectState === LoadingState.LOADING) {
+  if (projectState === IOStatus.LOADING) {
     return <Spinner />;
   }
 
@@ -37,9 +38,9 @@ function DataFrames() {
 
   const body = () => {
     switch (dataFrames.state) {
-      case LoadingState.LOADING:
+      case IOStatus.LOADING:
         return <Spinner />;
-      case LoadingState.IDLE:
+      case IOStatus.OK:
         return (
           <Flex flexWrap={'wrap'}>
             {Object.values(dataFrames.data).map(dfContainer => (
@@ -53,7 +54,7 @@ function DataFrames() {
             </Box>
           </Flex>
         );
-      case LoadingState.ERROR:
+      case IOStatus.ERROR:
         return <ErrorMessage message={dataFrames.errorMessage || 'Unknown error'} />;
     }
   };

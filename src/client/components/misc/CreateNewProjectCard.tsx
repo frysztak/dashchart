@@ -6,14 +6,14 @@ import { Formik } from 'formik';
 import { Input } from '@rebass/forms';
 import { object, string } from 'yup';
 import { Button } from 'rebass/styled-components';
-import { LoadingState } from '../../store/project';
 import { ThreeBounce } from 'styled-spinkit';
 import { Icon } from './Icon';
 import { ErrorCircle } from '@styled-icons/boxicons-regular';
 import useOnClickOutside from 'use-onclickoutside';
+import { IOStatus } from '../../store/common';
 
 export interface CreateNewProjectCardProps {
-  state: LoadingState;
+  state: IOStatus;
   submit: (name: string) => void;
 }
 
@@ -61,11 +61,11 @@ export function CreateNewProjectCard(props: CreateNewProjectCardProps) {
 
   const buttonContent = () => {
     switch (state) {
-      case LoadingState.IDLE:
+      case IOStatus.OK:
         return <>Create</>;
-      case LoadingState.LOADING:
+      case IOStatus.LOADING:
         return <StyledLoader size={24} color={'black'} />;
-      case LoadingState.ERROR:
+      case IOStatus.ERROR:
         return <ErrorIcon size={24} color={'red'} />;
     }
   };
@@ -94,11 +94,7 @@ export function CreateNewProjectCard(props: CreateNewProjectCardProps) {
                   />
                 </Box>
                 <Box>
-                  <StyledButton
-                    type={'submit'}
-                    disabled={!isValid || state === LoadingState.LOADING}
-                    onClick={submitForm}
-                  >
+                  <StyledButton type={'submit'} disabled={!isValid || state === IOStatus.LOADING} onClick={submitForm}>
                     <Flex alignItems={'center'} justifyContent={'center'}>
                       {buttonContent()}
                     </Flex>

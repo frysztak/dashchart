@@ -4,20 +4,21 @@ import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit'
 import { ColumnToDelete, DroppedColumn } from '../components/chartcreator/DropZone';
 import { http } from './http';
 import { Chart as PrismaChart } from '@prisma/client';
-import { fetchCharts, LoadingState, SaveChartPayload } from './project';
+import { fetchCharts, SaveChartPayload } from './project';
 import { ID } from './state';
+import { IOStatus } from './common';
 
 export interface ChartCreatorState {
   currentColumns: DropZoneValues<ColumnId>;
   savedId: ID | null;
-  state: LoadingState;
+  state: IOStatus;
   errorMessage?: string;
 }
 
 export const initialChartCreator: ChartCreatorState = {
   currentColumns: {},
   savedId: null,
-  state: LoadingState.IDLE,
+  state: IOStatus.OK,
 };
 
 export const dropColumn = createAction<DroppedColumn>('dropColumn');
@@ -66,15 +67,15 @@ export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
       state.currentColumns = action.payload;
     })
     .addCase(createChart.pending, (state, action) => {
-      state.state = LoadingState.LOADING;
+      state.state = IOStatus.LOADING;
     })
     .addCase(createChart.fulfilled, (state, action) => {
       const chart = action.payload;
-      state.state = LoadingState.IDLE;
+      state.state = IOStatus.OK;
       state.savedId = chart.id;
     })
     .addCase(createChart.rejected, (state, action) => {
-      state.state = LoadingState.ERROR;
+      state.state = IOStatus.ERROR;
       state.errorMessage = action.error.message;
     }),
 );

@@ -4,12 +4,13 @@ import { ChartPreview } from '../../../components/charts/ChartPreview';
 import { Box, Flex } from 'reflexbox';
 import { routes } from '../../../config/routes';
 import { useCurrentProject } from '../../../store/hooks';
-import { ChartState, LoadingState } from '../../../store/project';
+import { ChartState } from '../../../store/project';
 import React from 'react';
 import Head from 'next/head';
 import { ID } from '../../../store/state';
 import { CreateNewCard } from '../../../components/misc/PreviewCard';
 import { Spinner } from '../../../components/misc/Spinner';
+import { IOStatus } from '../../../store/common';
 
 function Charts() {
   const router = useRouter();
@@ -17,7 +18,7 @@ function Charts() {
   const dataFramesState = useDataFramesState(project);
   const charts: ChartState[] = project !== null ? useCharts(project) : [];
 
-  if (projectState === LoadingState.LOADING || dataFramesState?.state === LoadingState.LOADING) {
+  if (projectState === IOStatus.LOADING || dataFramesState?.state === IOStatus.LOADING) {
     return <Spinner />;
   }
 

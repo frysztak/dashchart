@@ -4,15 +4,7 @@ import { isNumeric, keys } from 'shared/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { setCurrentProject, setEditedDataFrame } from './current';
-import {
-  Project,
-  ChartState,
-  DataFrameContainer,
-  LoadingState,
-  fetchProjects,
-  fetchDataFrames,
-  fetchCharts,
-} from './project';
+import { Project, ChartState, DataFrameContainer, fetchProjects, fetchDataFrames, fetchCharts } from './project';
 import {
   useChartById,
   useCurrentProjectFromStore,
@@ -25,8 +17,9 @@ import {
 import { resetCurrentColumns, setCurrentColumns } from './chartCreator';
 import { DropZoneValues } from '../components/chartcreator/DragNDrop';
 import { ColumnId, DataFrame } from 'shared/DataFrame';
+import { IOStatus } from './common';
 
-export function useCurrentProject(): [Project | null, LoadingState] {
+export function useCurrentProject(): [Project | null, IOStatus] {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -135,7 +128,7 @@ export function useCurrentDataFrame(): [DataFrameContainer | null, boolean] {
         setEditedDataFrame({
           id: nextDataFrameId,
           source: '',
-          state: LoadingState.IDLE,
+          state: IOStatus.OK,
           dataFrame: {
             id: nextDataFrameId,
             name: 'New Data Frame',

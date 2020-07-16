@@ -6,26 +6,28 @@ import { UserEditableChartProps } from '../components/charts/common/Props';
 import { http } from './http';
 import { Project as PrismaProject, DataFrame as PrismaDataFrame, Chart as PrismaChart } from '@prisma/client';
 import { pick } from 'lodash';
+import { IOState, IOStatus } from './common';
 
 export type ProjectsState = {
   projects: Record<ID, Project>;
-  state: LoadingState;
+  state: IOStatus;
   errorMessage?: string;
   createProject: {
-    state: LoadingState;
+    state: IOStatus;
     errorMessage?: string;
   };
 };
 
 export type DataFramesState = {
   data: Record<ID, DataFrameContainer>;
-  state: LoadingState;
+  state: IOStatus;
   errorMessage?: string;
+  saveState: IOState;
 };
 
 export type ChartsState = {
   data: Record<ID, ChartStateContainer>;
-  state: LoadingState;
+  state: IOStatus;
   errorMessage?: string;
 };
 
@@ -39,17 +41,11 @@ export interface Project {
   updatedAt: Date;
 }
 
-export enum LoadingState {
-  IDLE = 'IDLE',
-  LOADING = 'LOADING',
-  ERROR = 'ERROR',
-}
-
 export interface DataFrameContainer {
   id: number;
   source: string;
   dataFrame: DataFrame;
-  state: LoadingState;
+  state: IOStatus;
   errorMessage?: string;
 }
 
@@ -61,7 +57,7 @@ export interface ChartState {
 }
 
 export interface ChartStateContainer {
-  state: LoadingState;
+  state: IOStatus;
   errorMessage?: string;
   data: ChartState;
 }
@@ -69,10 +65,10 @@ export interface ChartStateContainer {
 export interface DashboardState {}
 
 export const initialProjectsState: ProjectsState = {
-  state: LoadingState.LOADING,
+  state: IOStatus.LOADING,
   projects: {},
   createProject: {
-    state: LoadingState.IDLE,
+    state: IOStatus.OK,
   },
 };
 
@@ -144,22 +140,22 @@ export const saveDataFrame = createAsyncThunk('dataFrame/save', async (payload: 
 export const projectReducer = createReducer(initialProjectsState, builder =>
   builder
     .addCase(createProject.pending, (state, action) => {
-      state.createProject.state = LoadingState.LOADING;
+      state.createProject.state = IOStatus.LOADING;
     })
     .addCase(createProject.fulfilled, (state, action) => {
-      state.createProject.state = LoadingState.IDLE;
+      state.createProject.state = IOStatus.OK;
     })
     .addCase(createProject.rejected, (state, action) => {
-      state.createProject.state = LoadingState.ERROR;
+      state.createProject.state = IOStatus.ERROR;
       state.createProject.errorMessage = action.error.message;
     })
     .addCase(fetchProjects.pending, (state, action) => {
       state.projects = {};
-      state.state = LoadingState.LOADING;
+      state.state = IOStatus.LOADING;
     })
     .addCase(fetchProjects.fulfilled, (state, action) => {
       const projects: PrismaProject[] = action.payload;
-      state.state = LoadingState.IDLE;
+      state.state = IOStatus.OK;
       state.projects = projects.reduce(
         (acc: Record<ID, Project>, project: PrismaProject): Record<ID, Project> => ({
           ...acc,
@@ -169,11 +165,14 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
             createdAt: project.createdAt,
             updatedAt: project.updatedAt,
             dataFrames: {
-              state: LoadingState.LOADING,
+              state: IOStatus.LOADING,
               data: {},
+              saveState: {
+                state: IOStatus.OK,
+              },
             },
             charts: {
-              state: LoadingState.LOADING,
+              state: IOStatus.LOADING,
               data: {},
             },
             dashboards: {},
@@ -184,26 +183,24 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
     })
     .addCase(fetchProjects.rejected, (state, action) => {
       state.projects = {};
-      state.state = LoadingState.ERROR;
+      state.state = IOStatus.ERROR;
     })
     .addCase(fetchDataFrames.pending, (state, action) => {
       const projectId: ID = action.meta.arg;
-      state.projects[projectId].dataFrames = {
-        state: LoadingState.LOADING,
-        data: {},
-      };
+      state.projects[projectId].dataFrames.state = IOStatus.LOADING;
+      state.projects[projectId].dataFrames.data = {};
     })
     .addCase(fetchDataFrames.fulfilled, (state, action) => {
       const projectId: ID = action.meta.arg;
       const dataFrames: PrismaDataFrame[] = action.payload;
-      state.projects[projectId].dataFrames.state = LoadingState.IDLE;
+      state.projects[projectId].dataFrames.state = IOStatus.OK;
       state.projects[projectId].dataFrames.data = dataFrames.reduce(
         (acc: Record<ID, DataFrameContainer>, df: PrismaDataFrame) => ({
           ...acc,
           [df.id]: {
             id: df.id,
             source: df.source,
-            state: LoadingState.IDLE,
+            state: IOStatus.OK,
             // TODO: use something like io-ts to parse the json
             dataFrame: pick((df as unknown) as DataFrame, ['id', 'name', 'columns']),
           },
@@ -213,17 +210,12 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
     })
     .addCase(fetchDataFrames.rejected, (state, action) => {
       const projectId: ID = action.meta.arg;
-      state.projects[projectId].dataFrames = {
-        state: LoadingState.ERROR,
-        data: {},
-      };
+      state.projects[projectId].dataFrames.state = IOStatus.ERROR;
+      state.projects[projectId].dataFrames.data = {};
     })
     .addCase(saveDataFrame.pending, (state, action) => {
-      const {
-        projectId,
-        container: { id },
-      } = action.meta.arg;
-      state.projects[projectId].dataFrames.data[id].state = LoadingState.LOADING;
+      const { projectId } = action.meta.arg;
+      state.projects[projectId].dataFrames.saveState.state = IOStatus.LOADING;
     })
     .addCase(saveDataFrame.fulfilled, (state, action) => {
       const {
@@ -232,36 +224,39 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
       } = action.meta.arg;
       const dataFrame: PrismaDataFrame = action.payload;
       state.projects[projectId].dataFrames.data[id] = {
-        state: LoadingState.IDLE,
+        state: IOStatus.OK,
         source: dataFrame.source,
         id: dataFrame.id,
         // TODO: use something like io-ts to parse the json
         dataFrame: pick((dataFrame as unknown) as DataFrame, ['id', 'name', 'columns']),
       };
+      state.projects[projectId].dataFrames.saveState.state = IOStatus.OK;
     })
     .addCase(saveDataFrame.rejected, (state, action) => {
       const {
         projectId,
         container: { id },
       } = action.meta.arg;
-      state.projects[projectId].dataFrames.data[id].state = LoadingState.ERROR;
+      state.projects[projectId].dataFrames.data[id].state = IOStatus.ERROR;
+      state.projects[projectId].dataFrames.saveState.state = IOStatus.ERROR;
+      state.projects[projectId].dataFrames.saveState.errorMessage = action.error.message;
     })
     .addCase(fetchCharts.pending, (state, action) => {
       const projectId: ID = action.meta.arg;
       state.projects[projectId].charts = {
-        state: LoadingState.LOADING,
+        state: IOStatus.LOADING,
         data: {},
       };
     })
     .addCase(fetchCharts.fulfilled, (state, action) => {
       const projectId: ID = action.meta.arg;
       const charts: PrismaChart[] = action.payload;
-      state.projects[projectId].charts.state = LoadingState.IDLE;
+      state.projects[projectId].charts.state = IOStatus.OK;
       state.projects[projectId].charts.data = charts.reduce(
         (acc: Record<ID, ChartStateContainer>, ch: PrismaChart) => ({
           ...acc,
           [ch.id]: {
-            state: LoadingState.IDLE,
+            state: IOStatus.OK,
             data: {
               id: ch.id,
               name: ch.name,
@@ -277,13 +272,13 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
     .addCase(fetchCharts.rejected, (state, action) => {
       const projectId: ID = action.meta.arg;
       state.projects[projectId].charts = {
-        state: LoadingState.ERROR,
+        state: IOStatus.ERROR,
         data: {},
       };
     })
     .addCase(saveChart.pending, (state, action) => {
       const { projectId, chart } = action.meta.arg;
-      state.projects[projectId].charts.data[chart.id].state = LoadingState.LOADING;
+      state.projects[projectId].charts.data[chart.id].state = IOStatus.LOADING;
     })
     .addCase(saveChart.fulfilled, (state, action) => {
       const {
@@ -292,7 +287,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
       } = action.meta.arg;
       const chart: PrismaChart = action.payload;
       state.projects[projectId].charts.data[id] = {
-        state: LoadingState.IDLE,
+        state: IOStatus.OK,
         data: {
           id: chart.id,
           name: chart.name,
@@ -304,7 +299,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
     .addCase(saveChart.rejected, (state, action) => {
       const { projectId, chart } = action.meta.arg;
       console.error(action.error);
-      state.projects[projectId].charts.data[chart.id].state = LoadingState.ERROR;
+      state.projects[projectId].charts.data[chart.id].state = IOStatus.ERROR;
       state.projects[projectId].charts.data[chart.id].errorMessage = action.error.message;
     }),
 );

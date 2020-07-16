@@ -7,7 +7,7 @@ import {
   useDataFramesState,
   useIsDraggingDroppedColumn,
 } from '../../../../store/selectors';
-import { LoadingState, saveChart, SaveChartPayload } from '../../../../store/project';
+import { saveChart, SaveChartPayload } from '../../../../store/project';
 import { useCurrentChart, useCurrentProject } from '../../../../store/hooks';
 import { ChartCreator } from '../../../../components/chartcreator/ChartCreator';
 import { LeftBoxShadow, RightBoxShadow } from '../../../../components/misc/BoxShadow';
@@ -32,6 +32,7 @@ import { useRouter } from 'next/router';
 import { routes } from '../../../../config/routes';
 import { Spinner } from '../../../../components/misc/Spinner';
 import { ThreeBounce } from 'styled-spinkit';
+import { IOStatus } from '../../../../store/common';
 
 const ChartIcon = Icon(Chart);
 const LayoutIcon = Icon(Layout);
@@ -99,9 +100,9 @@ function ChartPage() {
   }, [chart]);
 
   if (
-    projectState === LoadingState.LOADING ||
-    dataFramesState?.state === LoadingState.LOADING ||
-    project?.charts.state === LoadingState.LOADING
+    projectState === IOStatus.LOADING ||
+    dataFramesState?.state === IOStatus.LOADING ||
+    project?.charts.state === IOStatus.LOADING
   ) {
     return <Spinner />;
   }
@@ -114,7 +115,7 @@ function ChartPage() {
   }
 
   const onSaveChart = () => {
-    if (chart && project.charts.data[chart.id].state === LoadingState.LOADING) {
+    if (chart && project.charts.data[chart.id].state === IOStatus.LOADING) {
       return;
     }
 
@@ -161,9 +162,9 @@ function ChartPage() {
 
   const saveIcon = () => {
     if (chart) {
-      if (project.charts.data[chart.id].state === LoadingState.LOADING) {
+      if (project.charts.data[chart.id].state === IOStatus.LOADING) {
         return <ThreeBounce size={32} color={'black'} />;
-      } else if (project.charts.data[chart.id].state === LoadingState.ERROR) {
+      } else if (project.charts.data[chart.id].state === IOStatus.ERROR) {
         return <ErrorIcon size={32} color={'red'} />;
       }
     }

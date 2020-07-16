@@ -1,4 +1,4 @@
-import { DataFrameContainer, LoadingState } from '../../store/project';
+import { DataFrameContainer } from '../../store/project';
 import { Sidebar } from '../misc/Sidebar';
 import { Box, Flex } from 'reflexbox';
 import { LightText } from '../misc/LightText';
@@ -10,6 +10,7 @@ import { AutoSubmit } from '../misc/AutoSubmit';
 import { Button } from 'rebass/styled-components';
 import { object, string } from 'yup';
 import { FormErrorMessage } from '../chartcreator/PropsEditor/FormErrorMessage';
+import { IOStatus } from '../../store/common';
 
 export interface DataFrameInfoSidebarProps {
   dataFrameContainer: DataFrameContainer;
@@ -82,7 +83,7 @@ export function DataFrameInfoSidebar(props: DataFrameInfoSidebarProps) {
                   <Button
                     type={'submit'}
                     onClick={onSaveClick}
-                    disabled={!isValid || dataFrameContainer.state !== LoadingState.IDLE}
+                    disabled={!isValid || dataFrameContainer.state !== IOStatus.OK}
                   >
                     Save
                   </Button>
