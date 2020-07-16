@@ -1,16 +1,21 @@
 import { useProjects } from '../store/selectors';
-import { fetchProjects, LoadingState, Project } from '../store/project';
+import { fetchProjects, LoadingState, createProject as createProjectAction } from '../store/project';
 import React, { useEffect } from 'react';
-import Link from 'next/link';
 import { routes } from '../config/routes';
 import Head from 'next/head';
 import { useDispatch } from 'react-redux';
 import { ErrorMessage } from '../components/misc/ErrorMessage';
 import { Spinner } from '../components/misc/Spinner';
+import { Box, Flex } from 'reflexbox';
+import { ProjectPreview } from '../components/misc/ProjectPreview';
+import { useRouter } from 'next/router';
+import { ID } from '../store/state';
+import { CreateNewProjectCard } from '../components/misc/CreateNewProjectCard';
 
 function Projects() {
   const dispatch = useDispatch();
-  const { projects, state, errorMessage } = useProjects();
+  const router = useRouter();
+  const { projects, state, errorMessage, createProject } = useProjects();
 
   useEffect(() => {
     if (Object.keys(projects).length === 0) {
@@ -18,21 +23,32 @@ function Projects() {
     }
   }, []);
 
+  const navigateToPage = (projectId: ID) => () => {
+    const route = routes.dataFrames(projectId);
+    router.push(route.href, route.as);
+  };
+
+  const createNewProject = (projectName: string) => {
+    dispatch(createProjectAction(projectName));
+  };
+
   const body = () => {
     switch (state) {
       case LoadingState.LOADING:
         return <Spinner />;
       case LoadingState.IDLE:
         return (
-          <ul>
-            {Object.values(projects).map((project: Project) => (
-              <li key={project.id}>
-                <Link {...routes.dataFrames(project.id)}>
-                  <a>{project.name}</a>
-                </Link>
-              </li>
+          <Flex flexWrap={'wrap'}>
+            {Object.values(projects).map(project => (
+              <Box m={5} marginTop={4} key={project.id}>
+                <ProjectPreview project={project} onClick={navigateToPage(project.id)} />
+              </Box>
             ))}
-          </ul>
+
+            <Box m={5} marginTop={4}>
+              <CreateNewProjectCard submit={createNewProject} state={createProject.state} />
+            </Box>
+          </Flex>
         );
       case LoadingState.ERROR:
         return <ErrorMessage message={errorMessage || 'Unknown error'} />;

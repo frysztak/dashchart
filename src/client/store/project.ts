@@ -11,6 +11,10 @@ export type ProjectsState = {
   projects: Record<ID, Project>;
   state: LoadingState;
   errorMessage?: string;
+  createProject: {
+    state: LoadingState;
+    errorMessage?: string;
+  };
 };
 
 export type DataFramesState = {
@@ -31,6 +35,8 @@ export interface Project {
   dataFrames: DataFramesState;
   charts: ChartsState;
   dashboards: Record<ID, DashboardState>;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export enum LoadingState {
@@ -65,7 +71,19 @@ export interface DashboardState {}
 export const initialProjectsState: ProjectsState = {
   state: LoadingState.LOADING,
   projects: {},
+  createProject: {
+    state: LoadingState.IDLE,
+  },
 };
+
+export const createProject = createAsyncThunk('projects/create', async (name: string, thunkAPI) => {
+  const projects = await http
+    .url('/projects')
+    .post({ name })
+    .json<PrismaProject[]>();
+  thunkAPI.dispatch(fetchProjects());
+  return projects;
+});
 
 export const fetchProjects = createAsyncThunk('projects/fetch', async () => {
   const projects = await http
@@ -125,36 +143,48 @@ export const saveDataFrame = createAsyncThunk('dataFrame/save', async (payload: 
 
 export const projectReducer = createReducer(initialProjectsState, builder =>
   builder
+    .addCase(createProject.pending, (state, action) => {
+      state.createProject.state = LoadingState.LOADING;
+    })
+    .addCase(createProject.fulfilled, (state, action) => {
+      state.createProject.state = LoadingState.IDLE;
+    })
+    .addCase(createProject.rejected, (state, action) => {
+      state.createProject.state = LoadingState.ERROR;
+      state.createProject.errorMessage = action.error.message;
+    })
     .addCase(fetchProjects.pending, (state, action) => {
-      return { projects: {}, state: LoadingState.LOADING };
+      state.projects = {};
+      state.state = LoadingState.LOADING;
     })
     .addCase(fetchProjects.fulfilled, (state, action) => {
       const projects: PrismaProject[] = action.payload;
-      return {
-        state: LoadingState.IDLE,
-        projects: projects.reduce(
-          (acc: Record<ID, Project>, project: PrismaProject): Record<ID, Project> => ({
-            ...acc,
-            [project.id]: {
-              id: project.id,
-              name: project.name,
-              dataFrames: {
-                state: LoadingState.LOADING,
-                data: {},
-              },
-              charts: {
-                state: LoadingState.LOADING,
-                data: {},
-              },
-              dashboards: {},
+      state.state = LoadingState.IDLE;
+      state.projects = projects.reduce(
+        (acc: Record<ID, Project>, project: PrismaProject): Record<ID, Project> => ({
+          ...acc,
+          [project.id]: {
+            id: project.id,
+            name: project.name,
+            createdAt: project.createdAt,
+            updatedAt: project.updatedAt,
+            dataFrames: {
+              state: LoadingState.LOADING,
+              data: {},
             },
-          }),
-          {},
-        ),
-      };
+            charts: {
+              state: LoadingState.LOADING,
+              data: {},
+            },
+            dashboards: {},
+          },
+        }),
+        {},
+      );
     })
     .addCase(fetchProjects.rejected, (state, action) => {
-      return { projects: {}, state: LoadingState.ERROR };
+      state.projects = {};
+      state.state = LoadingState.ERROR;
     })
     .addCase(fetchDataFrames.pending, (state, action) => {
       const projectId: ID = action.meta.arg;

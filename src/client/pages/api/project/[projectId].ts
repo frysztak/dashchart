@@ -23,14 +23,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     } else {
       res.json(project);
     }
-  } else if (req.method === 'POST') {
-    const project = await prisma.project.create({
-      data: req.body,
-    });
-    if (project === null) {
-      res.status(500).send({ error: `Failed to create project ${projectId}` });
-    } else {
-      res.json(project);
-    }
+  } else {
+    res.status(500).send('Only GET method is supported');
   }
 }
