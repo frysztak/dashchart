@@ -63,15 +63,16 @@ function DataFramePage() {
     );
   };
 
-  const saveDataFrame = () => {
-    dispatch(
+  const saveDataFrame = async () => {
+    await dispatch(
       saveDataFrameAction({
         projectId: project.id,
         container: container,
+        isNew: isNew,
       }),
     );
 
-    if (isNew) {
+    if (isNew && project.dataFrames.saveState.state === IOStatus.OK) {
       const route = routes.dataFrame(project.id, container.id);
       router.push(route.href, route.as);
     }

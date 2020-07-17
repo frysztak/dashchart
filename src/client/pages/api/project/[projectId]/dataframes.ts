@@ -11,22 +11,26 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     return;
   }
 
-  if (req.method === 'GET') {
-    const dataFrames = await prisma.dataFrame.findMany({
-      where: {
-        projectId: projectId,
-      },
-    });
-    res.json(dataFrames);
-  } else if (req.method === 'POST') {
-    const dataFrame = await prisma.dataFrame.create({
-      data: {
-        ...req.body,
-        project: {
-          connect: { id: projectId },
+  try {
+    if (req.method === 'GET') {
+      const dataFrames = await prisma.dataFrame.findMany({
+        where: {
+          projectId: projectId,
         },
-      },
-    });
-    res.json(dataFrame);
+      });
+      res.json(dataFrames);
+    } else if (req.method === 'POST') {
+      const dataFrame = await prisma.dataFrame.create({
+        data: {
+          ...req.body,
+          project: {
+            connect: { id: projectId },
+          },
+        },
+      });
+      res.json(dataFrame);
+    }
+  } catch (err) {
+    res.status(500).send(err.message);
   }
 }

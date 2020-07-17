@@ -124,16 +124,32 @@ export const saveChart = createAsyncThunk('chart/save', async (payload: SaveChar
 export interface SaveDataFramePayload {
   projectId: ID;
   container: DataFrameContainer;
+  isNew: boolean;
 }
 export const saveDataFrame = createAsyncThunk('dataFrame/save', async (payload: SaveDataFramePayload) => {
   const {
     projectId,
     container: { id },
+    isNew,
   } = payload;
-  const dataFrame = await http
-    .url(`/project/${projectId}/dataframe/${id}`)
-    .put(payload.container.dataFrame)
-    .json<PrismaDataFrame>();
+  const dataFrame = isNew
+    ? await http
+        .url(`/project/${projectId}/dataframes`)
+        .post({
+          name: payload.container.dataFrame.name,
+          columns: payload.container.dataFrame.columns,
+          source: payload.container.source,
+        })
+        .json<PrismaDataFrame>()
+    : await http
+        .url(`/project/${projectId}/dataframe/${id}`)
+        .put({
+          id: payload.container.id,
+          name: payload.container.dataFrame.name,
+          source: payload.container.source,
+          columns: payload.container.dataFrame.columns,
+        })
+        .json<PrismaDataFrame>();
   return dataFrame;
 });
 
@@ -237,7 +253,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
         projectId,
         container: { id },
       } = action.meta.arg;
-      state.projects[projectId].dataFrames.data[id].state = IOStatus.ERROR;
+      // state.projects[projectId].dataFrames.data[id].state = IOStatus.ERROR;
       state.projects[projectId].dataFrames.saveState.state = IOStatus.ERROR;
       state.projects[projectId].dataFrames.saveState.errorMessage = action.error.message;
     })

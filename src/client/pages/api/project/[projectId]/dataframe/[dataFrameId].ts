@@ -17,14 +17,18 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 
   if (req.method === 'PUT') {
-    const dataFrame = await prisma.dataFrame.update({
-      where: {
-        id: dataFrameId,
-      },
-      data: req.body,
-    });
-    res.json(dataFrame);
+    try {
+      const dataFrame = await prisma.dataFrame.update({
+        where: {
+          id: dataFrameId,
+        },
+        data: req.body,
+      });
+      res.json(dataFrame);
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
   } else {
-    res.status(500).send('Only PUT method is supported');
+    res.status(400).send('Only PUT method is supported');
   }
 }
