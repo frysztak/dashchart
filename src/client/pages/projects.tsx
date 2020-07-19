@@ -1,5 +1,5 @@
 import { useProjects } from '../store/selectors';
-import { fetchProjects, createProject as createProjectAction } from '../store/project';
+import { fetchProjects, createProject as createProjectAction, fetchProjectStats } from '../store/project';
 import React, { useEffect } from 'react';
 import { routes } from '../config/routes';
 import Head from 'next/head';
@@ -12,17 +12,24 @@ import { useRouter } from 'next/router';
 import { ID } from '../store/state';
 import { CreateNewProjectCard } from '../components/misc/CreateNewProjectCard';
 import { IOStatus } from '../store/common';
+import { keys } from 'shared/utils';
 
 function Projects() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { projects, state, errorMessage, createProject } = useProjects();
+  const { projects, state, errorMessage, createProject, projectStats } = useProjects();
 
   useEffect(() => {
     if (Object.keys(projects).length === 0) {
       dispatch(fetchProjects());
     }
   }, []);
+
+  useEffect(() => {
+    for (const projectId of keys(projects)) {
+      dispatch(fetchProjectStats(projectId));
+    }
+  }, [projects]);
 
   const navigateToPage = (projectId: ID) => () => {
     const route = routes.dataFrames(projectId);
@@ -40,9 +47,13 @@ function Projects() {
       case IOStatus.OK:
         return (
           <Flex flexWrap={'wrap'}>
-            {Object.values(projects).map(project => (
-              <Box m={5} marginTop={4} key={project.id}>
-                <ProjectPreview project={project} onClick={navigateToPage(project.id)} />
+            {Object.entries(projects).map(([projectId, project]) => (
+              <Box m={5} marginTop={4} key={projectId}>
+                <ProjectPreview
+                  project={project}
+                  stats={projectStats[projectId]}
+                  onClick={navigateToPage(project.id)}
+                />
               </Box>
             ))}
 

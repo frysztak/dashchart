@@ -10,6 +10,7 @@ import { IOState, IOStatus } from './common';
 
 export type ProjectsState = {
   projects: Record<ID, Project>;
+  projectStats: Record<ID, ProjectStats>;
   state: IOStatus;
   errorMessage?: string;
   createProject: {
@@ -41,6 +42,18 @@ export interface Project {
   updatedAt: Date;
 }
 
+export type ProjectStats =
+  | {
+      status: IOStatus.ERROR | IOStatus.LOADING;
+    }
+  | {
+      status: IOStatus.OK;
+      values: {
+        dataFrameCount: number;
+        chartCount: number;
+      };
+    };
+
 export interface DataFrameContainer {
   id: number;
   source: string;
@@ -67,6 +80,7 @@ export interface DashboardState {}
 export const initialProjectsState: ProjectsState = {
   state: IOStatus.LOADING,
   projects: {},
+  projectStats: {},
   createProject: {
     state: IOStatus.OK,
   },
@@ -87,6 +101,17 @@ export const fetchProjects = createAsyncThunk('projects/fetch', async () => {
     .get()
     .json<PrismaProject[]>();
   return projects;
+});
+
+type Stats = PrismaProject & {
+  dataFrameCount: number;
+  chartCount: number;
+};
+export const fetchProjectStats = createAsyncThunk('projects/fetchStats', async (projectId: ID) => {
+  return await http
+    .url(`/project/${projectId}/stats`)
+    .get()
+    .json<Stats>();
 });
 
 export const fetchDataFrames = createAsyncThunk('dataFrames/fetch', async (projectId: ID) => {
@@ -205,6 +230,29 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
       const projectId: ID = action.meta.arg;
       state.projects[projectId].dataFrames.state = IOStatus.LOADING;
       state.projects[projectId].dataFrames.data = {};
+    })
+    .addCase(fetchProjectStats.pending, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      state.projectStats[projectId] = {
+        status: IOStatus.LOADING,
+      };
+    })
+    .addCase(fetchProjectStats.fulfilled, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      const { chartCount, dataFrameCount } = action.payload;
+      state.projectStats[projectId] = {
+        status: IOStatus.OK,
+        values: {
+          chartCount,
+          dataFrameCount,
+        },
+      };
+    })
+    .addCase(fetchProjectStats.rejected, (state, action) => {
+      const projectId: ID = action.meta.arg;
+      state.projectStats[projectId] = {
+        status: IOStatus.ERROR,
+      };
     })
     .addCase(fetchDataFrames.fulfilled, (state, action) => {
       const projectId: ID = action.meta.arg;
