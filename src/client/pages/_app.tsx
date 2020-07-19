@@ -61,7 +61,7 @@ function App({ children }: { children: ReactElement }) {
   };
 
   const menuBarProps: MenuBarProps = {
-    projectName: currentProject?.name || '',
+    projectName: currentProject?.name || null,
     currentMenuItem: findCurrentMenuItem(router.pathname),
     onBackClicked: router.back,
     onItemClicked: navigateToPage,

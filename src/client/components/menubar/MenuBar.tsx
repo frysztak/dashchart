@@ -11,7 +11,7 @@ import { Pulsate, Rotate, Wobble } from '../misc/animations';
 import { TruncatedText } from '../misc/LightText';
 
 export interface MenuBarProps {
-  projectName: string;
+  projectName: string | null;
   currentMenuItem: MenuItem;
   onBackClicked: () => void;
   onItemClicked: (item: MenuItem) => void;
@@ -42,7 +42,11 @@ export function MenuBar(props: MenuBarProps) {
         </Flex>
 
         <Flex height={'100%'} alignItems={'center'}>
-          <TabBar currentMenuItem={props.currentMenuItem} onItemClicked={props.onItemClicked} />
+          <TabBar
+            currentMenuItem={props.currentMenuItem}
+            onItemClicked={props.onItemClicked}
+            projectSelected={props.projectName !== null}
+          />
         </Flex>
 
         <Flex alignItems={'center'} justifyContent={'flex-end'} flexBasis={'300px'}>
