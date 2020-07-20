@@ -11,7 +11,7 @@ import { saveChart, SaveChartPayload } from '../../../../store/project';
 import { useCurrentChart, useCurrentProject } from '../../../../store/hooks';
 import { ChartCreator } from '../../../../components/chartcreator/ChartCreator';
 import { LeftBoxShadow, RightBoxShadow } from '../../../../components/misc/BoxShadow';
-import { ChartCreatorState, createChart } from '../../../../store/chartCreator';
+import { ChartCreatorState, clearSavedId, createChart } from '../../../../store/chartCreator';
 import { ChartPropsSidebar } from '../../../../components/chartcreator/ChartPropsSidebar';
 import { Icon } from '../../../../components/misc/Icon';
 import { Chart, ErrorCircle, Layout, Save, Trash } from '@styled-icons/boxicons-regular';
@@ -87,6 +87,7 @@ function ChartPage() {
 
   useEffect(() => {
     if (project && chartCreator?.savedId !== null) {
+      dispatch(clearSavedId());
       const route = routes.chart(project.id, chartCreator.savedId);
       router.push(route.href, route.as);
     }

@@ -25,6 +25,7 @@ export const dropColumn = createAction<DroppedColumn>('dropColumn');
 export const deleteColumn = createAction<ColumnToDelete>('deleteColumn');
 export const resetCurrentColumns = createAction('resetCurrentColumns');
 export const setCurrentColumns = createAction<DropZoneValues<ColumnId>>('setCurrentColumns');
+export const clearSavedId = createAction('clearSavedId');
 
 export const createChart = createAsyncThunk('chart/create', async (payload: SaveChartPayload, thunkAPI) => {
   const { projectId, chart } = payload;
@@ -77,5 +78,8 @@ export const chartCreatorReducer = createReducer(initialChartCreator, builder =>
     .addCase(createChart.rejected, (state, action) => {
       state.state = IOStatus.ERROR;
       state.errorMessage = action.error.message;
+    })
+    .addCase(clearSavedId, (state, action) => {
+      state.savedId = null;
     }),
 );
