@@ -32,6 +32,15 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
           },
         },
       });
+
+      await prisma.project.update({
+        where: {
+          id: projectId,
+        },
+        data: {
+          updatedAt: new Date(),
+        },
+      });
       res.json(chart);
     } catch (err) {
       res.status(500).send(err.message);

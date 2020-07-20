@@ -239,7 +239,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
     })
     .addCase(fetchProjectStats.fulfilled, (state, action) => {
       const projectId: ID = action.meta.arg;
-      const { chartCount, dataFrameCount } = action.payload;
+      const { chartCount, dataFrameCount, updatedAt } = action.payload;
       state.projectStats[projectId] = {
         status: IOStatus.OK,
         values: {
@@ -247,6 +247,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
           dataFrameCount,
         },
       };
+      state.projects[projectId].updatedAt = updatedAt;
     })
     .addCase(fetchProjectStats.rejected, (state, action) => {
       const projectId: ID = action.meta.arg;
