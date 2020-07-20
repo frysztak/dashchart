@@ -74,14 +74,8 @@ function TabBarItem(props: TabBarItemProps) {
   const isDisabled = props.isDisabled || false;
   return (
     <ItemContainer flexDirection={'column'} height={'100%'} isDisabled={isDisabled}>
-      <Flex flex={1} alignItems={'center'}>
-        <TabBarItemName
-          fontSize={3}
-          mx={4}
-          isActive={props.isActive}
-          isDisabled={isDisabled}
-          onClick={props.onItemClicked}
-        >
+      <Flex flex={1} alignItems={'center'} onClick={props.onItemClicked}>
+        <TabBarItemName fontSize={3} mx={4} isActive={props.isActive} isDisabled={isDisabled}>
           {MenuItemNames[props.menuItem]}
         </TabBarItemName>
       </Flex>
