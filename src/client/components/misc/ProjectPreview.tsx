@@ -35,14 +35,14 @@ export function ProjectPreview(props: ProjectPreviewProps) {
       case IOStatus.OK:
         return (
           <Flex flexDirection={'column'} height={'100%'} justifyContent={'center'}>
-            <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'end'} flexGrow={1}>
+            <Flex flexDirection={'column'} alignItems={'center'} justifyContent={'flex-end'} flexGrow={1}>
               <Text fontSize={4}>{quantify('Data Frame', stats.values.dataFrameCount)}</Text>
               <Text fontSize={4} mt={2}>
                 {quantify('Chart', stats.values.chartCount)}
               </Text>
             </Flex>
 
-            <Flex alignItems={'end'} justifyContent={'end'} flexGrow={1} width={'100%'}>
+            <Flex alignItems={'flex-end'} justifyContent={'flex-end'} flexGrow={1} width={'100%'}>
               <LightText fontSize={1} m={1}>
                 Last edited {formatDistance(new Date(project.updatedAt), Date.now())} ago
               </LightText>
