@@ -5,7 +5,7 @@ import { DataFrame, ColumnId } from 'shared/DataFrame';
 import { UserEditableChartProps } from '../components/charts/common/Props';
 import { http } from './http';
 import { Project as PrismaProject, DataFrame as PrismaDataFrame, Chart as PrismaChart } from '@prisma/client';
-import { pick } from 'lodash';
+import { pick } from 'ramda';
 import { IOState, IOStatus } from './common';
 
 export type ProjectsState = {
@@ -267,7 +267,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
             source: df.source,
             state: IOStatus.OK,
             // TODO: use something like io-ts to parse the json
-            dataFrame: pick((df as unknown) as DataFrame, ['id', 'name', 'columns']),
+            dataFrame: pick(['id', 'name', 'columns'], (df as unknown) as DataFrame),
           },
         }),
         {},
@@ -293,7 +293,7 @@ export const projectReducer = createReducer(initialProjectsState, builder =>
         source: dataFrame.source,
         id: dataFrame.id,
         // TODO: use something like io-ts to parse the json
-        dataFrame: pick((dataFrame as unknown) as DataFrame, ['id', 'name', 'columns']),
+        dataFrame: pick(['id', 'name', 'columns'], (dataFrame as unknown) as DataFrame),
       };
       state.projects[projectId].dataFrames.saveState.state = IOStatus.OK;
     })
