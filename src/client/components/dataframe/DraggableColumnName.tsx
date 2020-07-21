@@ -1,7 +1,7 @@
 import { Flex, Text } from 'rebass';
 import { Circle } from '@styled-icons/boxicons-solid';
 import React from 'react';
-import { Column } from 'shared/DataFrame';
+import { Column, mapColumnType } from 'shared/DataFrame';
 import { ColumnType } from 'shared/DataFrame/index';
 import { useDrag } from 'react-dnd';
 import { DragAndDropItemType } from '../chartcreator/DragNDrop';
@@ -36,15 +36,4 @@ export function DraggableColumnName(props: DraggableColumnNameProps) {
       </Text>
     </Flex>
   );
-}
-
-function mapColumnType(type: ColumnType): string {
-  switch (type) {
-    case ColumnType.NUMBER:
-      return 'number';
-    case ColumnType.STRING:
-      return 'string';
-    default:
-      return type;
-  }
 }

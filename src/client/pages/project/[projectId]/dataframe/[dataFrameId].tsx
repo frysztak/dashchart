@@ -11,7 +11,7 @@ import React, { useEffect } from 'react';
 import Head from 'next/head';
 import { Box, Flex } from 'reflexbox';
 import { LeftBoxShadow } from '../../../../components/misc/BoxShadow';
-import { convertToDataTable } from 'shared/DataFrame';
+import { ColumnType, convertToDataTable, mapColumnType } from 'shared/DataFrame';
 import { DataFrameInfoSidebar } from '../../../../components/dataframe/DataFrameInfoSidebar';
 import DataTable from 'react-data-table-component';
 import { styled } from '../../../../config/Theme';
@@ -24,6 +24,14 @@ const StyledDataTable = styled(DataTable)`
   width: auto;
   margin-right: 16px;
 `;
+
+const customStyles = {
+  headCells: {
+    style: {
+      fontSize: '16px',
+    },
+  },
+};
 
 function DataFramePage() {
   const router = useRouter();
@@ -79,10 +87,14 @@ function DataFramePage() {
   };
 
   const [columns, rows] = convertToDataTable(container.dataFrame);
-  const styledColumns = columns.map(col => ({
-    ...col,
-    sortable: true,
-  }));
+  const styledColumns = columns.map((col, idx) => {
+    const type: ColumnType | undefined = Object.values(container.dataFrame.columns)[idx]?.type;
+    return {
+      ...col,
+      name: type ? `${col.name} :: ${mapColumnType(type)}` : col.name,
+      sortable: true,
+    };
+  });
 
   return (
     <>
@@ -93,7 +105,7 @@ function DataFramePage() {
       </Head>
       <Flex height={'100%'}>
         <Box flexGrow={1} overflowY={'auto'}>
-          <StyledDataTable columns={styledColumns} data={rows} keyField={'__id'} noHeader />
+          <StyledDataTable columns={styledColumns} data={rows} keyField={'__id'} noHeader customStyles={customStyles} />
         </Box>
         <Box>
           <LeftBoxShadow>

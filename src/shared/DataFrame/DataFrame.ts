@@ -8,6 +8,17 @@ export enum ColumnType {
   NUMBER = 'NUMBER',
 }
 
+export function mapColumnType(type: ColumnType): string {
+  switch (type) {
+    case ColumnType.NUMBER:
+      return 'number';
+    case ColumnType.STRING:
+      return 'string';
+    default:
+      return type;
+  }
+}
+
 interface BaseColumn {
   inferredType?: ColumnType;
 }
