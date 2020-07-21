@@ -12,11 +12,11 @@ module.exports = {
         ],
       ],
     },
-    dev: {
+    development: {
       presets: ['next/babel'],
       plugins: [['styled-components', { ssr: true }]],
     },
-    prod: {
+    production: {
       presets: ['next/babel'],
       plugins: [['styled-components', { ssr: true }]],
     },
