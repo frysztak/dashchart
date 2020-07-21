@@ -92,7 +92,7 @@ function DataFramePage() {
         </title>
       </Head>
       <Flex height={'100%'}>
-        <Box flexGrow={1}>
+        <Box flexGrow={1} overflowY={'auto'}>
           <StyledDataTable columns={styledColumns} data={rows} keyField={'__id'} noHeader />
         </Box>
         <Box>
