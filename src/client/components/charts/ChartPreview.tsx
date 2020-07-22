@@ -46,7 +46,11 @@ export function ChartPreview(props: ChartPreviewProps) {
     ),
   );
   return fold(
-    (e: Error) => <ErrorMessage message={e.message} />,
+    (e: Error) => (
+      <PreviewCard title={props.name}>
+        <ErrorMessage message={e.message} />
+      </PreviewCard>
+    ),
     (chartProps: ChartProps[]) => (
       <PreviewCard title={props.name} onClick={props.onClick}>
         <AggregateChart chartProps={chartProps} />
