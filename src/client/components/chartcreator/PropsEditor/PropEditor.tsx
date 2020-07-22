@@ -4,6 +4,7 @@ import { Circle } from '@styled-icons/boxicons-solid';
 import { Label, Select, Input } from '@rebass/forms';
 import { keys } from 'shared/utils/Collection';
 import { FormErrorMessage } from './FormErrorMessage';
+import { BulletItem } from '../../misc/BulletItem';
 
 export enum PropType {
   ENUM = 'ENUM',
@@ -79,21 +80,19 @@ export function PropEditor(props: PropEditorProps) {
   };
 
   return (
-    <Flex flexGrow={1} mt={2} alignItems={'center'}>
-      <Flex size={20} justifyContent={'center'} alignItems={'center'}>
-        <Circle size={8} />
-      </Flex>
+    <BulletItem>
+      <>
+        <Box width={1 / 2}>
+          <Label ml={2} htmlFor={field} maxWidth={'calc(100% - 8px)'}>
+            {name}
+          </Label>
+        </Box>
 
-      <Box width={1 / 2}>
-        <Label ml={2} htmlFor={field} maxWidth={'calc(100% - 8px)'}>
-          {name}
-        </Label>
-      </Box>
-
-      <Box width={1 / 2}>
-        {valueInput()}
-        <FormErrorMessage message={errorMessage} />
-      </Box>
-    </Flex>
+        <Box width={1 / 2}>
+          {valueInput()}
+          <FormErrorMessage message={errorMessage} />
+        </Box>
+      </>
+    </BulletItem>
   );
 }

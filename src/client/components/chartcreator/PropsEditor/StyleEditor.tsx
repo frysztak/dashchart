@@ -1,6 +1,6 @@
 import { AxisFontFamily, AxisFontFamilyMap, AxisFontStyle, ChartStyle } from '../../charts/common/Props';
 import { Formik } from 'formik';
-import { FormikWrapper, Group, PropEditorGroups, WideForm } from './PropsEditorGroups';
+import { FormikWrapper, Group, PropEditorGroups, WideForm } from '../../misc/PropsEditorGroups';
 import { PropEditor, PropType } from './PropEditor';
 import React from 'react';
 import { AutoSubmit } from '../../misc/AutoSubmit';

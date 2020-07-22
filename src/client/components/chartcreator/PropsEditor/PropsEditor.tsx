@@ -3,7 +3,7 @@ import React from 'react';
 import { Formik } from 'formik';
 import { AutoSubmit } from '../../misc/AutoSubmit';
 import { PropEditor, PropType } from './PropEditor';
-import { FormikWrapper, Group, PropEditorGroups, WideForm } from './PropsEditorGroups';
+import { FormikWrapper, Group, PropEditorGroups, WideForm } from '../../misc/PropsEditorGroups';
 
 export interface ChartPropsEditorProps {
   chartName: string;

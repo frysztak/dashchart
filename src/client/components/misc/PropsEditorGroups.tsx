@@ -1,4 +1,4 @@
-import { styled } from '../../../config/Theme';
+import { styled } from '../../config/Theme';
 import { PropsEditorGroup } from './PropsEditorGroup';
 import { Flex } from 'reflexbox';
 

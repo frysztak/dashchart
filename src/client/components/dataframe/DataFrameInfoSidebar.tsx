@@ -3,7 +3,7 @@ import { Sidebar } from '../misc/Sidebar';
 import { Box, Flex } from 'reflexbox';
 import { LightText } from '../misc/LightText';
 import React from 'react';
-import { WideForm } from '../chartcreator/PropsEditor/PropsEditorGroups';
+import { WideForm } from '../misc/PropsEditorGroups';
 import { PropEditor, PropType } from '../chartcreator/PropsEditor/PropEditor';
 import { Formik } from 'formik';
 import { AutoSubmit } from '../misc/AutoSubmit';
@@ -11,16 +11,19 @@ import { Button } from 'rebass/styled-components';
 import { object, string } from 'yup';
 import { FormErrorMessage } from '../chartcreator/PropsEditor/FormErrorMessage';
 import { IOStatus } from '../../store/common';
+import { DataFrameTypeConversions } from './DataFrameTypeConversions';
+import { ColumnType } from '../../../shared/DataFrame';
 
 export interface DataFrameInfoSidebarProps {
   dataFrameContainer: DataFrameContainer;
   update: (newDF: DataFrameContainer) => void;
   onDownloadClick: () => void;
   onSaveClick: () => void;
+  onConvertType: (columnName: string, newType: ColumnType) => void;
 }
 
 export function DataFrameInfoSidebar(props: DataFrameInfoSidebarProps) {
-  const { dataFrameContainer, update, onDownloadClick, onSaveClick } = props;
+  const { dataFrameContainer, update, onDownloadClick, onSaveClick, onConvertType } = props;
 
   const validationSchema = object().shape({
     dataFrame: object().shape({
@@ -88,6 +91,8 @@ export function DataFrameInfoSidebar(props: DataFrameInfoSidebarProps) {
                     Save
                   </Button>
                 </Flex>
+
+                <DataFrameTypeConversions dataFrame={dataFrameContainer.dataFrame} convertType={onConvertType} />
                 <AutoSubmit />
               </WideForm>
             )}

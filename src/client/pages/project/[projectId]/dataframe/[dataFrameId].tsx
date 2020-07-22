@@ -3,6 +3,7 @@ import { DataFrameContainer, saveDataFrame as saveDataFrameAction } from '../../
 import { useCurrentDataFrame, useCurrentProject } from '../../../../store/hooks';
 import {
   downloadDataFrame as downloadDataFrameAction,
+  convertColumnType as convertColumnTypeAction,
   resetEditedDataFrame,
   setEditedDataFrame,
 } from '../../../../store/current';
@@ -86,6 +87,15 @@ function DataFramePage() {
     }
   };
 
+  const convertColumnType = (columnName: string, columnType: ColumnType) => {
+    dispatch(
+      convertColumnTypeAction({
+        columnName,
+        columnType,
+      }),
+    );
+  };
+
   const [columns, rows] = convertToDataTable(container.dataFrame);
   const styledColumns = columns.map((col, idx) => {
     const type: ColumnType | undefined = Object.values(container.dataFrame.columns)[idx]?.type;
@@ -114,6 +124,7 @@ function DataFramePage() {
               update={updateDataFrame}
               onDownloadClick={downloadDataFrame}
               onSaveClick={saveDataFrame}
+              onConvertType={convertColumnType}
             />
           </LeftBoxShadow>
         </Box>

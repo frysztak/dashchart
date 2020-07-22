@@ -3,8 +3,8 @@ import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit'
 import { DataFrameContainer } from './project';
 import { CSVLoader } from 'shared/loaders/CSV';
 import { Result, takeRight } from 'shared/utils/index';
-import { DataFrame } from 'shared/DataFrame/index';
-import { isLeft } from 'fp-ts/es6/Either';
+import { ColumnType, convertColumn, DataFrame } from 'shared/DataFrame/index';
+import { isLeft, isRight } from 'fp-ts/es6/Either';
 import { IOStatus } from './common';
 
 export interface Current {
@@ -43,6 +43,13 @@ export const downloadDataFrame = createAsyncThunk(
   },
 );
 
+export interface ConvertColumnTypePayload {
+  columnName: string;
+  columnType: ColumnType;
+}
+
+export const convertColumnType = createAction<ConvertColumnTypePayload>('dataFrame/convertColumnType');
+
 export const currentReducer = createReducer(initialCurrent, builder =>
   builder
     .addCase(setCurrentProject, (state, action) => {
@@ -80,6 +87,17 @@ export const currentReducer = createReducer(initialCurrent, builder =>
       if (state.editedDataFrame) {
         state.editedDataFrame.state = IOStatus.ERROR;
         state.editedDataFrame.errorMessage = message;
+      }
+    })
+    .addCase(convertColumnType, (state, action) => {
+      const { columnName, columnType } = action.payload;
+      if (state.editedDataFrame && columnName in state.editedDataFrame.dataFrame.columns) {
+        const newDF = convertColumn(state.editedDataFrame.dataFrame, columnName, columnType);
+        if (isRight(newDF)) {
+          state.editedDataFrame.dataFrame = takeRight(newDF);
+        } else {
+          console.error(newDF.left);
+        }
       }
     }),
 );

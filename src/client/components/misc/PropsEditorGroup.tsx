@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 import { Flex } from 'reflexbox';
 import { Text } from 'rebass';
-import { Icon } from '../../misc/Icon';
+import { Icon } from './Icon';
 import { ChevronRight } from '@styled-icons/boxicons-regular';
 
 export interface PropsEditorGroupProps {
