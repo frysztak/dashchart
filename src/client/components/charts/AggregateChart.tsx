@@ -27,8 +27,8 @@ export function AggregateChart(props: AggregateChartProps) {
   return (
     <Wrapper>
       {chartProps.map((data: ChartProps, idx: number) => (
-        <Cell column={1} row={1}>
-          <Chart {...data} key={idx} />
+        <Cell key={idx} column={1} row={1}>
+          <Chart {...data} />
         </Cell>
       ))}
     </Wrapper>

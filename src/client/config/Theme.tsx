@@ -41,7 +41,7 @@ export const theme = {
     color: 'rgba(0,0,0,0.3)',
   },
   previewCard: {
-    width: 350,
+    width: 340,
     height: 200,
   },
   buttons: {

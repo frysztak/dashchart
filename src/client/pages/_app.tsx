@@ -77,7 +77,7 @@ function App({ children }: { children: ReactElement }) {
           <MenuBar {...menuBarProps} />
         </BottomBoxShadow>
       </ElevatedBox>
-      <Box flexGrow={1} overflowY={'hidden'}>
+      <Box flexGrow={1} overflowY={'auto'}>
         {children}
       </Box>
     </Flex>
