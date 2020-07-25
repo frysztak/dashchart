@@ -7,6 +7,7 @@
     "build": "cross-env NODE_ENV=production next build",
     "start": "next start",
     "storybook": "cross-env NODE_ENV=development start-storybook -p 6006 -c .storybook --ci",
+    "storybook:build": "cross-env NODE_ENV=production build-storybook -c .storybook -o .storybook_out",
     "test": "cross-env NODE_ENV=test jest",
     "analyze": "cross-env NODE_ENV=production ANALYZE=true next build",
     "analyze:server": "cross-env NODE_ENV=production BUNDLE_ANALYZE=server next build",

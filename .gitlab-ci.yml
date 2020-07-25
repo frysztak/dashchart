@@ -1,0 +1,44 @@
+image: node:12
+cache:
+  paths:
+    - node_modules/
+    - src/shared/node_modules/
+    - src/client/node_modules/
+    - .yarn
+before_script:
+  - apt-get update -qq && apt-get install
+
+stages:
+  - build
+  - storybook
+  - test
+
+Build:
+  stage: build
+  before_script:
+    - cd src/
+    - yarn config set cache-folder .yarn
+    - yarn install --frozen-lockfile
+    - yarn global add yalc
+    - cd shared/
+    - yarn install --frozen-lockfile
+    - yalc publish
+    - cd ../client/
+    - yalc add shared
+    - yarn install --frozen-lockfile
+  script:
+    - yarn build
+
+Storybook:
+  stage: storybook
+  script:
+    - cd src/client/
+    - yarn storybook:build
+
+Test:
+  stage: test
+  script:
+    - cd src/shared/
+    - yarn test
+    - cd ../client/
+    - yarn test
