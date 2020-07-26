@@ -12,6 +12,8 @@ stages:
   - build
   - storybook
   - test
+  - push
+  - deploy
 
 Build:
   stage: build
@@ -42,3 +44,23 @@ Test:
     - yarn test
     - cd ../client/
     - yarn test
+
+Push:
+  stage: push
+  image: docker/compose
+  services:
+    - docker:dind
+  script:
+    - docker-compose build
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker-compose push
+
+Deploy:
+  stage: deploy
+  tags:
+    - vps
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker-compose pull
+    - docker-compose down
+    - docker-compose up -d

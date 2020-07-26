@@ -12,8 +12,8 @@ RUN yarn global add yalc
 RUN yalc publish
 
 WORKDIR /app/src/client
-RUN yarn install --frozen-lockfile
 RUN yalc add shared
+RUN yarn install --frozen-lockfile
 RUN yarn build
 
 EXPOSE 3000
