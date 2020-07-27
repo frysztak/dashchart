@@ -9,8 +9,24 @@ services:
       - POSTGRES_PASSWORD=postgres
     expose:
       - 5432
+    networks:
+      - proxy
+    restart: unless-stopped
   app:
     build: ./
     image: registry.gitlab.com/frysztak/dashchart/app:latest
-    ports:
-      - 3000:3000
+    expose:
+      - 3000
+    environment:
+      - VIRTUAL_HOST=dashchart.frysztak.net
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=dashchart.frysztak.net
+      - LETSENCRYPT_EMAIL=sebastian.frysztak@gmail.com
+    networks:
+      - proxy
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external:
+      name: nginx-proxy
