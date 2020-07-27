@@ -17,7 +17,7 @@ export function TabBar(props: TabBarProps) {
         <TabBarItem
           menuItem={menuItem}
           isActive={menuItem === props.currentMenuItem}
-          isDisabled={menuItem !== MenuItem.PROJECTS && !props.projectSelected}
+          isDisabled={menuItem === MenuItem.DASHBOARDS || (menuItem !== MenuItem.PROJECTS && !props.projectSelected)}
           key={menuItem}
           onItemClicked={() => props.onItemClicked(menuItem)}
         />
