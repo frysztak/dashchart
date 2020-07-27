@@ -1,3 +1,3 @@
 import wretch from 'wretch';
 
-export const http = wretch('http://localhost:3000/api');
+export const http = wretch(`${process.env.NEXT_PUBLIC_URL}/api`);

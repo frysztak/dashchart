@@ -1,7 +1,8 @@
 FROM node:12-alpine
 WORKDIR /app
 COPY . /app
-COPY docker/app/.env /app/src/client/prisma/
+COPY docker/app/next.env /app/src/client/.env
+COPY docker/app/prisma.env /app/src/client/prisma/.env
 
 WORKDIR /app
 RUN npm ci
