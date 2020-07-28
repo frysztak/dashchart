@@ -8,7 +8,8 @@ export interface SidebarProps {
 
 const Background = styled.div<{ bgColor: ThemeColors }>`
   background-color: ${p => p.theme.colors[p.bgColor]};
-  width: 250px;
+  min-width: 275px;
+  width: 15vw;
   height: 100%;
   overflow-y: auto;
 `;

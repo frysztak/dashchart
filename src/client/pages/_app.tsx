@@ -14,6 +14,7 @@ import { Box, Flex } from 'reflexbox';
 import { BottomBoxShadow } from '../components/misc/BoxShadow';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+// @ts-ignore
 import Menu from 'react-burger-menu/lib/menus/slide';
 
 import '../assets/fonts/font.css';
@@ -21,7 +22,6 @@ import { routes } from '../config/routes';
 import { BurgerContext, BurgerProvider } from '../utils/BurgerContext';
 import { State } from 'react-burger-menu';
 import { TabBar } from '../components/menubar/TabBar';
-import Hide from '../components/misc/Hide';
 
 const ElevatedBox = styled(Box)`
   z-index: 1;
