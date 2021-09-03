@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "csv-parse": "^4.8.8",
-    "immer": "^6.0.1"
+    "immer": "^9.0.6"
   },
   "husky": {
     "hooks": {
